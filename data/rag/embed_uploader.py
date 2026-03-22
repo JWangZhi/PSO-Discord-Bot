@@ -19,7 +19,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from google import genai
 from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone, ServerlessSpec # pylint: disable=no-name-in-module
 
 import config
 

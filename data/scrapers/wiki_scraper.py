@@ -9,7 +9,6 @@ Scraped data is converted to clean Markdown and saved to the
 data/storage/ directory to prepare for the Embedding step.
 """
 
-import os
 import time
 from pathlib import Path
 
@@ -97,6 +96,7 @@ def scrape_dynamic(page_path: str) -> str | None:
 
     driver = None
     try:
+        # pylint: disable=not-callable
         driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()),
             options=options,
@@ -117,7 +117,7 @@ def scrape_dynamic(page_path: str) -> str | None:
         markdown_text = md(str(content_div), heading_style="ATX", strip=["img"])
         return markdown_text.strip()
 
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         print(f"[Scraper/Selenium] Error: {e}")
         return None
     finally:

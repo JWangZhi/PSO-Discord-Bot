@@ -5,6 +5,7 @@ This module manages the MongoDB Atlas connection and provides CRUD operations
 for the 2-Layer Memory System (Short-term & Long-term Memory)
 used for the Role Play feature.
 """
+# pylint: disable=unsubscriptable-object
 
 import sys
 from pathlib import Path
@@ -179,6 +180,30 @@ class MemoryManager:
             "character": "default",
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
+
+COLLECTION_PHASHION = "phashion_items"
+
+class PhashionDBManager:
+    """Manages raw fashion data storage in MongoDB for verification and proof."""
+    
+    def __init__(self):
+        self._db = MongoDB.get_db()
+        self._col = self._db[COLLECTION_PHASHION]
+
+    async def save_item(self, item_name: str, thumbnail_url: str, tags: dict):
+        """Save a scraped phashion item and its tags to MongoDB."""
+        item_data = {
+            "name": item_name,
+            "thumbnail": thumbnail_url,
+            "tags": tags,
+            "last_updated": datetime.now(timezone.utc).isoformat()
+        }
+        # Upsert: update if item_name exists, otherwise insert
+        await self._col.update_one(
+            {"name": item_name},
+            {"$set": item_data},
+            upsert=True
+        )
 
 
 # --- Quick Test ---

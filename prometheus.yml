@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'pso2bot'
+    static_configs:
+      - targets: ['pso2bot:8000']

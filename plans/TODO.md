@@ -24,9 +24,9 @@
 - [x] Setup sample Persona files in `ai_prompts/characters/`.
 
 ## Phase 4: Fashion Recognition (The Eyes)
-- [ ] Integrate Gemini Vision.
-- [ ] Image noise reduction & Search keyword analysis.
-- [ ] Cross-check with Phashion database.
+- [x] Integrate Gemini Vision.
+- [x] Image noise reduction & Search keyword analysis.
+- [x] Cross-check with Phashion database.
 
 ## Phase 5: Optimization & Expansion (Deployment)
 - [ ] Complete Token Optimization (Fast Route, Intent Matrix).
