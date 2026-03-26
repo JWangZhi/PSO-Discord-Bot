@@ -1,107 +1,52 @@
 """
-Embedding Uploader - Converts Wiki data to Vectors and uploads to Pinecone.
+Embedding Uploader V3.0 — Read .chunks.json → Embed → Upload to Pinecone.
 
-Processing flow:
-1. Read scraped Markdown files from data/storage/wiki_raw/
-2. Chunk into smaller segments ~500 words.
-3. Call Local Embedding API to convert text -> 768d vector.
-4. Push vectors to Pinecone Index.
+Usage:
+  uv run python data/rag/embed_uploader.py             # Upsert (idempotent)
+  uv run python data/rag/embed_uploader.py --purge      # Delete all, then upload
 """
 
 import sys
 import time
-import hashlib
+import json
 from pathlib import Path
 
-# Ensure project root is in sys.path to import config
+# Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from google import genai
 from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec # pylint: disable=no-name-in-module
+from pinecone import Pinecone, ServerlessSpec  # pylint: disable=no-name-in-module
 
 import config
 
-# Directory containing scraped Wiki data
-WIKI_RAW_DIR = Path(__file__).parent.parent / "storage" / "wiki_raw"
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
 
-# Pinecone Configuration
-PINECONE_INDEX_NAME = "pso2-wiki"
-EMBEDDING_DIMENSION = 768  # EmbeddingGemma-300m output
+WIKI_RAW_DIR       = Path(__file__).parent.parent / "storage" / "wiki_raw"
+PINECONE_INDEX     = "pso2-wiki"
+EMBEDDING_DIM      = 768
+EMBED_BATCH_SIZE   = 50
+UPSERT_BATCH_SIZE  = 50
+PINECONE_META_LIMIT = 500  # bytes, conservative under 512
 
-
-def chunk_text(text: str, max_words: int = 400) -> list[dict]:
-    """Cut Markdown text into smaller chunks by heading.
-
-    Prioritize splitting by heading (##, ###). If a section is too long,
-    automatically split further by word count.
-
-    Returns:
-        List of {"text": str, "heading": str}
-    """
-    chunks = []
-    current_heading = "Introduction"
-    current_lines = []
-
-    for line in text.split("\n"):
-        # Detect new heading
-        if line.startswith("## ") or line.startswith("### "):
-            # Save current chunk
-            if current_lines:
-                chunk_text_str = "\n".join(current_lines).strip()
-                if len(chunk_text_str.split()) > 10:  # Skip too short chunks
-                    chunks.append({
-                        "text": chunk_text_str,
-                        "heading": current_heading,
-                    })
-            current_heading = line.lstrip("#").strip()
-            current_lines = [line]
-        else:
-            current_lines.append(line)
-
-    # Add final chunk
-    if current_lines:
-        chunk_text_str = "\n".join(current_lines).strip()
-        if len(chunk_text_str.split()) > 10:
-            chunks.append({
-                "text": chunk_text_str,
-                "heading": current_heading,
-            })
-
-    # Split further if chunk is too long
-    final_chunks = []
-    for chunk in chunks:
-        words = chunk["text"].split()
-        if len(words) > max_words:
-            for i in range(0, len(words), max_words):
-                sub_text = " ".join(words[i: i + max_words])
-                final_chunks.append({
-                    "text": sub_text,
-                    "heading": chunk["heading"],
-                })
-        else:
-            final_chunks.append(chunk)
-
-    return final_chunks
+PURGE_MODE = "--purge" in sys.argv
 
 
-def embed_texts(texts: list[str]) -> list[list[float]]:
-    """Call Local Embedding API (LM Studio) to convert text -> vector.
+# ---------------------------------------------------------------------------
+# Embedding Client
+# ---------------------------------------------------------------------------
 
-    Uses OpenAI-compatible endpoint from LM Studio running EmbeddingGemma-300m.
-
-    Args:
-        texts: List of sentences/paragraphs to embed.
-
-    Returns:
-        List of 768-dimensional vectors.
-    """
-    client = OpenAI(
+def get_embed_client() -> OpenAI:
+    return OpenAI(
         base_url=config.LOCAL_EMBED_URL,
-        api_key="lm-studio",  # LM Studio does not require a real key
+        api_key="lm-studio",
     )
 
+
+def embed_texts(client: OpenAI, texts: list[str]) -> list[list[float]]:
+    """Batch embed texts via Local Embedding API."""
     response = client.embeddings.create(
         model=config.LOCAL_EMBED_MODEL,
         input=texts,
@@ -109,107 +54,140 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     return [item.embedding for item in response.data]
 
 
-def init_pinecone_index() -> object:
-    """Initialize or connect to Pinecone Index.
+# ---------------------------------------------------------------------------
+# Pinecone
+# ---------------------------------------------------------------------------
 
-    If the index exists but has the wrong dimension, it will be deleted and recreated.
-
-    Returns:
-        Pinecone Index object.
-    """
+def init_pinecone() -> object:
+    """Connect to or create the Pinecone index."""
     pc = Pinecone(api_key=config.PINECONE_API_KEY)
+    existing = {idx.name for idx in pc.list_indexes()}
 
-    existing_indexes = {idx.name: idx for idx in pc.list_indexes()}
+    if PINECONE_INDEX not in existing:
+        print(f"[Pinecone] Creating index: {PINECONE_INDEX} (dim={EMBEDDING_DIM})")
+        pc.create_index(
+            name=PINECONE_INDEX,
+            dimension=EMBEDDING_DIM,
+            metric="cosine",
+            spec=ServerlessSpec(cloud="aws", region="us-east-1"),
+        )
+        time.sleep(10)
+    else:
+        print(f"[Pinecone] Connected to: {PINECONE_INDEX}")
 
-    if PINECONE_INDEX_NAME in existing_indexes:
-        idx_info = existing_indexes[PINECONE_INDEX_NAME]
-        if idx_info.dimension != EMBEDDING_DIMENSION:
-            print(f"[Pinecone] Old index has dimension {idx_info.dimension}, need {EMBEDDING_DIMENSION}. Deleting...")
-            pc.delete_index(PINECONE_INDEX_NAME)
-            time.sleep(3)
-        else:
-            print(f"[Pinecone] Connected to index: {PINECONE_INDEX_NAME}")
-            return pc.Index(PINECONE_INDEX_NAME)
-
-    print(f"[Pinecone] Creating new index: {PINECONE_INDEX_NAME} (dim={EMBEDDING_DIMENSION})")
-    pc.create_index(
-        name=PINECONE_INDEX_NAME,
-        dimension=EMBEDDING_DIMENSION,
-        metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-east-1"),
-    )
-    time.sleep(10)  # Wait for index to be ready
-
-    return pc.Index(PINECONE_INDEX_NAME)
+    return pc.Index(PINECONE_INDEX)
 
 
-def make_id(page_name: str, chunk_idx: int) -> str:
-    """Create a unique ID for each vector."""
-    raw = f"{page_name}_{chunk_idx}"
-    return hashlib.md5(raw.encode()).hexdigest()
+def purge_index(index):
+    """Delete all vectors after user confirmation."""
+    stats = index.describe_index_stats()
+    count = stats.total_vector_count
 
-
-def upload_wiki_to_pinecone():
-    """Main function: Read all Wiki files -> Chunk -> Embed -> Upload."""
-    md_files = list(WIKI_RAW_DIR.glob("*.md"))
-    if not md_files:
-        print("[Upload] No files found in wiki_raw/. Please run the scraper first.")
+    if count == 0:
+        print("[Purge] Index is already empty.")
         return
 
-    print(f"[Upload] Found {len(md_files)} Wiki files.")
+    confirm = input(
+        f"This will DELETE ALL {count} vectors in '{PINECONE_INDEX}'. "
+        f"Type 'yes' to confirm: "
+    )
+    if confirm.strip().lower() != "yes":
+        print("Aborted.")
+        sys.exit(0)
 
-    index = init_pinecone_index()
-    total_vectors = 0
+    index.delete(delete_all=True)
+    print(f"[Purge] Deleted {count} vectors.")
+    time.sleep(2)
 
-    for md_file in md_files:
-        page_name = md_file.stem  # vd: "Hunter"
-        print(f"\n[Upload] Processing: {page_name}")
 
-        content = md_file.read_text(encoding="utf-8")
-        chunks = chunk_text(content)
-        print(f"  -> {len(chunks)} chunks")
+# ---------------------------------------------------------------------------
+# Chunk Loader
+# ---------------------------------------------------------------------------
 
-        if not chunks:
+def load_all_chunks() -> list[dict]:
+    """Recursively load all .chunks.json from wiki_raw."""
+    all_chunks = []
+    chunk_files = sorted(WIKI_RAW_DIR.rglob("*.chunks.json"))
+
+    if not chunk_files:
+        print("[Loader] No .chunks.json files found. Run wiki_scraper.py first.")
+        sys.exit(1)
+
+    for f in chunk_files:
+        with open(f, "r", encoding="utf-8") as fh:
+            chunks = json.load(fh)
+            all_chunks.extend(chunks)
+
+    print(f"[Loader] Found {len(chunk_files)} files, {len(all_chunks)} total chunks.")
+    return all_chunks
+
+
+def truncate_metadata_value(value: str, max_bytes: int = PINECONE_META_LIMIT) -> str:
+    """Truncate string to fit within Pinecone metadata byte limit."""
+    encoded = value.encode("utf-8")
+    if len(encoded) <= max_bytes:
+        return value
+    return encoded[:max_bytes].decode("utf-8", errors="ignore")
+
+
+# ---------------------------------------------------------------------------
+# Main Upload
+# ---------------------------------------------------------------------------
+
+def upload():
+    """Main flow: Load chunks → Embed → Upsert to Pinecone."""
+    embed_client = get_embed_client()
+    index = init_pinecone()
+
+    if PURGE_MODE:
+        purge_index(index)
+
+    chunks = load_all_chunks()
+
+    total_uploaded = 0
+
+    for i in range(0, len(chunks), EMBED_BATCH_SIZE):
+        batch = chunks[i:i + EMBED_BATCH_SIZE]
+        texts = [c["content"] for c in batch]
+
+        # Embed
+        try:
+            embeddings = embed_texts(embed_client, texts)
+        except Exception as e:
+            print(f"  [ERROR] Embedding failed at batch {i // EMBED_BATCH_SIZE + 1}: {e}")
             continue
 
-        # Embed in batches (max 100/API call)
-        texts = [c["text"] for c in chunks]
-        batch_size = 50
-        all_vectors = []
+        # Build vectors
+        vectors = []
+        for chunk, emb in zip(batch, embeddings):
+            vec_id = chunk["chunk_id"]
+            metadata = {
+                "game_mode":   chunk.get("game_mode", ""),
+                "category":    chunk.get("category", ""),
+                "page_title":  chunk.get("page_title", ""),
+                "section":     chunk.get("section", ""),
+                "sub_section": chunk.get("sub_section", ""),
+                "url":         chunk.get("url", ""),
+                "text":        truncate_metadata_value(chunk["content"]),
+            }
+            vectors.append((vec_id, emb, metadata))
 
-        for i in range(0, len(texts), batch_size):
-            batch_texts = texts[i: i + batch_size]
-            batch_chunks = chunks[i: i + batch_size]
+        # Upsert to Pinecone
+        for j in range(0, len(vectors), UPSERT_BATCH_SIZE):
+            upsert_batch = vectors[j:j + UPSERT_BATCH_SIZE]
+            index.upsert(vectors=upsert_batch)
 
-            print(f"  -> Embedding batch {i // batch_size + 1}...")
-            embeddings = embed_texts(batch_texts)
+        total_uploaded += len(vectors)
+        progress = min(i + EMBED_BATCH_SIZE, len(chunks))
+        print(f"  [{progress}/{len(chunks)}] embedded + upserted")
 
-            for j, (emb, chunk) in enumerate(zip(embeddings, batch_chunks)):
-                vec_id = make_id(page_name, i + j)
-                all_vectors.append({
-                    "id": vec_id,
-                    "values": emb,
-                    "metadata": {
-                        "page": page_name,
-                        "heading": chunk["heading"],
-                        "text": chunk["text"][:1000],  # Pinecone metadata limit
-                        "source": f"https://pso2na.arks-visiphone.com/wiki/{page_name}",
-                    },
-                })
+        time.sleep(0.3)
 
-            time.sleep(0.5)  # Rate limit
-
-        # Upload to Pinecone in batches
-        upsert_batch = 50
-        for i in range(0, len(all_vectors), upsert_batch):
-            batch = all_vectors[i: i + upsert_batch]
-            index.upsert(vectors=[(v["id"], v["values"], v["metadata"]) for v in batch])
-
-        total_vectors += len(all_vectors)
-        print(f"  -> Uploaded {len(all_vectors)} vectors.")
-
-    print(f"\n[Upload] Completed! A total of {total_vectors} vectors pushed to Pinecone.")
+    # Final stats
+    time.sleep(2)
+    stats = index.describe_index_stats()
+    print(f"\n[Done] Uploaded {total_uploaded} vectors. Index total: {stats.total_vector_count}")
 
 
 if __name__ == "__main__":
-    upload_wiki_to_pinecone()
+    upload()

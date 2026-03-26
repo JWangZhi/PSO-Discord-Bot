@@ -1,32 +1,76 @@
 """
 Vision Agent
 
-Uses Google Gemini 1.5 Flash to analyze outfit images sent by players.
-It specifically ignores mutable traits (colors, face, lighting) and focuses 
+Analyzes outfit images sent by players using a local Vision-Language Model (VLM).
+It specifically ignores mutable traits (colors, face, lighting) and focuses
 on structural features to generate a list of searchable tags.
+
+Supports two backends:
+- Local VLM via LM Studio (OpenAI-compatible API) [ACTIVE]
+- Google Gemini Cloud API [COMMENTED OUT - for future use / higher rate limits]
 """
 
-import os
 import sys
 import json
+import base64
 from pathlib import Path
 
 # Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from google import genai
+from openai import OpenAI
 import config
 
+# --- [COMMENTED OUT] Gemini Cloud Backend ---
+# from google import genai
+# class GeminiVisionAgent:
+#     """Vision Agent using Google Gemini Cloud API."""
+#     def __init__(self):
+#         self.client = genai.Client(api_key=config.GEMINI_API_KEY)
+#         self.model_name = 'gemini-2.5-flash'
+#
+#     def analyze_outfit_from_bytes(self, image_data: bytes, mime_type: str = "image/jpeg") -> dict:
+#         try:
+#             prompt = VisionAgent._create_prompt()
+#             response = self.client.models.generate_content(
+#                 model=self.model_name,
+#                 contents=[
+#                     prompt,
+#                     genai.types.Part.from_bytes(data=image_data, mime_type=mime_type)
+#                 ]
+#             )
+#             text_response = response.text.strip()
+#             if text_response.startswith('```json'):
+#                 text_response = text_response[7:]
+#             if text_response.startswith('```'):
+#                 text_response = text_response[3:]
+#             if text_response.endswith('```'):
+#                 text_response = text_response[:-3]
+#             return json.loads(text_response.strip())
+#         except Exception as e:
+#             print(f"[VisionAgent/Gemini] Error: {e}")
+#             return {"error": str(e)}
+# --- [END COMMENTED OUT] ---
+
+
 class VisionAgent:
-    """Agent responsible for Reverse Image Look-up for Phashion."""
+    """Agent responsible for Reverse Image Look-up for Phashion.
+    
+    Uses a local Vision-Language Model (VLM) served by LM Studio.
+    """
+
+    # LM Studio local server endpoint
+    LOCAL_VLM_URL = "http://127.0.0.1:9707/v1"
 
     def __init__(self):
-        # Configure Gemini API using the new Client
-        self.client = genai.Client(api_key=config.GEMINI_API_KEY)
-        self.model_name = 'gemini-2.5-flash'
-        
-    def _create_prompt(self) -> str:
+        self.client = OpenAI(
+            base_url=self.LOCAL_VLM_URL,
+            api_key="lm-studio",  # LM Studio doesn't require a real key
+        )
+
+    @staticmethod
+    def _create_prompt() -> str:
         """Create the strict prompt for the Vision AI."""
         return """
         You are an elite Fashion Analyst (Phashion) for the game Phantasy Star Online 2.
@@ -56,53 +100,69 @@ class VisionAgent:
 
     def analyze_outfit_from_bytes(self, image_data: bytes, mime_type: str = "image/jpeg") -> dict:
         """
-        Analyze an outfit from image bytes.
+        Analyze an outfit from image bytes using the local VLM.
         """
         try:
             prompt = self._create_prompt()
-            
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[
-                    prompt,
-                    genai.types.Part.from_bytes(data=image_data, mime_type=mime_type)
-                ]
+
+            # Encode image to base64 for OpenAI vision API format
+            b64_image = base64.b64encode(image_data).decode("utf-8")
+
+            response = self.client.chat.completions.create(
+                model="local-model",  # LM Studio uses whatever model is loaded
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:{mime_type};base64,{b64_image}"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=512,
+                temperature=0.2,
             )
-            text_response = response.text.strip()
-            
-            # Clean possible markdown block indicators if the LLM disobeys the prompt slightly
+
+            text_response = response.choices[0].message.content.strip()
+
+            # Clean possible markdown block indicators
             if text_response.startswith('```json'):
                 text_response = text_response[7:]
             if text_response.startswith('```'):
                 text_response = text_response[3:]
             if text_response.endswith('```'):
                 text_response = text_response[:-3]
-                
+
             result = json.loads(text_response.strip())
             return result
-            
+
         except json.JSONDecodeError as e:
-            print(f"[VisionAgent] Failed to parse JSON from Gemini: {e}")
-            print(f"Raw response: {response.text}")
+            print(f"[VisionAgent] Failed to parse JSON from local VLM: {e}")
+            print(f"Raw response: {text_response}")
             return {"error": "Invalid JSON response from AI"}
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-exception-caught
             print(f"[VisionAgent] Error analyzing image: {e}")
             return {"error": str(e)}
+
 
 # --- Quick Test ---
 if __name__ == "__main__":
     import requests
-    
+
     agent = VisionAgent()
-    
-    # Example placeholder image from internet just to test API connection
+
     print("Downloading sample image...")
-    img_url = "https://cataas.com/cat" # Using a cat picture just to test API connection and JSON formatting
-    response = requests.get(img_url)
-    
-    if response.status_code == 200:
-        print("Analyzing image with Gemini Vision...")
-        result = agent.analyze_outfit_from_bytes(response.content)
+    img_url = "https://cataas.com/cat"
+    resp = requests.get(img_url, timeout=10)
+
+    if resp.status_code == 200:
+        print("Analyzing image with Local VLM...")
+        result = agent.analyze_outfit_from_bytes(resp.content)
         print("\n=== Extraction Result ===")
         print(json.dumps(result, indent=2, ensure_ascii=False))
     else:

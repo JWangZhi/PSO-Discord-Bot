@@ -35,10 +35,15 @@ class PhashionScraper:
         self.mongo_db = self.mongo_client["pso2_bot"]
         self.mongo_col = self.mongo_db["phashion_items"]
         
-    def get_fashion_category_urls(self, base_url: str = "https://pso2na.arks-visiphone.com/wiki/Portal:New_Genesis/Fashion") -> list[str]:
+    def get_fashion_category_urls(self, portal_config: dict) -> list[str]:
         """
-        Extract all fashion sub-categories (Basewear, Hairstyles, Eyes, etc.) from the 'Fashion Directory' table.
+        Extract fashion sub-categories based on portal configuration.
         """
+        base_url = portal_config["url"]
+        table_kw = portal_config["table_keyword"]
+        link_match = portal_config["link_match"]
+        exclude_matches = portal_config.get("exclude_match", [])
+        
         urls = []
         try:
             print(f"[PhashionScraper] Discovering categories from: {base_url}")
@@ -48,21 +53,25 @@ class PhashionScraper:
             
             soup = BeautifulSoup(response.text, "html.parser")
             
-            # Find the Fashion Directory table by looking for its title or specific structure
+            # Find the designated table
             tables = soup.find_all("table")
             for table in tables:
-                if "Fashion Directory" in table.text:
+                if table_kw in table.text:
                     links = table.find_all("a")
                     for link in links:
                         href = link.get("href")
-                        if href and "/wiki/Portal:New_Genesis/" in href:
+                        if href and link_match in href:
+                            # Check exclusions
+                            if any(ex in href for ex in exclude_matches):
+                                continue
+                                
                             full_url = "https://pso2na.arks-visiphone.com" + href
                             # Filter out non-category links
                             if "Change_to_Simplified_View" not in href and full_url not in urls:
                                 urls.append(full_url)
                     break # Stop after finding the directory table
             
-            print(f"[PhashionScraper] Discovered {len(urls)} category URLs.")
+            print(f"[PhashionScraper] Discovered {len(urls)} category URLs for {portal_config['name']}.")
             return urls
         except Exception as e:
             print(f"[PhashionScraper] Error discovering categories: {e}")
@@ -187,8 +196,11 @@ class PhashionScraper:
                 continue
 
             rows = table.find_all("tr")
-            for row in rows[1:]: # Skip assumed header row
-                if count >= test_limit:
+            for rows_idx, row in enumerate(rows): # Skip assumed header row
+                if rows_idx == 0: # Skip header row
+                    continue
+
+                if test_limit is not None and count >= test_limit:
                     break
                     
                 cells = row.find_all(["td", "th"])
@@ -231,25 +243,43 @@ class PhashionScraper:
                 })
                 count += 1
                 
-            if count >= test_limit:
+            if test_limit is not None and count >= test_limit:
                 break
                 
         return results
 
+    def run(self):
+        """Main execution sequence."""
+        print("=== Starting Phashion Scraper ===")
+        
+        targets_file = Path(__file__).parent / "phashion_targets.json"
+        with open(targets_file, "r", encoding="utf-8") as f:
+            targets = json.load(f)
+            
+        all_categories = []
+        
+        # 1. Gather URLs from Portals
+        for portal in targets.get("portals", []):
+            urls = self.get_fashion_category_urls(portal)
+            all_categories.extend(urls)
+            
+        # 2. Add Direct Categories
+        for direct in targets.get("direct_categories", []):
+            print(f"[PhashionScraper] Adding direct category: {direct['name']}")
+            all_categories.append(direct["url"])
+        
+        # Limit for testing (Comment out on production)
+        # all_categories = all_categories[:2]
+        
+        print(f"[PhashionScraper] Total categories to scrape: {len(all_categories)}")
+        
+        for url in all_categories:
+            self.scrape_category(url, test_limit=None)  # None = scrape all
+            time.sleep(1) # Polite delay between categories
+        
+        print("=== Phashion Scraper Finished ===")
+
 # --- Quick Test ---
 if __name__ == "__main__":
-    print("=== Testing Phashion Scraper ===")
     scraper = PhashionScraper()
-    
-    # 1. Get all categories dynamically instead of hardcoding
-    category_urls = scraper.get_fashion_category_urls()
-    
-    # 2. Test scraping on the first 2 categories found
-    all_results = []
-    for cat_url in category_urls[:2]:
-        cat_results = scraper.scrape_category(cat_url, test_limit=2)
-        all_results.extend(cat_results)
-        
-    print("\n=== Fetched Items Summary ===")
-    for item in all_results:
-        print(f"- {item['name']} | Tags: {item.get('tags', {}).get('structural_tags', [])}")
+    scraper.run()

@@ -1,0 +1,321 @@
+{
+  "ngs": {
+    "class_overview": {
+      "scrape_type": "mixed",
+      "category": "class",
+      "pages": [
+        "Portal:New_Genesis/Class",
+        "Portal:New_Genesis/Character_Skills",
+        "Portal:New_Genesis/Add-on_Skills",
+        "Portal:New_Genesis/Tech_Arts_Customization"
+      ]
+    },
+    "classes": {
+      "scrape_type": "mixed",
+      "category": "class",
+      "pages": [
+        "Portal:New_Genesis/Hunter",
+        "Portal:New_Genesis/Fighter",
+        "Portal:New_Genesis/Ranger",
+        "Portal:New_Genesis/Gunner",
+        "Portal:New_Genesis/Force",
+        "Portal:New_Genesis/Techter",
+        "Portal:New_Genesis/Braver",
+        "Portal:New_Genesis/Bouncer",
+        "Portal:New_Genesis/Waker",
+        "Portal:New_Genesis/Slayer"
+      ]
+    },
+    "ex_styles": {
+      "scrape_type": "mixed",
+      "category": "ex_style",
+      "pages": [
+        "Portal:New_Genesis/Adras",
+        "Portal:New_Genesis/Blitz",
+        "Portal:New_Genesis/Celeste"
+      ]
+    },
+    "weapons": {
+      "scrape_type": "structured_table",
+      "category": "weapon",
+      "pages": [
+        "Portal:New_Genesis/Weapon_Series",
+        "Portal:New_Genesis/Armor",
+        "Portal:New_Genesis/Weapon_Camos",
+        "Portal:New_Genesis/MARS",
+        "Portal:New_Genesis/Skill_Rings",
+        "Portal:New_Genesis/Color_Variants"
+      ]
+    },
+    "combat_systems": {
+      "scrape_type": "mixed",
+      "category": "system",
+      "pages": [
+        "Portal:New_Genesis/Photon_Arts_List",
+        "Portal:New_Genesis/Techniques_List",
+        "Portal:New_Genesis/Photon_Blasts",
+        "Portal:New_Genesis/Potentials",
+        "Portal:New_Genesis/List_of_Augments",
+        "Portal:New_Genesis/Item_Lab",
+        "Portal:New_Genesis/Battle_Power",
+        "Portal:New_Genesis/Damage_Calculation",
+        "Portal:New_Genesis/Status_Effects",
+        "Portal:New_Genesis/PSE"
+      ]
+    },
+    "world": {
+      "scrape_type": "mixed",
+      "category": "world",
+      "pages": [
+        "Portal:New_Genesis/World",
+        "Portal:New_Genesis/Enemies",
+        "Portal:New_Genesis/Urgent_Quests",
+        "Portal:New_Genesis/Battledia_Quests",
+        "Portal:New_Genesis/Trigger_Quests",
+        "Portal:New_Genesis/Trinitas_Quests",
+        "Portal:New_Genesis/Trainia_Advance_Quests",
+        "Portal:New_Genesis/Standing_Quests",
+        "Portal:New_Genesis/Duel_Quests",
+        "Portal:New_Genesis/Time_Extension_Quests",
+        "Portal:New_Genesis/Emergencies",
+        "Portal:New_Genesis/World_Trials",
+        "Portal:New_Genesis/Gathering",
+        "Portal:New_Genesis/Region_Mags",
+        "Portal:New_Genesis/Cocoons_and_Towers",
+        "Portal:New_Genesis/Field_Races",
+        "Portal:New_Genesis/Weather",
+        "Portal:New_Genesis/NPCs"
+      ]
+    },
+    "progression": {
+      "scrape_type": "mixed",
+      "category": "progression",
+      "pages": [
+        "Portal:New_Genesis/Experience_Level",
+        "Portal:New_Genesis/Player_Status",
+        "Portal:New_Genesis/Tasks",
+        "Portal:New_Genesis/Achievements",
+        "Portal:New_Genesis/Titles",
+        "Portal:New_Genesis/Cumulative_Title_List",
+        "Portal:New_Genesis/Mission_Pass",
+        "Portal:New_Genesis/Login_Stamps",
+        "Portal:New_Genesis/Currency",
+        "Portal:New_Genesis/Inventory",
+        "Portal:New_Genesis/Storage"
+      ]
+    },
+    "items": {
+      "scrape_type": "mixed",
+      "category": "item",
+      "pages": [
+        "Portal:New_Genesis/Consumables",
+        "Portal:New_Genesis/Materials",
+        "Portal:New_Genesis/Other",
+        "Portal:New_Genesis/Item_Packs"
+      ]
+    },
+    "scratches": {
+      "scrape_type": "structured_table",
+      "category": "scratch",
+      "pages": [
+        "Portal:New_Genesis/AC_Scratches",
+        "Portal:New_Genesis/SG_Scratches",
+        "Portal:New_Genesis/Special_Scratches",
+        "Portal:New_Genesis/Revival_Scratches",
+        "Portal:New_Genesis/Treasure_Scratches"
+      ]
+    },
+    "shops": {
+      "scrape_type": "structured_table",
+      "category": "shop",
+      "pages": [
+        "Portal:New_Genesis/Exchange_Shops",
+        "Portal:New_Genesis/ARKS_Cash_Shop",
+        "Portal:New_Genesis/Star_Gems_Shop",
+        "Portal:New_Genesis/Treasure_Shop",
+        "Portal:New_Genesis/Seasonal_Points_Exchange_Shop"
+      ]
+    },
+    "community": {
+      "scrape_type": "text_document",
+      "category": "system",
+      "pages": [
+        "Portal:New_Genesis/ARKS_ID",
+        "Portal:New_Genesis/Symbol_Arts",
+        "Portal:New_Genesis/Alliances",
+        "Portal:New_Genesis/Friends",
+        "Portal:New_Genesis/Group_Chat",
+        "Portal:New_Genesis/Chat_Commands",
+        "Portal:New_Genesis/Settings"
+      ]
+    },
+    "creative_space": {
+      "scrape_type": "mixed",
+      "category": "creative",
+      "pages": [
+        "Portal:New_Genesis/Creative_Space",
+        "Portal:New_Genesis/Material_Build_Parts",
+        "Portal:New_Genesis/Structure_Build_Parts",
+        "Portal:New_Genesis/Nature_Build_Parts",
+        "Portal:New_Genesis/Furnishing_Build_Parts"
+      ]
+    }
+  },
+  "pso2": {
+    "class_overview": {
+      "scrape_type": "mixed",
+      "category": "class",
+      "pages": [
+        "Class",
+        "Races"
+      ]
+    },
+    "classes": {
+      "scrape_type": "mixed",
+      "category": "class",
+      "pages": [
+        "Hunter",
+        "Fighter",
+        "Ranger",
+        "Gunner",
+        "Force",
+        "Techter",
+        "Braver",
+        "Bouncer",
+        "Summoner",
+        "Hero",
+        "Phantom",
+        "Etoile",
+        "Luster"
+      ]
+    },
+    "weapons_by_type": {
+      "scrape_type": "structured_table",
+      "category": "weapon",
+      "pages": [
+        "Swords_List",
+        "Wired_Lances_List",
+        "Partisans_List",
+        "Twin_Daggers_List",
+        "Double_Sabers_List",
+        "Knuckles_List",
+        "Katanas_List",
+        "Soaring_Blades_List",
+        "Gunblade_List",
+        "Assault_Rifles_List",
+        "Launchers_List",
+        "Twin_Machine_Guns_List",
+        "Bows_List",
+        "Rods_List",
+        "Talises_List",
+        "Wands_List",
+        "Jet_Boots_List",
+        "Harmonizers_List",
+        "Weapon_Camos"
+      ]
+    },
+    "weapon_systems": {
+      "scrape_type": "mixed",
+      "category": "system",
+      "pages": [
+        "Photon_Arts_List",
+        "Techniques_List",
+        "S-Grade_Augments",
+        "Potentials",
+        "Enhancement",
+        "Affix_Augments"
+      ]
+    },
+    "armor": {
+      "scrape_type": "structured_table",
+      "category": "armor",
+      "pages": [
+        "Units",
+        "Back_Units_List",
+        "Arm_Units_List",
+        "Leg_Units_List",
+        "Sub_Units_List",
+        "Skill_Rings"
+      ]
+    },
+    "content": {
+      "scrape_type": "text_document",
+      "category": "system",
+      "pages": [
+        "Story",
+        "Missions",
+        "ARKS_Missions",
+        "Client_Orders",
+        "Quests",
+        "Battle_Arena"
+      ]
+    },
+    "progression": {
+      "scrape_type": "mixed",
+      "category": "progression",
+      "pages": [
+        "Titles",
+        "Achievements",
+        "Mission_Pass",
+        "Login_Stamps",
+        "Collection_Folder",
+        "Experience_Level"
+      ]
+    },
+    "other_systems": {
+      "scrape_type": "mixed",
+      "category": "system",
+      "pages": [
+        "Gathering",
+        "Crafting",
+        "Dark_Blast",
+        "Mags",
+        "Damage_Formula",
+        "Status_Effects"
+      ]
+    },
+    "fashion": {
+      "scrape_type": "structured_table",
+      "category": "fashion",
+      "pages": [
+        "Fashion",
+        "Hairstyles",
+        "Eyes",
+        "Eyebrows",
+        "Eyelashes",
+        "Makeup",
+        "Body_Paints",
+        "Costumes",
+        "Accessories",
+        "Stickers",
+        "Voices",
+        "Emotes"
+      ]
+    },
+    "shops": {
+      "scrape_type": "structured_table",
+      "category": "shop",
+      "pages": [
+        "ARKS_Cash_Shop",
+        "FUN_Shop",
+        "Star_Gem_Shop_Items",
+        "Photon_Exchange_Shop",
+        "Badge_Exchange_Shop",
+        "Unique_Weapon_Badge_Shop",
+        "Rising_Weapon_Badge_Exchanges",
+        "EX-Cube_Exchange",
+        "Swap_Shop",
+        "Treasure_Shop"
+      ]
+    },
+    "scratches": {
+      "scrape_type": "structured_table",
+      "category": "scratch",
+      "pages": [
+        "AC_Scratches",
+        "SG_Scratches",
+        "FUN_Scratches"
+      ]
+    }
+  }
+}
