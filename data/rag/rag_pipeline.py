@@ -10,6 +10,7 @@ Retrieval flow:
 """
 
 import sys
+import re
 from pathlib import Path
 from dataclasses import dataclass
 
@@ -19,9 +20,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from openai import OpenAI
 from pinecone import Pinecone
-from pymongo import MongoClient
 
-import config
+from settings import env as config
+from settings import app as app_settings
 
 
 # ---------------------------------------------------------------------------
@@ -40,28 +41,23 @@ class RetrievedChunk:
     category: str = ""
 
 
-@dataclass
-class TableResult:
-    """A row retrieved from MongoDB (structured stats)."""
-    data: dict
-    page: str
-    source_url: str
-    game_mode: str = ""
-    category: str = ""
-
-
 # ---------------------------------------------------------------------------
 # RAG Pipeline
 # ---------------------------------------------------------------------------
 
 class RAGPipeline:
-    """Retrieval-Augmented Generation with Hybrid Search.
+    """Retrieval-Augmented Generation via Pinecone semantic search.
 
     - Embedding: Local (LM Studio)
     - Vector DB: Pinecone Cloud (semantic chunks)
-    - Document DB: MongoDB Atlas (structured tables)
     - LLM: Called outside this pipeline
     """
+
+    MIN_CHUNK_CONFIDENCE = app_settings.RAG_MIN_CHUNK_CONFIDENCE
+    GENERIC_QUERY_TOKENS = {
+        "ngs", "pso2", "new", "genesis", "class", "classes", "skill", "skills",
+        "guide", "info", "information", "what", "how", "does", "is", "are",
+    }
 
     def __init__(self):
         # Local Embedding client
@@ -72,11 +68,7 @@ class RAGPipeline:
 
         # Pinecone
         pc = Pinecone(api_key=config.PINECONE_API_KEY)
-        self._index = pc.Index("pso2-wiki")
-
-        # MongoDB
-        mongo_client = MongoClient(config.MONGODB_URI)
-        self._table_coll = mongo_client["pso2_bot"]["wiki_tables"]
+        self._index = pc.Index(app_settings.RAG_WIKI_INDEX_NAME)
 
     # ---- Embedding ----
 
@@ -128,45 +120,17 @@ class RAGPipeline:
 
     # ---- MongoDB Search (Structured) ----
 
-    def search_tables(
-        self,
-        query: str,
-        game_mode: str | None = None,
-        category: str | None = None,
-        limit: int = 10,
-    ) -> list[TableResult]:
-        """Search MongoDB for structured table rows matching query terms."""
-        mongo_filter: dict = {}
+    @staticmethod
+    def _tokenize_query(query: str) -> list[str]:
+        """Tokenize a query into normalized terms for chunk re-ranking."""
+        return [t for t in re.findall(r"[a-zA-Z0-9_+\-]{2,}", query.lower()) if t]
 
-        if game_mode:
-            mongo_filter["game_mode"] = game_mode.upper()
-        if category:
-            mongo_filter["category"] = category
+    @classmethod
+    def _specific_tokens(cls, query_tokens: list[str]) -> list[str]:
+        """Keep tokens that carry entity intent (e.g., 'slayer', 'gunblade')."""
+        return [t for t in query_tokens if t not in cls.GENERIC_QUERY_TOKENS and len(t) >= 3]
 
-        # Text search across nested 'data' fields
-        # Simple approach: regex on stringified data values
-        if query:
-            mongo_filter["$or"] = [
-                {f"data.{key}": {"$regex": query, "$options": "i"}}
-                for key in ["name", "weapon", "series", "item",
-                            "costume", "accessory", "hairstyle"]
-            ]
-
-        results = []
-        cursor = self._table_coll.find(mongo_filter).limit(limit)
-
-        for doc in cursor:
-            results.append(TableResult(
-                data=doc.get("data", {}),
-                page=doc.get("page", ""),
-                source_url=doc.get("source_url", ""),
-                game_mode=doc.get("game_mode", ""),
-                category=doc.get("category", ""),
-            ))
-
-        return results
-
-    # ---- Hybrid Context Builder ----
+    # ---- Context Builder ----
 
     def retrieve_context(
         self,
@@ -174,41 +138,87 @@ class RAGPipeline:
         game_mode: str | None = None,
         top_k: int = 5,
     ) -> str:
-        """Main entry — Parallel search, merge context for LLM prompt."""
+        """Main entry — build retrieval context from Pinecone with evidence quality markers."""
 
-        # 1. Semantic search (always)
+        # 1. Semantic search
         chunks = self.search_chunks(query, top_k=top_k, game_mode=game_mode)
+        query_tokens = self._tokenize_query(query)
+        specific_tokens = self._specific_tokens(query_tokens)
 
-        # 2. Table search (entity detection — search if query has specific terms)
-        table_results = self.search_tables(query, game_mode=game_mode, limit=5)
+        # Re-rank chunks by boosting pages/text that contain specific tokens.
+        if specific_tokens and chunks:
+            boosted = []
+            for c in chunks:
+                haystack = f"{c.page} {c.heading} {c.text}".lower()
+                hit_count = sum(1 for token in specific_tokens if token in haystack)
+                boosted_score = c.score + (0.08 * hit_count)
+                boosted.append((boosted_score, c))
+            boosted.sort(key=lambda x: x[0], reverse=True)
 
-        # 3. Build context string
+            ranked_chunks = [c for _, c in boosted]
+            matching_chunks = []
+            non_matching_chunks = []
+            for c in ranked_chunks:
+                haystack = f"{c.page} {c.heading} {c.text}".lower()
+                if any(token in haystack for token in specific_tokens):
+                    matching_chunks.append(c)
+                else:
+                    non_matching_chunks.append(c)
+
+            if len(matching_chunks) >= 2:
+                chunks = matching_chunks[:top_k]
+            elif matching_chunks:
+                chunks = (matching_chunks + non_matching_chunks[:1])[:top_k]
+            else:
+                chunks = ranked_chunks[:top_k]
+
+        # 2. Build context string
         parts = []
+        chunk_max_score = max((c.score for c in chunks), default=0.0)
+        source_urls = []
 
         if chunks:
             parts.append("=== Wiki Knowledge ===")
             for i, c in enumerate(chunks, 1):
+                if c.source:
+                    source_urls.append(c.source)
                 parts.append(
                     f"--- Source {i}: {c.page} > {c.heading} "
                     f"[{c.game_mode}] (Score: {c.score:.2f}) ---\n"
                     f"{c.text}\n"
                 )
 
-        if table_results:
-            parts.append("\n=== Structured Data ===")
-            for i, t in enumerate(table_results, 1):
-                # Flatten data dict to readable string
-                data_str = ", ".join(
-                    f"{k}: {v}" for k, v in t.data.items()
-                    if v and str(v).strip() and k != "_id"
-                )
-                parts.append(
-                    f"--- Table {i}: {t.page} [{t.game_mode}/{t.category}] ---\n"
-                    f"{data_str}\n"
-                )
+        # Deduplicate sources while preserving order.
+        unique_sources = []
+        for url in source_urls:
+            if url and url not in unique_sources:
+                unique_sources.append(url)
 
-        if not parts:
-            return "[No relevant data found in Wiki.]"
+        # Evidence gating marker for downstream response guard.
+        strong_chunk = chunk_max_score >= self.MIN_CHUNK_CONFIDENCE
+        specific_hit_in_chunks = True
+        if specific_tokens and chunks:
+            specific_hit_in_chunks = any(
+                any(token in f"{c.page} {c.heading} {c.text}".lower() for token in specific_tokens)
+                for c in chunks[:3]
+            )
+
+        insufficient = (
+            not chunks
+            or not strong_chunk
+            or (specific_tokens and not specific_hit_in_chunks)
+        )
+        if insufficient:
+            parts.insert(0, "[INSUFFICIENT_EVIDENCE]")
+
+        parts.insert(0, f"[RETRIEVAL_QUALITY] chunk_max={chunk_max_score:.2f}")
+
+        if unique_sources:
+            parts.append("\n=== Sources ===")
+            parts.extend(f"- {url}" for url in unique_sources[:8])
+
+        if len(parts) <= 2 and insufficient:
+            return "[INSUFFICIENT_EVIDENCE]\n[No relevant data found in Wiki.]"
 
         return "\n".join(parts)
 
@@ -218,7 +228,7 @@ class RAGPipeline:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print("=== Test RAG Pipeline V3.0 (Hybrid) ===\n")
+    print("=== Test RAG Pipeline (Pinecone) ===\n")
     rag = RAGPipeline()
 
     test_queries = [
@@ -231,14 +241,9 @@ if __name__ == "__main__":
         print(f"Q: {q} (game={gm})")
         print("-" * 50)
 
-        chunks = rag.search_chunks(q, top_k=2, game_mode=gm)
+        chunks = rag.search_chunks(q, top_k=3, game_mode=gm)
         for c in chunks:
             print(f"  [CHUNK {c.score:.3f}] {c.page} > {c.heading}")
             print(f"    {c.text[:100]}...")
-
-        tables = rag.search_tables(q, game_mode=gm, limit=2)
-        for t in tables:
-            print(f"  [TABLE] {t.page} [{t.category}]")
-            print(f"    {dict(list(t.data.items())[:4])}")
 
         print()

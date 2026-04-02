@@ -1,59 +1,17 @@
 """
-MongoDB Connection & Memory Manager
+Memory Manager — CRUD operations for the 2-Layer RP Memory System.
 
-This module manages the MongoDB Atlas connection and provides CRUD operations
-for the 2-Layer Memory System (Short-term & Long-term Memory)
-used for the Role Play feature.
+Uses the shared MongoDB singleton from core.db.
 """
 # pylint: disable=unsubscriptable-object
 
-import sys
-from pathlib import Path
+import logging
 from datetime import datetime, timezone
 
-# Ensure project root is in sys.path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+from core.db import MongoDB, COL_RP_MEMORY, default_rp_memory
+from settings import app as app_settings
 
-from motor.motor_asyncio import AsyncIOMotorClient
-
-import config
-
-# Database & Collection names
-DB_NAME = "pso2_bot"
-COLLECTION_MEMORY = "rp_memory"
-
-
-class MongoDB:
-    """Singleton managing async connection to MongoDB Atlas."""
-
-    _client: AsyncIOMotorClient | None = None
-    _db = None
-
-    @classmethod
-    def connect(cls):
-        """Initialize connection to MongoDB Atlas."""
-        if cls._client is None:
-            cls._client = AsyncIOMotorClient(config.MONGODB_URI)
-            cls._db = cls._client[DB_NAME]
-            print(f"[MongoDB] Connected to database: {DB_NAME}")
-        return cls._db
-
-    @classmethod
-    def get_db(cls):
-        """Get database object (auto-connect if not connected)."""
-        if cls._db is None:
-            return cls.connect()
-        return cls._db
-
-    @classmethod
-    async def close(cls):
-        """Close connection."""
-        if cls._client:
-            cls._client.close()
-            cls._client = None
-            cls._db = None
-            print("[MongoDB] Connection closed.")
+log = logging.getLogger(__name__)
 
 
 class MemoryManager:
@@ -67,11 +25,11 @@ class MemoryManager:
     - character: Name of the active persona
     """
 
-    MAX_BUFFER = 30  # Maximum messages to keep before hard cap (allows buffering for compression)
+    MAX_BUFFER = app_settings.MEMORY_MAX_BUFFER
 
     def __init__(self):
         self._db = MongoDB.get_db()
-        self._col = self._db[COLLECTION_MEMORY]
+        self._col = self._db[COL_RP_MEMORY]
 
     async def get_memory(self, channel_id: str) -> dict:
         """Get all memory for a channel.
@@ -79,10 +37,14 @@ class MemoryManager:
         Returns:
             Memory document or default structure if not found.
         """
-        doc = await self._col.find_one({"channel_id": channel_id})
-        if doc is None:
+        try:
+            doc = await self._col.find_one({"channel_id": channel_id})
+            if doc is None:
+                return self._default_memory(channel_id)
+            return doc
+        except Exception:
+            log.warning("[Memory] DB unreachable, using default memory for %s", channel_id)
             return self._default_memory(channel_id)
-        return doc
 
     async def add_message(self, channel_id: str, role: str, content: str):
         """Add 1 message to Short-term Memory.
@@ -101,109 +63,95 @@ class MemoryManager:
         }
 
         # Add new message, capped at MAX_RECENT
-        await self._col.update_one(
-            {"channel_id": channel_id},
-            {
-                "$push": {
-                    "recent_messages": {
-                        "$each": [message],
-                        "$slice": -self.MAX_BUFFER,
-                    }
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {
+                    "$push": {
+                        "recent_messages": {
+                            "$each": [message],
+                            "$slice": -self.MAX_BUFFER,
+                        }
+                    },
+                    "$set": {"last_updated": datetime.now(timezone.utc).isoformat()},
+                    "$setOnInsert": {
+                        "summary": "",
+                        "facts": [],
+                        "emotion": {"mood": "neutral", "trust": 0.5},
+                        "character": "default",
+                    },
                 },
-                "$set": {"last_updated": datetime.now(timezone.utc).isoformat()},
-                "$setOnInsert": {
-                    "summary": "",
-                    "facts": [],
-                    "emotion": {"mood": "neutral", "trust": 0.5},
-                    "character": "default",
-                },
-            },
-            upsert=True,
-        )
+                upsert=True,
+            )
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping add_message for %s", channel_id)
 
     async def update_summary(self, channel_id: str, new_summary: str):
         """Update Long-term Summary (after Context Compression)."""
-        await self._col.update_one(
-            {"channel_id": channel_id},
-            {
-                "$set": {
-                    "summary": new_summary,
-                    "last_updated": datetime.now(timezone.utc).isoformat(),
-                }
-            },
-            upsert=True,
-        )
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {
+                    "$set": {
+                        "summary": new_summary,
+                        "last_updated": datetime.now(timezone.utc).isoformat(),
+                    }
+                },
+                upsert=True,
+            )
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping update_summary for %s", channel_id)
 
     async def add_fact(self, channel_id: str, fact: str):
         """Add 1 new fact to Long-term Memory."""
-        await self._col.update_one(
-            {"channel_id": channel_id},
-            {"$addToSet": {"facts": fact}},
-            upsert=True,
-        )
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {"$addToSet": {"facts": fact}},
+                upsert=True,
+            )
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping add_fact for %s", channel_id)
 
     async def update_emotion(self, channel_id: str, mood: str, trust: float):
         """Update bot's emotional state."""
-        await self._col.update_one(
-            {"channel_id": channel_id},
-            {
-                "$set": {
-                    "emotion.mood": mood,
-                    "emotion.trust": max(0.0, min(1.0, trust)),
-                    "last_updated": datetime.now(timezone.utc).isoformat(),
-                }
-            },
-            upsert=True,
-        )
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {
+                    "$set": {
+                        "emotion.mood": mood,
+                        "emotion.trust": max(0.0, min(1.0, trust)),
+                        "last_updated": datetime.now(timezone.utc).isoformat(),
+                    }
+                },
+                upsert=True,
+            )
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping update_emotion for %s", channel_id)
 
     async def set_character(self, channel_id: str, character_name: str):
         """Change Persona for the channel."""
-        await self._col.update_one(
-            {"channel_id": channel_id},
-            {"$set": {"character": character_name}},
-            upsert=True,
-        )
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {"$set": {"character": character_name}},
+                upsert=True,
+            )
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping set_character for %s", channel_id)
 
     async def clear_memory(self, channel_id: str):
         """Delete all memory for a channel (reset)."""
-        await self._col.delete_one({"channel_id": channel_id})
+        try:
+            await self._col.delete_one({"channel_id": channel_id})
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping clear_memory for %s", channel_id)
 
     @staticmethod
     def _default_memory(channel_id: str) -> dict:
         """Default memory structure."""
-        return {
-            "channel_id": channel_id,
-            "recent_messages": [],
-            "summary": "",
-            "facts": [],
-            "emotion": {"mood": "neutral", "trust": 0.5},
-            "character": "default",
-            "last_updated": datetime.now(timezone.utc).isoformat(),
-        }
-
-COLLECTION_PHASHION = "phashion_items"
-
-class PhashionDBManager:
-    """Manages raw fashion data storage in MongoDB for verification and proof."""
-    
-    def __init__(self):
-        self._db = MongoDB.get_db()
-        self._col = self._db[COLLECTION_PHASHION]
-
-    async def save_item(self, item_name: str, thumbnail_url: str, tags: dict):
-        """Save a scraped phashion item and its tags to MongoDB."""
-        item_data = {
-            "name": item_name,
-            "thumbnail": thumbnail_url,
-            "tags": tags,
-            "last_updated": datetime.now(timezone.utc).isoformat()
-        }
-        # Upsert: update if item_name exists, otherwise insert
-        await self._col.update_one(
-            {"name": item_name},
-            {"$set": item_data},
-            upsert=True
-        )
+        return default_rp_memory(channel_id)
 
 
 # --- Quick Test ---

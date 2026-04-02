@@ -15,7 +15,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import groq
 from core.memory import MemoryManager
-import config
+from settings import env as config
 
 class ContextCompressor:
     """Handles automatic context compression using the Groq API."""
@@ -102,7 +102,7 @@ class ContextCompressor:
 # --- Quick Test ---
 if __name__ == "__main__":
     import asyncio
-    from core.memory import MongoDB
+    from core.db import MongoDB
 
     async def test():
         print("=== Test Context Compressor ===")

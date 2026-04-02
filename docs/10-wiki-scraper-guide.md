@@ -117,3 +117,25 @@ To force a fresh fetch, delete the cache files:
 ```bash
 rm -rf data/storage/cache/
 ```
+
+---
+
+## Additional Source: Official PSO2 Players Site
+
+To ingest official content from `https://pso2.com/players/` into RAG chunks:
+
+```bash
+uv run python data/scrapers/players_scraper.py
+```
+
+Optional page cap:
+
+```bash
+uv run python data/scrapers/players_scraper.py --max-pages 60
+```
+
+Then upload all chunks (including players source) to Pinecone:
+
+```bash
+uv run python data/rag/embed_uploader.py
+```

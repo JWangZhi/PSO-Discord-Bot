@@ -61,3 +61,25 @@ By splitting the brain into many pieces (a "Multi-agent" system), we achieve som
 Instead of paying a massive monthly fee to run one giant AI, we use clever coding to route tasks directly to the best *Free Tier* services available worldwide. We use local databases, intelligent text chunking, and memory compression to ensure the bot can serve thousands of PSO2 players 24/7 without ever crashing or charging a dime. 
 
 *Prepare to elevate your ARKS adventure!*
+
+---
+
+## Configuration Layout
+
+The project now uses a centralized settings structure:
+
+- `settings/env.py`: secrets and environment-backed runtime values
+	- API keys, DB URIs, model endpoints, and feature toggles such as `DISABLE_RAG`.
+- `settings/app.py`: app-level operational defaults
+	- ports, index names, thresholds, and batch sizes.
+- `settings/scraper.py`: wiki scraper-specific defaults
+	- wiki endpoint, cache/TTL, request delay, chunking and table heuristics.
+
+Legacy modules remain as compatibility shims:
+
+- `config.py` -> re-exports `settings/env.py`
+- `app_settings.py` -> re-exports `settings/app.py`
+- `data/scrapers/scraper_settings.py` -> re-exports `settings/scraper.py`
+
+Use `.env.example` as the source template for environment overrides.
+Detailed guide: `docs/13-config-structure.md`.

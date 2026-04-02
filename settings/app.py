@@ -1,0 +1,51 @@
+"""Application-level operational settings.
+
+Keep non-secret defaults here so constants are not scattered in modules.
+"""
+
+import os
+
+
+# Discord / runtime
+DISCORD_MESSAGE_LIMIT = int(os.getenv("DISCORD_MESSAGE_LIMIT", "2000"))
+METRICS_PORT = int(os.getenv("METRICS_PORT", "8000"))
+
+
+# Router
+ROUTER_MODEL = os.getenv("ROUTER_MODEL", "gemini-2.5-flash")
+ROUTER_TEMPERATURE = float(os.getenv("ROUTER_TEMPERATURE", "0.1"))
+ROUTER_SIMPLE_CHAT_TERMS = (
+    "hello",
+    "hi",
+    "hey",
+    "sup",
+    "chào",
+    "xin chào",
+)
+
+
+# MongoDB (operational data only — user memory, session state)
+APP_DB_NAME = os.getenv("APP_DB_NAME", "pso2_bot")
+MONGO_MEMORY_COLLECTION = os.getenv("MONGO_MEMORY_COLLECTION", "rp_memory")
+
+
+# Memory
+MEMORY_MAX_BUFFER = int(os.getenv("MEMORY_MAX_BUFFER", "30"))
+
+
+# RAG
+RAG_ENABLED = os.getenv("RAG_ENABLED", "0").lower() in {"1", "true", "yes", "on"}
+RAG_WIKI_INDEX_NAME = os.getenv("RAG_WIKI_INDEX_NAME", "pso2-wiki")
+RAG_MIN_CHUNK_CONFIDENCE = float(os.getenv("RAG_MIN_CHUNK_CONFIDENCE", "0.65"))
+
+
+# Vision
+LOCAL_VLM_URL = os.getenv("LOCAL_VLM_URL", "http://127.0.0.1:9707/v1")
+LOCAL_VLM_MODEL = os.getenv("LOCAL_VLM_MODEL", "local-model")
+VISION_MAX_TOKENS = int(os.getenv("VISION_MAX_TOKENS", "512"))
+VISION_TEMPERATURE = float(os.getenv("VISION_TEMPERATURE", "0.2"))
+
+
+# Debug
+BOT_DEBUG_ENABLED = os.getenv("BOT_DEBUG_ENABLED", "0").lower() in {"1", "true", "yes", "on"}
+BOT_DEBUG_INCLUDE_IN_REPLY = os.getenv("BOT_DEBUG_INCLUDE_IN_REPLY", "0").lower() in {"1", "true", "yes", "on"}

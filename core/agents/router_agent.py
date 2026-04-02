@@ -21,18 +21,20 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
-import config
+from settings import env as config
+from settings import app as app_settings
 
 class IntentResult(BaseModel):
     intent: str
     confidence: float
     reasoning: str
+    game_version: str = "ngs"
 
 class RouterAgent:
     def __init__(self):
         # We use a fast, cheap model for routing
         self._client = genai.Client(api_key=config.GEMINI_API_KEY)
-        self._model_name = "gemini-2.5-flash"
+        self._model_name = app_settings.ROUTER_MODEL
         
         self._system_prompt = """
 You are the master router for the PSO2 Discord bot. Your job is to classify the user's 
@@ -44,6 +46,16 @@ Rules:
 - 'wiki_search': The user is asking a factual question about Phantasy Star Online 2 (NGS) gameplay, classes, skills, weapons, or story. 
    Keywords: "how to", "where to find", "what does", "guide", "wiki".
 - 'chat': The user is just chatting, saying hello, or roleplaying with the bot character (Matoi, Xiera).
+
+Additionally, determine the game version:
+- 'ngs': Default. Questions about PSO2: New Genesis.
+- 'pso2': Questions about PSO2 Classic / base game, or classes/entities that ONLY exist in PSO2 Classic.
+
+ENTITY-GAME MAP (use this to classify):
+- PSO2-ONLY classes (do NOT exist in NGS): Phantom, Hero, Etoile, Luster, Summoner.
+- NGS-ONLY classes (do NOT exist in PSO2 Classic): Slayer, Waker.
+- Both games: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer.
+- If unsure, default to 'ngs'.
 
 Output as JSON matching the schema.
 """
@@ -62,8 +74,7 @@ Output as JSON matching the schema.
             )
             
         # Fast route for simple greetings
-        simple_chat = ["hello", "hi", "hey", "sup", "chào", "xin chào"]
-        if not has_image and user_message.strip().lower() in simple_chat:
+        if not has_image and user_message.strip().lower() in app_settings.ROUTER_SIMPLE_CHAT_TERMS:
             return IntentResult(
                 intent="chat", 
                 confidence=1.0, 
@@ -81,7 +92,7 @@ Output as JSON matching the schema.
                     system_instruction=self._system_prompt,
                     response_mime_type="application/json",
                     response_schema=IntentResult,
-                    temperature=0.1 # Low temp for deterministic classification
+                    temperature=app_settings.ROUTER_TEMPERATURE # Low temp for deterministic classification
                 ),
             )
             

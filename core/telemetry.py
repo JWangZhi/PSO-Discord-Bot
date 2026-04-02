@@ -7,6 +7,8 @@ for Grafana dashboards to consume.
 
 from prometheus_client import Counter, Histogram, start_http_server
 
+from settings import app as app_settings
+
 # Metrics Definitions
 COMMAND_REQUESTS = Counter(
     "pso2bot_command_requests_total",
@@ -32,7 +34,7 @@ EXTERNAL_API_ERRORS = Counter(
     ["service_name"]
 )
 
-def start_metrics_server(port: int = 8000):
+def start_metrics_server(port: int = app_settings.METRICS_PORT):
     """Start the Prometheus metrics HTTP server."""
     try:
         start_http_server(port)

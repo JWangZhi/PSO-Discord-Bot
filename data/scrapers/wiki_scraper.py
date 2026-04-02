@@ -15,7 +15,6 @@ Usage:
 
 import sys
 import re
-import io
 import time
 import json
 import hashlib
@@ -24,24 +23,22 @@ from pathlib import Path
 from typing import Optional
 
 import requests
-import pandas as pd
 from bs4 import BeautifulSoup, NavigableString, Tag
 from markdownify import markdownify as md
-
-# ---------------------------------------------------------------------------
-# Config
-# ---------------------------------------------------------------------------
-
-API_BASE      = "https://pso2na.arks-visiphone.com/api.php"
-WIKI_BASE     = "https://pso2na.arks-visiphone.com/wiki"
-HEADERS       = {"User-Agent": "PSO2-Bot-Scraper/3.0 (research only)"}
-STORAGE_DIR   = Path(__file__).parent.parent / "storage" / "wiki_raw"
-CACHE_DIR     = Path(__file__).parent.parent / "storage" / "cache"
-MANIFEST_FILE = Path(__file__).parent / "wiki_scraper_manifest.json"
-REQUEST_DELAY = 1.2
-CACHE_TTL_H   = 24
-MIN_CHUNK_LEN = 30
-BATCH_SIZE    = 50   # MediaWiki anonymous API limit for titles per request
+from settings.scraper import (
+    API_BASE,
+    WIKI_BASE,
+    HEADERS,
+    STORAGE_DIR,
+    CACHE_DIR,
+    MANIFEST_FILE,
+    REQUEST_DELAY,
+    CACHE_TTL_H,
+    MIN_CHUNK_LEN,
+    BATCH_SIZE,
+    NAV_TABLE_CLASS_HINTS,
+    NAV_CAPTION_HINTS,
+)
 
 SKIP_VALIDATION = "--fast" in sys.argv
 
@@ -76,6 +73,151 @@ def _chunk_id(url: str, section: str, sub_section: str) -> str:
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _is_nav_table(table: Tag) -> bool:
+    """Heuristic detection for navigation-like tables that pollute text chunks."""
+    if not table.attrs:
+        return False
+    class_tokens = {
+        token.lower()
+        for cls in (table.attrs.get("class") or [])
+        for token in str(cls).split()
+        if token
+    }
+    if class_tokens & NAV_TABLE_CLASS_HINTS:
+        return True
+
+    caption = table.find("caption")
+    if caption:
+        caption_text = caption.get_text(" ", strip=True).lower()
+        if any(hint in caption_text for hint in NAV_CAPTION_HINTS):
+            return True
+
+    links = table.find_all("a")
+    link_count = len(links)
+    text = table.get_text(" ", strip=True)
+    text_len = len(text)
+
+    # High link density and lots of short link labels are common in nav boxes.
+    if link_count >= 8 and text_len < 1800:
+        short_anchor_count = sum(1 for a in links if len(a.get_text(" ", strip=True)) <= 30)
+        if short_anchor_count / max(link_count, 1) >= 0.7:
+            return True
+
+    if link_count >= 10:
+        anchor_text_len = sum(len(a.get_text(" ", strip=True)) for a in links)
+        link_density = anchor_text_len / max(text_len, 1)
+        if link_density >= 0.6:
+            return True
+
+    return False
+
+
+def _is_skill_table(table: Tag) -> bool:
+    """Detect skill data tables (have class table-responsive-md + wikitable)."""
+    if not table.attrs:
+        return False
+    classes = {str(c).lower() for c in (table.attrs.get("class") or [])}
+    return "table-responsive-md" in classes and "wikitable" in classes
+
+
+def _extract_skill_from_table(table: Tag) -> dict | None:
+    """Extract structured skill data from a single wiki skill table.
+
+    Returns dict with: skill_name, description, restriction, prerequisite, stats
+    Returns None if table doesn't match expected skill table format.
+    """
+    rows = table.find_all("tr")
+    if len(rows) < 3:
+        return None
+
+    # Row 0: Skill name (first cell) + Description (second cell, usually colspan)
+    first_row_cells = rows[0].find_all(["td", "th"])
+    if not first_row_cells:
+        return None
+
+    skill_name = first_row_cells[0].get_text(strip=True)
+    description = ""
+    if len(first_row_cells) > 1:
+        description = first_row_cells[1].get_text(strip=True)
+
+    # Scan for restriction and prerequisite (colspan rows before stat rows)
+    restriction = ""
+    prerequisite = ""
+    stat_start_row = 1
+
+    for i in range(1, len(rows)):
+        cells = rows[i].find_all(["td", "th"])
+        # Full-width rows (colspan) contain restriction or prerequisite
+        if len(cells) == 1 and cells[0].get("colspan"):
+            text = cells[0].get_text(strip=True)
+            if "Prerequisite" in text:
+                prerequisite = text
+            elif "Can only" in text or "only be used" in text:
+                restriction = text
+            stat_start_row = i + 1
+        else:
+            break
+
+    # Remaining rows: key-value stat pairs
+    # Skip header rows ("Effect | Skill Level" and "1 | 2 | 3...")
+    stats = {}
+    for row in rows[stat_start_row:]:
+        cells = row.find_all(["td", "th"])
+        if len(cells) >= 2:
+            key = cells[0].get_text(strip=True)
+            if key in ("Effect", ""):
+                continue
+            # Skip level-number rows (all cells are digits)
+            values = [c.get_text(strip=True) for c in cells[1:] if c.get_text(strip=True)]
+            if values and all(v.isdigit() for v in values):
+                continue
+            if values:
+                stats[key] = values[0] if len(values) == 1 else " / ".join(values)
+
+    if not skill_name:
+        return None
+
+    return {
+        "skill_name": skill_name,
+        "description": description,
+        "restriction": restriction,
+        "prerequisite": prerequisite,
+        "stats": stats,
+    }
+
+
+def _skill_to_chunk_text(skill: dict) -> str:
+    """Convert extracted skill dict into clean markdown for embedding."""
+    lines = [f"## {skill['skill_name']}"]
+    if skill["description"]:
+        lines.append(skill["description"])
+    if skill["restriction"]:
+        lines.append(skill["restriction"])
+    if skill["prerequisite"]:
+        lines.append(skill["prerequisite"])
+    if skill["stats"]:
+        for key, val in skill["stats"].items():
+            lines.append(f"- {key}: {val}")
+    return "\n".join(lines)
+
+
+def _remove_noise_tables_for_text(soup: BeautifulSoup) -> int:
+    """Remove navigation and list-like tables before text chunk extraction."""
+    removed = 0
+    for table in soup.find_all("table"):
+        if _is_nav_table(table):
+            table.decompose()
+            removed += 1
+            continue
+
+        # For text chunking, table-heavy content is handled by table extractor separately.
+        if table.attrs and "wikitable" in {str(c).lower() for c in (table.attrs.get("class") or [])}:
+            table.decompose()
+            removed += 1
+
+    return removed
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +365,7 @@ def fetch_html(page_path: str) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
-# 4. Table Extractor (Pandas)
+# 4. Table Extractor (BeautifulSoup)
 # ---------------------------------------------------------------------------
 
 def extract_tables(
@@ -233,46 +375,56 @@ def extract_tables(
     page_path: str
 ) -> list[dict]:
     """
-    Use pandas.read_html() to parse all wikitables.
-    Handles rowspan/colspan automatically.
+    Parse all wikitables using BeautifulSoup.
+    Skips skill tables (handled separately in extract_text_chunks).
     """
+    soup = BeautifulSoup(html, "html.parser")
     results = []
 
-    try:
-        dfs = pd.read_html(io.StringIO(html), attrs={"class": "wikitable"})
-    except ValueError:
-        # No tables found
-        return results
-
-    for table_idx, df in enumerate(dfs):
-        # Filter mid-table sub-headers: rows where all values are identical
-        if len(df.columns) > 1:
-            mask = df.apply(lambda row: row.nunique() == 1, axis=1)
-            df = df[~mask].reset_index(drop=True)
-
-        # Skip empty tables
-        if df.empty:
+    for table_idx, table in enumerate(soup.find_all("table", class_="wikitable")):
+        # Skip skill tables — they are handled by the skill extractor
+        if _is_skill_table(table):
+            continue
+        # Skip nav tables
+        if _is_nav_table(table):
             continue
 
-        # Normalize column names
-        df.columns = [
-            re.sub(r"\s+", " ", str(col)).strip().lower()
-            for col in df.columns
+        tr_tags = table.find_all("tr")
+        if not tr_tags:
+            continue
+
+        # Extract headers from the first row
+        header_row = tr_tags[0]
+        headers = [
+            re.sub(r"\s+", " ", cell.get_text(strip=True)).lower()
+            for cell in header_row.find_all(["th", "td"])
         ]
+        if not headers:
+            continue
 
-        # Convert to list of dicts
-        rows = df.to_dict("records")
+        # Extract data rows
+        rows = []
+        for tr in tr_tags[1:]:
+            cells = tr.find_all(["td", "th"])
+            values = [cell.get_text(strip=True) for cell in cells]
+            if not values or all(v == values[0] for v in values):
+                continue  # skip empty or sub-header rows
+            # Pad or trim to match header length
+            row_dict = {}
+            for i, h in enumerate(headers):
+                row_dict[h] = values[i] if i < len(values) else ""
+            row_dict["_game_mode"]  = game_mode.upper()
+            row_dict["_category"]   = category
+            row_dict["_page"]       = page_path
+            row_dict["_source_url"] = _page_url(page_path)
+            rows.append(row_dict)
 
-        # Enrich with metadata
-        for row in rows:
-            row["_game_mode"]  = game_mode.upper()
-            row["_category"]   = category
-            row["_page"]       = page_path
-            row["_source_url"] = _page_url(page_path)
+        if not rows:
+            continue
 
         results.append({
             "table_index": table_idx,
-            "headers":     list(df.columns),
+            "headers":     headers,
             "row_count":   len(rows),
             "rows":        rows,
         })
@@ -293,6 +445,7 @@ def extract_text_chunks(
 ) -> list[dict]:
     """
     Split content by h2/h3 headings into semantic chunks for RAG embedding.
+    Skill tables are extracted as individual chunks before prose extraction.
     """
     soup = BeautifulSoup(html, "html.parser")
 
@@ -312,7 +465,40 @@ def extract_text_chunks(
     chunks: list[dict] = []
     url = _page_url(page_path)
 
-    # Preamble capture — text before first <h2>
+    # Pass 1: Extract skills from skill tables (before removing them)
+    skill_count = 0
+    for table in content_root.find_all("table"):
+        if _is_skill_table(table):
+            skill = _extract_skill_from_table(table)
+            if skill:
+                text = _skill_to_chunk_text(skill)
+                if len(text) >= MIN_CHUNK_LEN:
+                    chunks.append({
+                        "chunk_id":     _chunk_id(url, "Skills", skill["skill_name"]),
+                        "game_mode":    game_mode.upper(),
+                        "category":     category,
+                        "page_title":   page_title,
+                        "section":      "Skills",
+                        "sub_section":  skill["skill_name"],
+                        "content":      text,
+                        "url":          url,
+                        "last_scraped": _now_iso(),
+                    })
+                    skill_count += 1
+            # Remove the table so it doesn't pollute prose chunks
+            table.decompose()
+        elif _is_nav_table(table):
+            table.decompose()
+
+    if skill_count:
+        print(f"  [SKILLS] Extracted {skill_count} skill chunk(s)")
+
+    # Remove remaining wikitables (handled by table extractor separately)
+    for table in content_root.find_all("table"):
+        if table.attrs and "wikitable" in {str(c).lower() for c in (table.attrs.get("class") or [])}:
+            table.decompose()
+
+    # Pass 2: Extract remaining prose by h2/h3 headings
     current_h2: str = "Introduction"
     current_h3: str = "Overview"
     buffer: list     = []
