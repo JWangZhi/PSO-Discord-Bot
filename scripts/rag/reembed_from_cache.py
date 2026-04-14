@@ -1,18 +1,18 @@
 """
-Re-extract chunks from cached HTML → embed via LM Studio → upload to Pinecone.
+Load pre-extracted chunks from wiki_raw/**/*.chunks.json → embed via LM Studio → upload to Pinecone.
 
-Uses the same extract_text_chunks() logic from wiki_scraper.py (Phase 2.5).
+Source: data/storage/wiki_raw/**/*.chunks.json  (written by wiki_scraper.py)
+NOT from HTML cache/ — those are raw and may be stale.
 
 Usage:
-  python data/rag/reembed_from_cache.py              # all cached pages
-  python data/rag/reembed_from_cache.py --dry-run     # extract only, no upload
+  python data/rag/reembed_from_cache.py              # embed all chunks.json
+  python data/rag/reembed_from_cache.py --dry-run     # count only, no upload
   python data/rag/reembed_from_cache.py --clear        # clear index before upload
 """
 
 import sys
 import json
 import time
-import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -23,58 +23,16 @@ from pinecone import Pinecone
 
 from settings import env as config
 from settings import app as app_settings
-from settings.scraper import CACHE_DIR, MANIFEST_FILE, STORAGE_DIR
-from data.scrapers.wiki_scraper import (
-    extract_text_chunks,
-    _safe_filename,
-    _ensure_dir,
-)
+from settings.scraper import STORAGE_DIR
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-EMBED_BATCH_SIZE = 32  # LM Studio handles batches fine
+WIKI_RAW_DIR = STORAGE_DIR  # data/storage/wiki_raw/
+EMBED_BATCH_SIZE = 32
 PINECONE_UPSERT_BATCH = 100
 DRY_RUN = "--dry-run" in sys.argv
 CLEAR_INDEX = "--clear" in sys.argv
-
-
-# ---------------------------------------------------------------------------
-# Build page_path → (game_mode, category, scrape_type) from manifest
-# ---------------------------------------------------------------------------
-def build_manifest_map() -> dict[str, dict]:
-    """Returns { page_path: { game_mode, category, scrape_type } }."""
-    with open(MANIFEST_FILE, "r", encoding="utf-8") as f:
-        manifest = json.load(f)
-
-    mapping = {}
-    for game_mode, sections in manifest.items():
-        for _section_name, section_data in sections.items():
-            category = section_data.get("category", "general")
-            scrape_type = section_data.get("scrape_type", "mixed")
-            for page_path in section_data.get("pages", []):
-                mapping[page_path] = {
-                    "game_mode": game_mode,
-                    "category": category,
-                    "scrape_type": scrape_type,
-                }
-    return mapping
-
-
-def cache_filename_to_page_path(filename: str, manifest_map: dict) -> str | None:
-    """Reverse-map a cache filename back to its manifest page_path.
-
-    Cache files: Portal_New_Genesis_Slayer.html → Portal:New_Genesis/Slayer
-    PSO2 files:  Hunter.html → Hunter
-    """
-    stem = Path(filename).stem  # e.g. Portal_New_Genesis_Slayer
-
-    # Try to match against all known page paths
-    for page_path in manifest_map:
-        if _safe_filename(page_path) == stem:
-            return page_path
-
-    return None
 
 
 # ---------------------------------------------------------------------------
@@ -91,58 +49,33 @@ def embed_texts(client: OpenAI, texts: list[str], model: str) -> list[list[float
 # ---------------------------------------------------------------------------
 def main():
     print("=" * 60)
-    print("  Re-extract + Re-embed from Cache")
-    print(f"  Cache dir  : {CACHE_DIR}")
+    print("  Re-embed from wiki_raw chunks.json")
+    print(f"  Source dir : {WIKI_RAW_DIR}")
     print(f"  Dry run    : {DRY_RUN}")
     print(f"  Clear index: {CLEAR_INDEX}")
     print("=" * 60)
 
-    # 1. Build manifest map
-    manifest_map = build_manifest_map()
-    print(f"\n[INFO] Manifest has {len(manifest_map)} page paths")
+    # 1. Scan all .chunks.json files under wiki_raw/
+    chunk_files = sorted(WIKI_RAW_DIR.rglob("*.chunks.json"))
+    print(f"\n[INFO] Found {len(chunk_files)} .chunks.json files")
 
-    # 2. Scan cache HTML files
-    html_files = sorted(CACHE_DIR.glob("*.html"))
-    print(f"[INFO] Found {len(html_files)} cached HTML files")
+    if not chunk_files:
+        print("[ERROR] No .chunks.json files found. Run wiki_scraper.py first.")
+        return
 
-    # 3. Re-extract chunks from all cached HTML
+    # 2. Load all chunks
     all_chunks = []
-    matched = 0
-    skipped = 0
+    loaded_files = 0
+    for chunk_file in chunk_files:
+        try:
+            data = json.loads(chunk_file.read_text(encoding="utf-8"))
+            if isinstance(data, list) and data:
+                all_chunks.extend(data)
+                loaded_files += 1
+        except Exception as e:
+            print(f"  [WARN] Could not read {chunk_file.name}: {e}")
 
-    for html_file in html_files:
-        page_path = cache_filename_to_page_path(html_file.name, manifest_map)
-        if not page_path:
-            skipped += 1
-            continue
-
-        meta = manifest_map[page_path]
-        game_mode = meta["game_mode"]
-        category = meta["category"]
-        scrape_type = meta["scrape_type"]
-
-        # Only extract text chunks (for RAG embedding)
-        if scrape_type == "structured_table":
-            # structured_table pages have no prose, skip text extraction
-            # but we still want skill tables if any
-            pass
-
-        html = html_file.read_text(encoding="utf-8")
-        page_title = page_path.split("/")[-1].replace("_", " ")
-
-        chunks = extract_text_chunks(html, game_mode, category, page_path, page_title)
-        if chunks:
-            all_chunks.extend(chunks)
-            matched += 1
-
-        # Also save updated chunks.json locally
-        out_dir = STORAGE_DIR / game_mode.upper() / category
-        _ensure_dir(out_dir)
-        chunks_file = out_dir / (_safe_filename(page_path) + ".chunks.json")
-        with open(chunks_file, "w", encoding="utf-8") as f:
-            json.dump(chunks, f, ensure_ascii=False, indent=2)
-
-    print(f"\n[INFO] Extracted {len(all_chunks)} chunks from {matched} pages ({skipped} unmatched cache files)")
+    print(f"[INFO] Loaded {len(all_chunks)} chunks from {loaded_files} files")
 
     if not all_chunks:
         print("[WARN] No chunks to embed. Exiting.")
@@ -151,7 +84,7 @@ def main():
     if DRY_RUN:
         print("\n[DRY RUN] Skipping embedding + upload. Sample chunks:")
         for c in all_chunks[:3]:
-            print(f"  [{c['game_mode']}] {c['page_title']} > {c['section']} > {c['sub_section']} ({len(c['content'])} chars)")
+            print(f"  [{c.get('game_mode','-')}] {c.get('page_title','-')} > {c.get('section','-')} > {c.get('sub_section','-')} ({len(c.get('content',''))} chars)")
         print(f"  ... and {len(all_chunks) - 3} more")
         return
 
@@ -163,9 +96,15 @@ def main():
     # 5. Clear index if requested
     if CLEAR_INDEX:
         print("\n[WARN] Clearing all vectors from Pinecone index...")
-        index.delete(delete_all=True)
-        time.sleep(2)
-        print("[OK] Index cleared.")
+        try:
+            index.delete(delete_all=True, namespace="")
+            time.sleep(2)
+            print("[OK] Index cleared.")
+        except Exception as e:
+            if "Namespace not found" in str(e) or "404" in str(e):
+                print("[OK] Index already empty, nothing to clear.")
+            else:
+                raise
 
     # 6. Embed in batches
     print(f"\n[INFO] Embedding {len(all_chunks)} chunks (batch_size={EMBED_BATCH_SIZE})...")

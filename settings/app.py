@@ -33,12 +33,6 @@ MONGO_MEMORY_COLLECTION = os.getenv("MONGO_MEMORY_COLLECTION", "rp_memory")
 MEMORY_MAX_BUFFER = int(os.getenv("MEMORY_MAX_BUFFER", "30"))
 
 
-# RAG
-RAG_ENABLED = os.getenv("RAG_ENABLED", "0").lower() in {"1", "true", "yes", "on"}
-RAG_WIKI_INDEX_NAME = os.getenv("RAG_WIKI_INDEX_NAME", "pso2-wiki")
-RAG_MIN_CHUNK_CONFIDENCE = float(os.getenv("RAG_MIN_CHUNK_CONFIDENCE", "0.65"))
-
-
 # Vision
 LOCAL_VLM_URL = os.getenv("LOCAL_VLM_URL", "http://127.0.0.1:9707/v1")
 LOCAL_VLM_MODEL = os.getenv("LOCAL_VLM_MODEL", "local-model")

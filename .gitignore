@@ -20,5 +20,8 @@ Thumbs.db
 
 
 .agents/
-data/storage/
 .env
+
+# Data
+data/storage/
+data/rag/

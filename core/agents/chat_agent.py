@@ -108,9 +108,15 @@ class ChatAgent:
         
         messages = [{"role": "system", "content": system_prompt}]
         
-        # 3. Append short term history
+        # 3. Append short term history (filter out hallucinated messages)
+        _HALLUCINATION_MARKERS = [
+            "Data may be incomplete due to limited information",
+            "I recommend checking the official PSO2 website",
+        ]
         recent_history = memory_doc.get("recent_messages", [])[-5:]
         for msg in recent_history:
+            if msg["role"] == "assistant" and any(m in msg.get("content", "") for m in _HALLUCINATION_MARKERS):
+                continue  # Skip likely-hallucinated responses
             messages.append({"role": msg["role"], "content": msg["content"]})
             
         # 5. Guard: if retrieval is explicitly low-confidence, avoid speculative generation.

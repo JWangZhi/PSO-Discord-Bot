@@ -20,7 +20,7 @@ PSO2/NGS AI Discord Bot with:
 - **VisionAgent** (`core/agents/vision_agent.py`) — local VLM (BROKEN), analyzes outfit images
 - **MemoryManager** (`core/memory.py`) — MongoDB 2-layer memory
 - **MCPBridge** (`core/mcp/mcp_client.py`) — Chrome DevTools wiki fetch (BROKEN)
-- **RAGPipeline** (`data/rag/rag_pipeline.py`) — Pinecone vector search (BROKEN, never integrated)
+- **WikiSearchService** (`core/wiki_search.py`) — MongoDB-based retrieval with Gemini slug resolution
 - **WikiScraper** (`data/scrapers/wiki_scraper.py`) — offline MediaWiki scraper
 - **ContextCompressor** (`core/context_compressor.py`) — Groq summarizer (exists but never called)
 - **Entry point:** `main.py`
@@ -41,6 +41,11 @@ PSO2/NGS AI Discord Bot with:
 | 7 | Game type not passed from @mention flow | `on_message` hardcodes `"ngs"` at line 208 — no game version selection for mentions | All @mention wiki queries assume NGS |
 | 8 | No entity-game validation | Slug resolver doesn't know which classes/entities exist in which game | Bot tries to fetch "Phantom" as NGS page (doesn't exist), fails silently, hallucinates |
 | 9 | Hallucination on fallback | When wiki fetch returns nothing, `build_no_rag_context()` tells LLM to "answer from general model knowledge" — Groq hallucinates game data | Bot invents skills like "Phantom Mark", "Shadow Step" that don't exist |
+| 10 | Old hallucinated responses contaminate memory | Previous wrong answers stored in MongoDB `recent_messages` get injected into every new Groq prompt | Bot sees its own old hallucinated answers and may repeat them |
+| 11 | `--debug` floods terminal with pymongo noise | `logging.basicConfig(level=DEBUG)` sets ALL loggers to DEBUG — pymongo heartbeats every 10s produce walls of text | Real bot logs are unreadable |
+| 12 | `on_message` reply crashes when > 2000 chars | `message.reply()` has no length splitting unlike `send_long_message()` for slash commands | Bot silently fails on long wiki responses via @mention |
+| 13 | Follow-up queries fail — no query expansion | RAG receives raw "can you more details about it?" with no context resolution | Pronouns/references return zero results from text search |
+| 14 | `reembed_from_cache.py` reads wrong source | Script re-extracts from HTML `cache/` folder instead of using clean `.chunks.json` in `wiki_raw/` | MongoDB gets stale/corrupted chunks even though clean ones exist |
 
 ---
 
@@ -58,19 +63,32 @@ PSO2/NGS AI Discord Bot with:
 - [ ] Test: fetch `Portal:New_Genesis/Slayer` via new API
 
 ### Phase 2: Fix RAG Config and Integration [P0]
-- [ ] Add to `settings/env.py`: `PINECONE_API_KEY`, `LOCAL_EMBED_URL`, `LOCAL_EMBED_MODEL`
-- [ ] Add to `settings/app.py`: `RAG_WIKI_INDEX_NAME`, `RAG_MIN_CHUNK_CONFIDENCE`, `RAG_ENABLED`
+- [x] Add to `settings/env.py`: `LOCAL_EMBED_URL`, `LOCAL_EMBED_MODEL` (Pinecone removed)
+- [x] Add to `settings/app.py`: `RAG_WIKI_INDEX_NAME`, `RAG_MIN_CHUNK_CONFIDENCE`, `RAG_ENABLED`
 - [ ] Add to `.env.example`: all new variables with defaults
-- [ ] In `main.py`, optionally import and initialize `RAGPipeline` when `RAG_ENABLED=true`
-- [ ] Add fallback chain in wiki_search flow: RAG → MediaWiki API → model knowledge
-- [ ] Extract shared wiki-fetch logic into a method (deduplicate `on_message` + `/ask` command)
+- [x] In `main.py`, optionally import and initialize `RAGPipeline` when `RAG_ENABLED=true`
+- [x] Add fallback chain in wiki_search flow: RAG → MediaWiki API → model knowledge
+- [x] Extract shared wiki-fetch logic into a method (deduplicate `on_message` + `/ask` command)
 
 ### Phase 2.5: Fix HTML Extraction Pipeline [P0]
-- [ ] Rewrite skill table extraction in `wiki_scraper.py` using BeautifulSoup (not pandas)
-- [ ] Emit 1 chunk per skill instead of 1 mega-chunk for all skills
-- [ ] Keep pandas for simple data tables (weapons lists, item stats)
-- [ ] Re-run scraper to regenerate all `.chunks.json` files
-- [ ] Re-embed all chunks into Pinecone with Qwen3-Embedding-0.6B
+- [x] Clean per-skill chunks already exist in `data/storage/wiki_raw/**/*.chunks.json` (verified)
+- [ ] ~~Rewrite skill table extraction~~ (NOT NEEDED — wiki_scraper already produces good chunks)
+- [ ] Re-embed from `wiki_raw/` chunks (not HTML cache) — see Issue 14 fix below
+- [x] ~~Clear Pinecone index~~ (REMOVED — Pinecone no longer used, MongoDB is sole DB)
+
+> **HISTORICAL NOTE (now resolved):**
+> Pinecone was removed from the project. All retrieval now uses MongoDB
+> (WikiSearchService with Gemini slug resolution + $text search).
+> The stale vector issue below is no longer relevant.
+>
+> | Query | Top Pinecone result | Score | Correct? |
+> |---|---|---|---|
+> | "show me all skill of Ranger class" | Sticky Bomb Quick Reload (1 random skill) | 0.63 | WRONG |
+> | "list Ranger skills" | Class > Types of Skills (generic page) | 0.74 | WRONG |
+> | "Slayer Gunblade Focus Overdrive" | Bouncer > Fanatic Blade Augment | 0.70 | WRONG CLASS |
+> | "Phantom skills" | Hero > Properties of Hero | 0.70 | WRONG CLASS |
+
+
 
 ### Phase 3: Fix VisionAgent [P1]
 - [ ] Replace local VLM (OpenAI client) with Gemini Vision API
@@ -207,7 +225,8 @@ async def fetch_url(self, url: str, *, max_length: int = DEFAULT_MAX_LENGTH) -> 
 Add after line 24:
 ```python
 # RAG / Embeddings (LM Studio local)
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "")
+# (Pinecone removed — no longer needed)
+LOCAL_EMBED_URL = os.getenv("LOCAL_EMBED_URL", "http://127.0.0.1:9707/v1")
 LOCAL_EMBED_URL = os.getenv("LOCAL_EMBED_URL", "http://127.0.0.1:9707/v1")
 LOCAL_EMBED_MODEL = os.getenv("LOCAL_EMBED_MODEL", "qwen3-embedding-0.6b")
 ```
@@ -228,7 +247,7 @@ RAG_MIN_CHUNK_CONFIDENCE = float(os.getenv("RAG_MIN_CHUNK_CONFIDENCE", "0.65"))
 ```python
 from settings import app as app_settings
 
-# RAG Pipeline (optional — requires Pinecone + LM Studio)
+# RAG Pipeline (optional — uses MongoDB WikiSearchService)
 self.rag = None
 if app_settings.RAG_ENABLED:
     try:
@@ -593,6 +612,73 @@ async def send_long_message(interaction: discord.Interaction, text: str):
         await interaction.followup.send(current_chunk)
 ```
 
+### 4B-2: Fix `message.reply()` Overflow in `on_message` (Issue 12)
+
+**Problem:** `send_long_message()` only works with slash command interactions. The `on_message`
+handler uses `message.reply()` directly — crashes when reply > 2000 chars with:
+```
+400 Bad Request: Must be 2000 or fewer in length.
+```
+
+**Fix:** Add a `reply_long` helper for regular messages, then use it in `on_message`:
+
+**File: `main.py`** — add helper after `send_long_message`:
+```python
+async def reply_long(message: discord.Message, text: str):
+    """Split a long reply into 2000-char chunks for message.reply()."""
+    limit = app_settings.DISCORD_MESSAGE_LIMIT
+    if len(text) <= limit:
+        await message.reply(text)
+        return
+
+    lines = text.split("\n")
+    current_chunk = ""
+    first = True
+
+    for line in lines:
+        while len(line) > limit:
+            if current_chunk:
+                if first:
+                    await message.reply(current_chunk)
+                    first = False
+                else:
+                    await message.channel.send(current_chunk)
+                current_chunk = ""
+            if first:
+                await message.reply(line[:limit])
+                first = False
+            else:
+                await message.channel.send(line[:limit])
+            line = line[limit:]
+
+        if len(current_chunk) + len(line) + 1 > limit:
+            if first:
+                await message.reply(current_chunk)
+                first = False
+            else:
+                await message.channel.send(current_chunk)
+            current_chunk = line + "\n"
+        else:
+            current_chunk += line + "\n"
+
+    if current_chunk.strip():
+        if first:
+            await message.reply(current_chunk)
+        else:
+            await message.channel.send(current_chunk)
+```
+
+**Then replace all `message.reply(reply)` calls in `on_message` with:**
+```python
+await reply_long(message, reply)
+```
+
+There are 4 locations in `on_message`:
+- Line ~202: fashion_match with image
+- Line ~204: fashion_match without image
+- Line ~211: wiki_search
+- Line ~217: chat
+
 ### 4C: Wire ContextCompressor
 
 **File: `main.py`, in `PSO2Bot.__init__`:**
@@ -652,7 +738,7 @@ LOCAL_EMBED_URL=http://127.0.0.1:9707/v1
 LOCAL_EMBED_MODEL=qwen3-embedding-0.6b
 ```
 
-**After extraction fix:** re-run scraper, then re-embed all chunks and push to Pinecone.
+**After extraction fix:** re-run scraper, then upload chunks to MongoDB.
 
 ---
 
@@ -846,7 +932,161 @@ prompt += (
 
 ---
 
-### Phase 5 Task Checklist
+### Issue 10: Old Hallucinated Responses Contaminate Memory
+
+**Root cause:** MongoDB `recent_messages` stores the last 30 messages per user, including prior hallucinated assistant responses. These get injected into the Groq prompt as conversation history. The LLM sees its own old wrong answers.
+
+**Evidence from Groq request payload in logs:**
+```json
+{"role": "assistant", "content": "**Slayer Skills (PSO2)**\n* Katana Combat\n+ Wired Lance Combat..."}
+```
+This is a previous hallucinated response — still in memory.
+
+#### Fix A: Add `/clear_memory` slash command
+
+**File: `main.py`**
+
+```python
+@bot.tree.command(name="clear_memory", description="Clear your conversation history with the bot")
+async def clear_memory(interaction: discord.Interaction):
+    """Clear the user's conversation history."""
+    COMMAND_REQUESTS.labels(command_name="clear_memory").inc()
+    session_id = str(interaction.user.id)
+    try:
+        await bot.memory.clear_memory(session_id)
+        await interaction.response.send_message("Memory cleared. Starting fresh.", ephemeral=True)
+    except Exception as e:
+        print(f"[ERROR] clear_memory failed: {e}")
+        await interaction.response.send_message("Failed to clear memory.", ephemeral=True)
+```
+
+**File: `core/memory.py`** — add clear method:
+
+```python
+async def clear_memory(self, channel_id: str):
+    """Delete all memory for a channel/user."""
+    await self.collection.delete_one({"channel_id": channel_id})
+```
+
+#### Fix B: (Optional) Detect and filter stale hallucinated messages
+
+In `chat_agent.py`, when building the prompt, filter out previous assistant messages that contain known hallucination markers:
+
+```python
+# In _build_system_prompt, after appending recent_history:
+HALLUCINATION_MARKERS = [
+    "Data may be incomplete due to limited information",
+    "I recommend checking the official PSO2 website",
+]
+
+clean_history = []
+for msg in recent_history:
+    if msg["role"] == "assistant" and any(m in msg.get("content", "") for m in HALLUCINATION_MARKERS):
+        continue  # Skip likely-hallucinated responses
+    clean_history.append(msg)
+```
+
+---
+
+### Issue 11: `--debug` Floods Terminal with pymongo Noise
+
+**Root cause:** `main.py` line 37 — `logging.basicConfig(level=logging.DEBUG)` sets the ROOT logger to DEBUG. This propagates to pymongo, httpcore, httpx, groq, and every other library.
+
+pymongo sends heartbeat logs every ~10 seconds per shard (3 shards = 6+ log lines every 10 seconds).
+
+#### Fix: Suppress noisy loggers
+
+**File: `main.py`, replace lines 34-39:**
+
+```python
+# --debug flag overrides env-based settings
+if cli_args.debug:
+    import logging
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)-8s %(name)s: %(message)s")
+    app_settings.BOT_DEBUG_ENABLED = True
+    app_settings.BOT_DEBUG_INCLUDE_IN_REPLY = True
+
+    # Suppress noisy library loggers even in debug mode
+    for noisy_logger in ["pymongo", "httpcore", "httpx", "groq", "urllib3", "asyncio"]:
+        logging.getLogger(noisy_logger).setLevel(logging.WARNING)
+```
+
+This keeps the bot's own debug logs (MCP, memory, router) visible while silencing library noise.
+
+---
+
+### Issue 13: Follow-up Queries Fail — No Query Expansion
+
+**Root cause:** `main.py` line 237 sends raw user message to `_retrieve_wiki_context`:
+```python
+extra = await self._retrieve_wiki_context(content, game_key, game_label)
+```
+
+When user says "can you more details about it? I need the number for each stage level", the word "it" has no meaning to a text search. The query gets no relevant results, and falls through to "Data not found."
+
+The memory system stores conversation history in MongoDB and passes it to `ChatAgent` for LLM generation, but it is NOT used for RAG retrieval query construction.
+
+#### Fix: Add query expansion step before RAG
+
+**File: `main.py`** — add a method to `PSO2Bot`:
+
+```python
+async def _expand_query(self, session_id: str, raw_query: str) -> str:
+    """Resolve pronouns and references in follow-up queries using recent conversation."""
+    # Get last 4 messages for context
+    recent = await self.memory.get_recent_messages(session_id, limit=4)
+    if not recent or len(recent) < 2:
+        return raw_query  # No conversation history — use as-is
+
+    # Build mini-context for the LLM to resolve references
+    history_lines = []
+    for msg in recent[-4:]:
+        role = "User" if msg["role"] == "user" else "Bot"
+        # Truncate long bot replies
+        text = msg["content"][:200] + "..." if len(msg["content"]) > 200 else msg["content"]
+        history_lines.append(f"{role}: {text}")
+
+    history_block = "\n".join(history_lines)
+
+    prompt = (
+        "Given the following conversation history and a new user message, "
+        "rewrite the user message as a standalone search query that resolves "
+        "all pronouns and references. Output ONLY the rewritten query, nothing else.\n\n"
+        f"Conversation:\n{history_block}\n\n"
+        f"New message: {raw_query}\n\n"
+        "Rewritten query:"
+    )
+
+    from google import genai
+    from settings import env as config
+    client = genai.Client(api_key=config.GEMINI_API_KEY)
+    response = await client.aio.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
+        config={"temperature": 0.0, "max_output_tokens": 100},
+    )
+    expanded = response.text.strip()
+    if expanded and len(expanded) > 5:
+        print(f"[QUERY_EXPAND] '{raw_query}' → '{expanded}'")
+        return expanded
+    return raw_query
+```
+
+**File: `main.py`, line 237** — call expansion before retrieval:
+
+```python
+elif result.intent == "wiki_search":
+    game_key = result.game_version
+    game_label = "PSO2 Classic" if game_key == "pso2" else "PSO2: New Genesis"
+    # Expand vague follow-up queries using conversation context
+    search_query = await self._expand_query(session_id, content)
+    extra = await self._retrieve_wiki_context(search_query, game_key, game_label)
+    reply = await self.chat_agent.generate_reply(session_id, content, extra_context=extra)
+```
+
+---
+
+### Phase 5 Task Checklist (updated)
 
 - [ ] Add `game_version: str = "ngs"` field to `IntentResult` in `router_agent.py`
 - [ ] Update router system prompt with entity-game classification rules
@@ -856,13 +1096,19 @@ prompt += (
 - [ ] Harden `build_no_rag_context()` — hard refusal, no "answer from model knowledge"
 - [ ] Strengthen anti-hallucination in `chat_agent.py` system prompt
 - [ ] Extend `_WIKI_SLUG_SYSTEM_PROMPT` with PSO2 Classic page examples
+- [ ] Add `/clear_memory` slash command to `main.py`
+- [ ] Add `clear_memory()` method to `core/memory.py`
+- [ ] Fix `--debug` logging — suppress pymongo/httpcore/groq noise
+- [ ] Add `_expand_query()` method for follow-up query resolution
+- [ ] Use expanded query in `wiki_search` handler before RAG retrieval
 - [ ] Test: `/ask game:NGS question:Phantom class` → should say "Phantom is PSO2 Classic only"
 - [ ] Test: `/ask game:NGS question:Slayer skills` → should return real Slayer skills from wiki
+- [ ] Test: `/clear_memory` → clears old context, next query gets fresh response
+- [ ] Test: `--debug` flag → only bot logs visible, no pymongo heartbeats
+- [ ] Test: Follow-up "tell me more about it" → expands to specific query, RAG finds data
 - [ ] Test: ask about non-existent entity → should refuse, not hallucinate
 
 ---
-
-## Verification Checklist
 
 After all changes:
 

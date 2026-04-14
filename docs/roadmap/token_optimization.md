@@ -21,7 +21,7 @@ Do not cram the entire RAG data into every interaction.
 - **Mechanism**: Tier the data loading level based on user intent.
 - **Tiers**:
   - **Casual Chat**: Only load one line of the character's Profile (~20 tokens).
-  - **General Question**: Load brief snippets from the Vector DB related to the question.
+  - **General Question**: Load brief snippets from the MongoDB knowledge base related to the question.
   - **Deep Dive/Build Advice**: Only trigger Full RAG Retrieval when the user asks for in-depth technical advice.
 - **Benefit**: Reduces 300-800 tokens per request for typical conversations.
 

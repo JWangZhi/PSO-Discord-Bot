@@ -21,8 +21,12 @@ log = logging.getLogger(__name__)
 # Collection names (single source of truth)
 # ---------------------------------------------------------------------------
 COL_RP_MEMORY = app_settings.MONGO_MEMORY_COLLECTION  # "rp_memory"
+COL_RP_HISTORY = "rp_history"  # append-only raw log, TTL 30 days
 COL_GUILD_CONFIG = "guild_config"
 COL_COMMAND_HISTORY = "command_history"
+COL_WIKI_CHUNKS = "wiki_chunks"
+COL_WIKI_TABLES = "wiki_tables"
+COL_WIKI_PAGES = "wiki_pages"
 
 # ---------------------------------------------------------------------------
 # Index definitions per collection
@@ -31,6 +35,14 @@ _INDEXES: dict[str, list[IndexModel]] = {
     COL_RP_MEMORY: [
         IndexModel([("channel_id", ASCENDING)], unique=True),
         IndexModel([("last_updated", DESCENDING)]),
+    ],
+    COL_RP_HISTORY: [
+        IndexModel([("channel_id", ASCENDING), ("timestamp", DESCENDING)]),
+        IndexModel(
+            [("timestamp", ASCENDING)],
+            name="ttl_30d",
+            expireAfterSeconds=30 * 24 * 3600,  # auto-delete after 30 days
+        ),
     ],
     COL_GUILD_CONFIG: [
         IndexModel([("guild_id", ASCENDING)], unique=True),
@@ -44,6 +56,15 @@ _INDEXES: dict[str, list[IndexModel]] = {
             name="ttl_90d",
             expireAfterSeconds=90 * 24 * 3600,  # auto-delete after 90 days
         ),
+    ],
+    COL_WIKI_CHUNKS: [
+        IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
+    ],
+    COL_WIKI_TABLES: [
+        IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
+    ],
+    COL_WIKI_PAGES: [
+        IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
     ],
 }
 
@@ -120,6 +141,7 @@ def default_guild_config(guild_id: str) -> dict:
         "guild_id": guild_id,
         "persona_name": "default",
         "language": "en",
+        "rp_channels": [],
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }

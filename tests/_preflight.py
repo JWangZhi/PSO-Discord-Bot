@@ -35,12 +35,8 @@ for name, val in [
     ("GEMINI_API_KEY",    config.GEMINI_API_KEY),
     ("GROQ_API_KEY",      config.GROQ_API_KEY),
     ("MONGODB_URI",       config.MONGODB_URI),
-    ("PINECONE_API_KEY",  config.PINECONE_API_KEY),
 ]:
     print(f"  {name}: {'SET' if val else 'EMPTY'}")
-
-print(f"  RAG_ENABLED: {app_settings.RAG_ENABLED}")
-print(f"  LOCAL_EMBED_URL: {config.LOCAL_EMBED_URL}")
 
 print("\n=== Summary ===")
 if errors:

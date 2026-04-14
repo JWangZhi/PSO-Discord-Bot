@@ -1,85 +1,128 @@
 # PSO2 Smart Companion Bot
 
-Welcome to the ultimate AI-powered Discord bot designed exclusively for the **Phantasy Star Online 2 (PSO2: NGS)** community! 
-
-If you've ever felt overwhelmed by the countless weapons, skill trees, or fashion items in the game, this bot is here to be your ultimate guide and companion.
+An AI-powered Discord bot for the **Phantasy Star Online 2 (PSO2: NGS)** community — game expert, fashion detective, and roleplay companion in one.
 
 ---
 
-## What does this Bot actually do?
+## Features
 
-Imagine taking the entire PSO2 Wiki, giving it a brain, giving it eyes, and wrapping it in the personality of your favorite in-game characters. That is exactly what this bot is.
+### 1. Game Expert (Smart Q&A)
+Ask naturally: *"How should I build my Slayer class?"* or *"What does Fear Eraser do?"*
+The bot searches its local wiki database (Arks-Visiphone) and replies with sourced, accurate data. No hallucination guardrails built in.
 
-It has three main superpowers:
+### 2. Fashion Detective (Reverse Image Lookup)
+Upload a screenshot and the Vision Agent (Gemini) analyzes the outfit — hairstyle, accessories, color — and identifies the cosmetic items.
 
-### 1. The Game Expert (Smart Q&A)
-You don't need to manually search through long Wiki pages anymore. You can just ask the bot naturally: *"How should I build my Slayer class?"* or *"What does the Fear Eraser skill do?"*
-The bot will instantly read through its vast, stored knowledge of the PSO2 Wiki, find the exact answer, and explain it to you simply.
+### 3. Roleplay Companion (RP Channel Mode)
+Admins can designate any channel as an **RP channel** with `/rp_enable`. In RP mode:
+- Bot responds to **every message** (no @mention needed)
+- Uses **channel-level shared memory** — all users share the same conversation context
+- Remembers conversation history with automatic context compression
+- `/rp_disable` to turn off; `/clear_memory` to reset the channel's memory
 
-### 2. The Fashion Detective (Reverse Image Look-up)
-*End-game is Fashion.* You see a beautiful outfit screenshot on Discord or X (Twitter), but the poster didn't list the items they used.
-Just reply to the image with a command! The bot will **look at the picture** using AI vision, analyze the hairstyle, accessories, and colors, and then match it against its database to tell you exactly which cosmetic items you are looking at.
-
-### 3. The Roleplay Companion (Persona System)
-You aren't talking to a boring, robotic machine. You can configure the bot to act like beloved characters from the game!
-If you choose **Matoi**, she will call you "Guardian" and speak to you sweetly and loyally. If you choose **Xiera**, she will be energetic, slightly sassy, and talk about analyzing data. The bot even remembers what you talked about!
-
----
-
-## How does it work? (The non-technical explanation)
-
-To make everything fast, accurate, and completely free to operate, the bot works like a highly organized team of specialists. Here is the step-by-step workflow:
-
-### Step 1: Building the Encyclopedia
-While you are sleeping, the bot is working. Once a week, it quietly goes to the official community Wiki (Arks-Visiphone) and reads everything. It turns every weapon stat, every skill description, and every fashion item into a "digital fingerprint" (Vectors) and stores it in its own special vault (Pinecone Database).
-
-### Step 2: The "Traffic Cop"
-When you send a message to the bot, it doesn't just blindly fire up its biggest, most expensive brain. Instead, a super-fast, tiny AI looks at your message like a Traffic Cop and says:
-- *"Oh, they just said 'Hello'! Send them to the Fast Chat desk."* -> Gets an instant, friendly reply.
-- *"Ah, they are asking a hard question about damage multipliers!"* -> Sends the request to the **Researcher Agent**, who runs to the library vault to find the answer.
-- *"Wait, this is a picture!"* -> Sends the image to the **Vision Agent** (Gemini) to analyze what the outfit looks like.
-
-### Step 3: The Language Bridge (Auto-Translation)
-What if you ask a question in Vietnamese, but the Wiki is in English? No problem.
-1. You ask: *"Vũ khí mạnh nhất cho Hunter là gì?"*
-2. The bot secretly translates it to English inside its head.
-3. It searches the English library vault.
-4. It finds the answer, comprehends it, and then translates the final answer back into beautiful, natural Vietnamese for you, keeping the exact English names for items so you don't get confused.
-
-### Step 4: The Immortal Memory (Context Compression)
-Usually, if you chat with an AI for 2 hours, it "forgets" what you said earlier, or the server bill becomes thousands of dollars because reading a massive chat history is expensive.
-Our bot uses a brilliant trick called **Context Compression**. 
-Every time you exchange 10 messages with the bot, a tiny librarian AI secretly looks at the conversation and writes a 1-sentence summary (e.g., *"The player is stuck in a dungeon and Matoi is worried about them."*). 
-It saves this tiny summary in its long-term memory vault (MongoDB) and tosses the old messages. This way, the bot perfectly remembers who you are and what is happening, but its memory stays permanently lightweight and blazing fast!
+Available personas: `default` (ARKS System Advisor), `matoi`, `xiera` — configured per guild in `ai_prompts/characters/`.
 
 ---
 
-## Why this design is special
+## Architecture
 
-By splitting the brain into many pieces (a "Multi-agent" system), we achieve something incredible: **Zero-cost operation.** 
+```
+on_message
+    ├── is_rp_channel? ──yes──▶ ChatAgent (session = channel_id)
+    │                                └── MemoryManager (shared channel memory)
+    └── @mention? ──yes──▶ RouterAgent (Gemini Flash)
+                                ├── "chat"         ──▶ ChatAgent (session = user_id)
+                                ├── "wiki_search"  ──▶ WikiSearchService → ChatAgent
+                                └── "fashion_match"──▶ VisionAgent → ChatAgent
+```
 
-Instead of paying a massive monthly fee to run one giant AI, we use clever coding to route tasks directly to the best *Free Tier* services available worldwide. We use local databases, intelligent text chunking, and memory compression to ensure the bot can serve thousands of PSO2 players 24/7 without ever crashing or charging a dime. 
-
-*Prepare to elevate your ARKS adventure!*
+**Memory system (2-layer):**
+- `rp_memory` — rolling window (working memory for LLM context)
+- `rp_history` — append-only raw log per channel, TTL 30 days
+- `ContextCompressor` — auto-summarizes when buffer exceeds threshold, keeps context lightweight
 
 ---
 
-## Configuration Layout
+## Slash Commands
 
-The project now uses a centralized settings structure:
+| Command | Description | Permission |
+|---|---|---|
+| `/ask` | Ask a wiki question by game version | Everyone |
+| `/fashion` | Identify outfit from image | Everyone |
+| `/wiki` | Fetch & summarize a wiki URL | Everyone |
+| `/rp_enable` | Enable RP mode in current channel | Manage Channels |
+| `/rp_disable` | Disable RP mode in current channel | Manage Channels |
+| `/clear_memory` | Reset conversation memory | Everyone |
+| `/ping` | Check bot latency | Everyone |
 
-- `settings/env.py`: secrets and environment-backed runtime values
-	- API keys, DB URIs, model endpoints, and feature toggles such as `DISABLE_RAG`.
-- `settings/app.py`: app-level operational defaults
-	- ports, index names, thresholds, and batch sizes.
-- `settings/scraper.py`: wiki scraper-specific defaults
-	- wiki endpoint, cache/TTL, request delay, chunking and table heuristics.
+---
 
-Legacy modules remain as compatibility shims:
+## Project Layout
 
-- `config.py` -> re-exports `settings/env.py`
-- `app_settings.py` -> re-exports `settings/app.py`
-- `data/scrapers/scraper_settings.py` -> re-exports `settings/scraper.py`
+```
+PSO_bot/
+├── main.py                  # Bot entry point, event handlers, slash commands
+├── core/
+│   ├── agents/
+│   │   ├── chat_agent.py    # Groq/LLaMA — generates replies
+│   │   ├── router_agent.py  # Gemini Flash — classifies intent
+│   │   └── vision_agent.py  # Gemini — analyzes images
+│   ├── db.py                # MongoDB singleton, collection names, index definitions
+│   ├── memory.py            # MemoryManager — rp_memory + rp_history CRUD
+│   ├── context_compressor.py# Auto-summarizes old messages into long-term memory
+│   ├── wiki_search.py       # Hybrid MongoDB wiki search
+│   └── mcp/                 # Optional: live MediaWiki API bridge
+├── bot/
+│   └── cogs/
+│       └── rp_chat.py       # RPChannelManager — RP channel registry + cache
+├── ai_prompts/
+│   └── characters/          # Persona system prompts (default, matoi, xiera)
+├── scripts/
+│   ├── scraper/             # wiki_scraper.py — Arks-Visiphone scraper
+│   ├── etl/                 # upload_wiki_to_mongo.py — loads scraped data to DB
+│   └── rag/                 # rag_pipeline.py, reembed_from_cache.py
+├── settings/
+│   ├── env.py               # Secrets & runtime values (API keys, URIs)
+│   ├── app.py               # Operational defaults (ports, thresholds, limits)
+│   └── scraper.py           # Scraper-specific config
+├── data/storage/            # Cached HTML from wiki scraper
+└── docs/                    # Architecture docs, roadmap, guides
+```
 
-Use `.env.example` as the source template for environment overrides.
-Detailed guide: `docs/13-config-structure.md`.
+---
+
+## Setup
+
+```bash
+# 1. Install dependencies
+uv sync
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# 3. Run the bot
+python main.py
+
+# Optional: enable live wiki fetching via MCP
+python main.py --mcp
+
+# Optional: verbose debug output
+python main.py --debug
+```
+
+**Required environment variables** (see `.env.example`):
+- `DISCORD_BOT_TOKEN`
+- `GROQ_API_KEY` + `GROQ_MODEL`
+- `GEMINI_API_KEY`
+- `MONGODB_URI`
+
+---
+
+## Configuration
+
+- `settings/env.py` — secrets, API keys, model endpoints, feature flags (`DISABLE_RAG`)
+- `settings/app.py` — ports, memory buffer size, Discord message limit
+- `settings/scraper.py` — wiki endpoint, cache TTL, chunking heuristics
+
+See [docs/13-config-structure.md](docs/13-config-structure.md) for details.

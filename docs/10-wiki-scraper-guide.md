@@ -134,8 +134,8 @@ Optional page cap:
 uv run python data/scrapers/players_scraper.py --max-pages 60
 ```
 
-Then upload all chunks (including players source) to Pinecone:
+Then upload all chunks (including players source) to MongoDB:
 
 ```bash
-uv run python data/rag/embed_uploader.py
+uv run python data/rag/upload_to_mongo.py
 ```

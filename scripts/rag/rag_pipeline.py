@@ -36,6 +36,7 @@ class RetrievedChunk:
     source: str
     page: str
     heading: str
+    sub_heading: str
     score: float
     game_mode: str = ""
     category: str = ""
@@ -57,7 +58,22 @@ class RAGPipeline:
     GENERIC_QUERY_TOKENS = {
         "ngs", "pso2", "new", "genesis", "class", "classes", "skill", "skills",
         "guide", "info", "information", "what", "how", "does", "is", "are",
+        "tell", "more", "about", "need", "details", "detail", "some", "number",
+        "with", "potency", "its", "it", "of", "for", "the", "a", "an", "me",
+        "please", "can", "you", "give", "show",
     }
+
+    @staticmethod
+    def _normalize_token(token: str) -> str:
+        """Light normalization for query/entity matching."""
+        token = token.lower().strip()
+        if len(token) > 4 and token.endswith("ies"):
+            return token[:-3] + "y"
+        if len(token) > 4 and token.endswith("es"):
+            return token[:-2]
+        if len(token) > 3 and token.endswith("s"):
+            return token[:-1]
+        return token
 
     def __init__(self):
         # Local Embedding client
@@ -111,6 +127,7 @@ class RAGPipeline:
                 source=meta.get("url", ""),
                 page=meta.get("page_title", ""),
                 heading=meta.get("section", ""),
+                sub_heading=meta.get("sub_section", ""),
                 score=match.score,
                 game_mode=meta.get("game_mode", ""),
                 category=meta.get("category", ""),
@@ -123,7 +140,8 @@ class RAGPipeline:
     @staticmethod
     def _tokenize_query(query: str) -> list[str]:
         """Tokenize a query into normalized terms for chunk re-ranking."""
-        return [t for t in re.findall(r"[a-zA-Z0-9_+\-]{2,}", query.lower()) if t]
+        raw_tokens = re.findall(r"[a-zA-Z0-9_+\-]{2,}", query.lower())
+        return [RAGPipeline._normalize_token(t) for t in raw_tokens if t]
 
     @classmethod
     def _specific_tokens(cls, query_tokens: list[str]) -> list[str]:
@@ -149,9 +167,25 @@ class RAGPipeline:
         if specific_tokens and chunks:
             boosted = []
             for c in chunks:
-                haystack = f"{c.page} {c.heading} {c.text}".lower()
+                haystack = f"{c.page} {c.heading} {c.sub_heading} {c.text}".lower()
                 hit_count = sum(1 for token in specific_tokens if token in haystack)
+                exact_sub_heading_hit = c.sub_heading and c.sub_heading.lower() == query.strip().lower()
+                exact_page_hit = c.page and c.page.lower() == query.strip().lower()
+                sub_heading_tokens = self._specific_tokens(self._tokenize_query(c.sub_heading))
+                page_tokens = self._specific_tokens(self._tokenize_query(c.page))
+                sub_heading_overlap = 0.0
+                page_overlap = 0.0
+                if sub_heading_tokens:
+                    sub_heading_overlap = sum(1 for token in sub_heading_tokens if token in specific_tokens) / len(sub_heading_tokens)
+                if page_tokens:
+                    page_overlap = sum(1 for token in page_tokens if token in specific_tokens) / len(page_tokens)
                 boosted_score = c.score + (0.08 * hit_count)
+                if exact_sub_heading_hit:
+                    boosted_score += 0.20
+                if exact_page_hit:
+                    boosted_score += 0.12
+                boosted_score += 0.20 * sub_heading_overlap
+                boosted_score += 0.10 * page_overlap
                 boosted.append((boosted_score, c))
             boosted.sort(key=lambda x: x[0], reverse=True)
 
@@ -159,7 +193,7 @@ class RAGPipeline:
             matching_chunks = []
             non_matching_chunks = []
             for c in ranked_chunks:
-                haystack = f"{c.page} {c.heading} {c.text}".lower()
+                haystack = f"{c.page} {c.heading} {c.sub_heading} {c.text}".lower()
                 if any(token in haystack for token in specific_tokens):
                     matching_chunks.append(c)
                 else:
@@ -182,8 +216,11 @@ class RAGPipeline:
             for i, c in enumerate(chunks, 1):
                 if c.source:
                     source_urls.append(c.source)
+                location = f"{c.page} > {c.heading}"
+                if c.sub_heading and c.sub_heading != c.heading:
+                    location += f" > {c.sub_heading}"
                 parts.append(
-                    f"--- Source {i}: {c.page} > {c.heading} "
+                    f"--- Source {i}: {location} "
                     f"[{c.game_mode}] (Score: {c.score:.2f}) ---\n"
                     f"{c.text}\n"
                 )
@@ -196,16 +233,28 @@ class RAGPipeline:
 
         # Evidence gating marker for downstream response guard.
         strong_chunk = chunk_max_score >= self.MIN_CHUNK_CONFIDENCE
+        exact_query_hit = False
+        normalized_query = query.strip().lower()
+        if chunks and normalized_query:
+            exact_query_hit = any(
+                normalized_query in {
+                    c.page.lower().strip(),
+                    c.heading.lower().strip(),
+                    c.sub_heading.lower().strip(),
+                }
+                for c in chunks
+                if c.page or c.heading or c.sub_heading
+            )
         specific_hit_in_chunks = True
         if specific_tokens and chunks:
             specific_hit_in_chunks = any(
-                any(token in f"{c.page} {c.heading} {c.text}".lower() for token in specific_tokens)
+                any(token in f"{c.page} {c.heading} {c.sub_heading} {c.text}".lower() for token in specific_tokens)
                 for c in chunks[:3]
             )
 
         insufficient = (
             not chunks
-            or not strong_chunk
+            or not (strong_chunk or exact_query_hit)
             or (specific_tokens and not specific_hit_in_chunks)
         )
         if insufficient:

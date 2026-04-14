@@ -8,7 +8,7 @@ Uses the shared MongoDB singleton from core.db.
 import logging
 from datetime import datetime, timezone
 
-from core.db import MongoDB, COL_RP_MEMORY, default_rp_memory
+from core.db import MongoDB, COL_RP_MEMORY, COL_RP_HISTORY, default_rp_memory
 from settings import app as app_settings
 
 log = logging.getLogger(__name__)
@@ -30,6 +30,7 @@ class MemoryManager:
     def __init__(self):
         self._db = MongoDB.get_db()
         self._col = self._db[COL_RP_MEMORY]
+        self._history_col = self._db[COL_RP_HISTORY]
 
     async def get_memory(self, channel_id: str) -> dict:
         """Get all memory for a channel.
@@ -46,8 +47,16 @@ class MemoryManager:
             log.warning("[Memory] DB unreachable, using default memory for %s", channel_id)
             return self._default_memory(channel_id)
 
-    async def add_message(self, channel_id: str, role: str, content: str):
-        """Add 1 message to Short-term Memory.
+    async def get_recent_messages(self, channel_id: str, limit: int = 4) -> list[dict]:
+        """Return the most recent messages for a channel/user."""
+        memory = await self.get_memory(channel_id)
+        recent = memory.get("recent_messages", [])
+        if limit <= 0:
+            return []
+        return recent[-limit:]
+
+    async def add_message(self, channel_id: str, role: str, content: str, persona: str = "default"):
+        """Add 1 message to Short-term Memory and append to rp_history log.
 
         If MAX_RECENT is exceeded, the oldest message will be removed.
 
@@ -55,14 +64,17 @@ class MemoryManager:
             channel_id: Discord channel ID.
             role: "user" or "assistant".
             content: Message content.
+            persona: Active persona name (logged to history).
         """
+        # 1. Append to raw history log (fire-and-forget, never blocks LLM)
+        await self.log_message(channel_id, role, content, persona)
         message = {
             "role": role,
             "content": content,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        # Add new message, capped at MAX_RECENT
+        # 2. Update rp_memory (working memory for LLM), capped at MAX_RECENT
         try:
             await self._col.update_one(
                 {"channel_id": channel_id},
@@ -113,6 +125,14 @@ class MemoryManager:
         except Exception:
             log.warning("[Memory] DB unreachable, skipping add_fact for %s", channel_id)
 
+    async def clear_memory(self, channel_id: str):
+        """Delete all memory for a channel/user."""
+        try:
+            await self._col.delete_one({"channel_id": channel_id})
+            log.info("[Memory] Cleared memory for %s", channel_id)
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping clear_memory for %s", channel_id)
+
     async def update_emotion(self, channel_id: str, mood: str, trust: float):
         """Update bot's emotional state."""
         try:
@@ -141,12 +161,91 @@ class MemoryManager:
         except Exception:
             log.warning("[Memory] DB unreachable, skipping set_character for %s", channel_id)
 
-    async def clear_memory(self, channel_id: str):
-        """Delete all memory for a channel (reset)."""
+    async def log_message(
+        self, channel_id: str, role: str, content: str, persona: str = "default"
+    ) -> None:
+        """Append a raw message to rp_history (append-only audit log).
+
+        This is separate from rp_memory and is never fed to the LLM directly.
+        Used to rebuild rp_memory if it gets wiped or corrupted.
+        """
+        entry = {
+            "channel_id": channel_id,
+            "role": role,
+            "content": content,
+            "persona": persona,
+            "timestamp": datetime.now(timezone.utc),
+        }
         try:
-            await self._col.delete_one({"channel_id": channel_id})
+            await self._history_col.insert_one(entry)
         except Exception:
-            log.warning("[Memory] DB unreachable, skipping clear_memory for %s", channel_id)
+            log.warning("[Memory] DB unreachable, skipping log_message for %s", channel_id)
+
+    async def rebuild_from_history(self, channel_id: str, limit: int = 20) -> bool:
+        """Rebuild rp_memory from rp_history when memory is missing or stale.
+
+        Fetches the last `limit` messages from rp_history, reconstructs
+        recent_messages, then triggers ContextCompressor to regenerate summary.
+
+        Returns True if rebuild succeeded, False if no history was found.
+        """
+        try:
+            cursor = (
+                self._history_col.find({"channel_id": channel_id})
+                .sort("timestamp", -1)
+                .limit(limit)
+            )
+            raw_docs = await cursor.to_list(length=limit)
+        except Exception:
+            log.warning("[Memory] DB unreachable, cannot rebuild history for %s", channel_id)
+            return False
+
+        if not raw_docs:
+            log.info("[Memory] No history found for %s, nothing to rebuild", channel_id)
+            return False
+
+        # Reverse to chronological order
+        raw_docs.reverse()
+
+        # Reconstruct recent_messages (last MAX_BUFFER entries)
+        recent = [
+            {
+                "role": doc["role"],
+                "content": doc["content"],
+                "timestamp": doc["timestamp"].isoformat()
+                if hasattr(doc["timestamp"], "isoformat")
+                else doc["timestamp"],
+            }
+            for doc in raw_docs
+        ]
+        recent = recent[-self.MAX_BUFFER :]
+
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {
+                    "$set": {
+                        "recent_messages": recent,
+                        "last_updated": datetime.now(timezone.utc).isoformat(),
+                    },
+                    "$setOnInsert": {
+                        "summary": "",
+                        "facts": [],
+                        "emotion": {"mood": "neutral", "trust": 0.5},
+                        "character": "default",
+                    },
+                },
+                upsert=True,
+            )
+            log.info(
+                "[Memory] Rebuilt rp_memory for %s from %d history entries",
+                channel_id,
+                len(raw_docs),
+            )
+            return True
+        except Exception:
+            log.warning("[Memory] DB unreachable, cannot write rebuilt memory for %s", channel_id)
+            return False
 
     @staticmethod
     def _default_memory(channel_id: str) -> dict:

@@ -13,7 +13,7 @@ Use for environment-backed values and secrets.
 Examples:
 - `DISCORD_BOT_TOKEN`
 - `GEMINI_API_KEY`, `GROQ_API_KEY`
-- `PINECONE_API_KEY`, `MONGODB_URI`
+- `MONGODB_URI`
 - `LOCAL_EMBED_URL`, `LOCAL_EMBED_MODEL`
 - `DISABLE_RAG`
 

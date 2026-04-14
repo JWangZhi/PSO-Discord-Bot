@@ -20,7 +20,7 @@ The LLM (Groq/Gemini) receives a list of available functions. When a user asks a
 
 | Tool | Description | Data Source |
 | --- | --- | --- |
-| `search_wiki_text` | Semantic search across wiki text chunks | Pinecone (`pso2-wiki`) |
+| `search_wiki_text` | Text search across wiki text chunks | MongoDB (`wiki_chunks`) |
 | `lookup_class_skills` | Get all skills for a specific class | MongoDB (`wiki_tables`) |
 | `lookup_weapon_stats` | Get stats for a specific weapon or series | MongoDB (`wiki_tables`) |
 | `lookup_item` | Search for any item by name | MongoDB (`wiki_tables`) |
@@ -135,7 +135,7 @@ async def get_class(game: str, class_name: str):
 @server.tool("search_wiki")
 async def search_wiki(query: str, game_mode: str = "ngs"):
     """Semantic search across wiki chunks."""
-    # Call Pinecone
+    # Query MongoDB text search
     ...
 
 @server.tool("lookup_stats")
