@@ -1,0 +1,37 @@
+# Version control
+.git
+.gitignore
+
+# Python
+.venv
+__pycache__
+*.pyc
+*.pyo
+
+# IDE
+.vscode
+.idea
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Cached data (heavy — not needed at runtime)
+data/storage/cache/
+data/storage/wiki_raw/
+
+# Agent/skill config (development only)
+.agents
+
+# Docker
+Dockerfile
+docker-compose.yml
+prometheus.yml
+
+# Docs & plans
+docs/
+README.md
+
+# Tests (not needed in production)
+tests/

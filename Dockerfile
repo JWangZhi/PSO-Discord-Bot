@@ -3,8 +3,7 @@ FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    UV_SYSTEM_PYTHON=1
+    PYTHONDONTWRITEBYTECODE=1
 
 # Set the working directory
 WORKDIR /app
@@ -17,16 +16,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install uv (Fast python package manager)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Copy the dependency files
+# Copy the dependency files first (layer caching)
 COPY pyproject.toml uv.lock ./
 
-# Install dependencies into the system python (since UV_SYSTEM_PYTHON=1)
-RUN uv sync --no-dev
+# Install dependencies via uv sync (creates .venv)
+RUN uv sync --no-dev --frozen
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the rest of the application code
 COPY . .
+
+# Non-root user for security
+RUN useradd --create-home appuser && chown -R appuser:appuser /app
+USER appuser
 
 # Expose the Prometheus metrics port
 EXPOSE 8000

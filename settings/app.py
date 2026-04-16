@@ -14,13 +14,26 @@ METRICS_PORT = int(os.getenv("METRICS_PORT", "8000"))
 # Router
 ROUTER_MODEL = os.getenv("ROUTER_MODEL", "gemini-2.5-flash")
 ROUTER_TEMPERATURE = float(os.getenv("ROUTER_TEMPERATURE", "0.1"))
-ROUTER_SIMPLE_CHAT_TERMS = (
-    "hello",
-    "hi",
-    "hey",
-    "sup",
-    "chào",
-    "xin chào",
+
+# Fast route: exact greetings that skip LLM entirely
+ROUTER_SIMPLE_CHAT_TERMS: frozenset[str] = frozenset({
+    "hello", "hi", "hey", "sup", "yo", "hiya", "heya",
+    "chào", "xin chào", "ê", "ê bot", "bot ơi",
+    "gm", "gn", "good morning", "good night",
+    "thanks", "thank you", "ty", "thx", "cảm ơn",
+    "ok", "okay", "k", "kk",
+    "bye", "bb", "cya", "goodbye", "tạm biệt",
+    "lol", "lmao", "haha", "hehe", "xd",
+})
+
+# Fast route: regex patterns that skip LLM (checked after stripping @mention)
+# These catch greetings with trailing punctuation, names, etc.
+ROUTER_FAST_CHAT_PATTERNS: tuple[str, ...] = (
+    r"^(hi|hey|hello|yo|sup|hiya|heya|chào|xin chào)[\s!.,?]*\w{0,20}[!.?]*$",
+    r"^(good\s*(morning|night|evening|day))[\s!.,]*$",
+    r"^(thanks?|thank\s*you|ty|thx|cảm ơn)[\s!.,]*.*$",
+    r"^(bye|goodbye|cya|bb|tạm biệt)[\s!.,]*$",
+    r"^[hHaAeElL]{2,6}$",  # "haha", "hehe", "lol" etc.
 )
 
 

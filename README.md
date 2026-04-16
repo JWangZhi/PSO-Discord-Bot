@@ -126,3 +126,25 @@ python main.py --debug
 - `settings/scraper.py` — wiki endpoint, cache TTL, chunking heuristics
 
 See [docs/13-config-structure.md](docs/13-config-structure.md) for details.
+
+---
+
+## Docker & Monitoring
+
+```bash
+# Build and run all services (bot + Prometheus + Grafana)
+docker-compose up -d
+
+# Build bot image only
+docker build -t pso2bot .
+```
+
+| Service | URL | Credentials |
+|---|---|---|
+| Bot metrics | http://localhost:8000 | — |
+| Prometheus | http://localhost:9090 | — |
+| Grafana | http://localhost:3000 | admin / `GRAFANA_ADMIN_PASSWORD` (default: admin) |
+
+Grafana auto-provisions the **PSO2 Bot Overview** dashboard on first start — no manual import needed.
+
+**Dashboard panels:** message rate by intent, slash command usage, response latency (p50/p95/p99), API errors, and all-time totals.

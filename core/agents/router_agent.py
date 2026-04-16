@@ -18,6 +18,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+import re
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
@@ -73,12 +74,24 @@ Output as JSON matching the schema.
                 reasoning="Fast route: Image uploaded with no text."
             )
             
-        # Fast route for simple greetings
-        if not has_image and user_message.strip().lower() in app_settings.ROUTER_SIMPLE_CHAT_TERMS:
+        # Fast route for simple greetings (exact match)
+        lower_msg = user_message.strip().lower()
+        if not has_image and lower_msg in app_settings.ROUTER_SIMPLE_CHAT_TERMS:
             return IntentResult(
                 intent="chat", 
                 confidence=1.0, 
                 reasoning="Fast route: Simple greeting."
+            )
+
+        # Fast route for greeting-like patterns (regex)
+        if not has_image and any(
+            re.search(pat, lower_msg, re.IGNORECASE)
+            for pat in app_settings.ROUTER_FAST_CHAT_PATTERNS
+        ):
+            return IntentResult(
+                intent="chat",
+                confidence=0.95,
+                reasoning="Fast route: Greeting pattern match."
             )
             
         # If it bypassed fast routes, use LLM
