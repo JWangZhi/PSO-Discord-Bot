@@ -16,7 +16,11 @@ dependencies = [
     "motor>=3.7.1",
     "prometheus-client>=0.24.1",
     "pydantic>=2.12.5",
-    "pylint>=4.0.5",
     "python-dotenv>=1.2.2",
     "requests>=2.32.5",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.5",
 ]

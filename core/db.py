@@ -131,6 +131,7 @@ def default_rp_memory(channel_id: str) -> dict:
         "facts": [],
         "emotion": {"mood": "neutral", "trust": 0.5},
         "character": "default",
+        "game_version_pref": None,   # "ngs" | "pso2" | None (not set yet)
         "last_updated": datetime.now(timezone.utc).isoformat(),
     }
 

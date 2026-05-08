@@ -27,6 +27,10 @@ log = logging.getLogger(__name__)
 # Max context chars to feed to the LLM
 MAX_CONTEXT_CHARS = 6000
 MAX_TEXT_SEARCH_RESULTS = 10
+_NUMERIC_HINTS = {
+    "price", "cost", "how much", "potency", "damage", "duration", "cooldown",
+    "rate", "percent", "%", "days", "day", "pp", "hp", "bp",
+}
 
 # ---------------------------------------------------------------------------
 # Slug → page_name mapping helpers
@@ -69,6 +73,8 @@ WIKI PAGES YOU KNOW:
 - Systems: Portal:New_Genesis/Photon_Arts_List, Portal:New_Genesis/Enhancement, Portal:New_Genesis/Augments, Portal:New_Genesis/Class, Portal:New_Genesis/Experience_Level
 - Skills: Portal:New_Genesis/Add-on_Skills, Portal:New_Genesis/Tech_Arts_Customization
 - PSO2 Classic classes: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer, Summoner, Hero, Phantom, Etoile, Luster
+- PSO2 Classic shop/system: ARKS_Cash_Shop, Swap_Shop, Treasure_Shop, Client_Orders, Enhancement, Dark_Blast
+- PSO2 Classic armor: Arm_Units_List, Leg_Units_List, Back_Units_List
 
 EXAMPLES:
 Q: "What skills does Slayer have?" game_version: ngs
@@ -190,8 +196,19 @@ class WikiSearchService:
             log.info("[WikiSearch] No results for query=%r game=%s", query, game_version)
             return None
 
-        # Step 5: Format context
-        return self._format_context(primary_chunks, primary_tables, game_mode, slug)
+        # Step 5: Score retrieval quality and rank tables by query relevance
+        quality = self._assess_retrieval_quality(query, primary_chunks, primary_tables)
+        primary_tables = self._rank_tables(primary_tables, query)
+
+        # Step 6: Format context
+        return self._format_context(
+            primary_chunks,
+            primary_tables,
+            game_mode,
+            slug,
+            query,
+            quality,
+        )
 
     # ------------------------------------------------------------------
     # Slug resolution
@@ -249,16 +266,184 @@ class WikiSearchService:
     # ------------------------------------------------------------------
 
     @staticmethod
+    def _query_tokens(query: str) -> set[str]:
+        """Extract normalized query tokens for lightweight relevance scoring."""
+        return {
+            t for t in re.findall(r"[a-zA-Z0-9_+\-]{2,}", query.lower())
+            if t not in {"the", "a", "an", "is", "are", "to", "for", "of", "in", "on", "and", "or"}
+        }
+
+    @classmethod
+    def _query_phrases(cls, query: str) -> list[str]:
+        """Build short phrase candidates (bigrams/trigrams) from query for stronger overlap checks."""
+        words = [
+            w for w in re.findall(r"[a-zA-Z0-9_+\-]{2,}", query.lower())
+            if w not in {"the", "a", "an", "is", "are", "to", "for", "of", "in", "on", "and", "or"}
+        ]
+        phrases: list[str] = []
+        for n in (3, 2):
+            if len(words) < n:
+                continue
+            for i in range(len(words) - n + 1):
+                phrases.append(" ".join(words[i:i + n]))
+        return phrases[:8]
+
+    @staticmethod
+    def _is_numeric_query(query: str) -> bool:
+        """Heuristic: does this query ask for numbers/stats/prices?"""
+        q = query.lower()
+        if any(h in q for h in _NUMERIC_HINTS):
+            return True
+        return bool(re.search(r"\b\d+(?:\.\d+)?\b", q))
+
+    @classmethod
+    def _table_score(cls, table: dict, query: str) -> int:
+        """Score a table for ranking before formatting context."""
+        score = 0
+        tokens = cls._query_tokens(query)
+        phrases = cls._query_phrases(query)
+        numeric_query = cls._is_numeric_query(query)
+
+        headers = [str(h).lower() for h in table.get("headers", [])]
+        rows = table.get("rows", [])
+        page_name = str(table.get("page_name", "")).lower()
+
+        if numeric_query and any(h in {"cost", "price", "potency", "damage", "duration", "cooldown"} for h in headers):
+            score += 5
+
+        if any(tok in page_name for tok in tokens):
+            score += 3
+        if any(p in page_name for p in phrases):
+            score += 6
+
+        # Row overlap signal: prioritize tables that actually mention query entities.
+        overlap_hits = 0
+        numeric_hits = 0
+        for row in rows[:40]:
+            row_blob = " ".join(str(v).lower() for v in row.values())
+            if any(tok in row_blob for tok in tokens):
+                overlap_hits += 1
+            if any(p in row_blob for p in phrases):
+                overlap_hits += 3
+            if numeric_query and re.search(r"\b\d+(?:\.\d+)?\b", row_blob):
+                numeric_hits += 1
+
+        score += min(overlap_hits, 6)
+        if numeric_query:
+            score += min(numeric_hits, 4)
+
+        return score
+
+    @classmethod
+    def _rank_tables(cls, tables: list[dict], query: str) -> list[dict]:
+        """Rank tables by relevance so critical rows appear before context budget runs out."""
+        return sorted(tables, key=lambda t: cls._table_score(t, query), reverse=True)
+
+    @classmethod
+    def _assess_retrieval_quality(
+        cls,
+        query: str,
+        chunks: list[dict],
+        tables: list[dict],
+    ) -> dict:
+        """Assess retrieval quality and decide whether evidence is insufficient.
+
+        This gate is generic and protects all factual domains, not just AC/pricing.
+        """
+        tokens = cls._query_tokens(query)
+        phrases = cls._query_phrases(query)
+        numeric_query = cls._is_numeric_query(query)
+
+        token_hits = 0
+        numeric_hits = 0
+        phrase_hits = 0
+
+        for c in chunks[:30]:
+            blob = " ".join(
+                [
+                    str(c.get("page_title", "")).lower(),
+                    str(c.get("section", "")).lower(),
+                    str(c.get("sub_section", "")).lower(),
+                    str(c.get("content", "")).lower(),
+                ]
+            )
+            if any(t in blob for t in tokens):
+                token_hits += 1
+            if any(p in blob for p in phrases):
+                phrase_hits += 1
+            if numeric_query and re.search(r"\b\d+(?:\.\d+)?\b", blob):
+                numeric_hits += 1
+
+        for t in tables[:30]:
+            headers_blob = " ".join(str(h).lower() for h in t.get("headers", []))
+            rows_blob = " ".join(
+                " ".join(str(v).lower() for v in row.values())
+                for row in t.get("rows", [])[:30]
+            )
+            blob = headers_blob + " " + rows_blob
+            if any(tok in blob for tok in tokens):
+                token_hits += 2  # tables carry stronger factual signal
+            if any(p in blob for p in phrases):
+                phrase_hits += 2
+            if numeric_query and re.search(r"\b\d+(?:\.\d+)?\b", blob):
+                numeric_hits += 2
+
+        score = token_hits + numeric_hits + phrase_hits
+        insufficient = False
+        reason = ""
+
+        if numeric_query and numeric_hits == 0:
+            insufficient = True
+            reason = "numeric_query_without_numeric_evidence"
+        elif phrases and phrase_hits == 0 and len(tokens) <= 5:
+            insufficient = True
+            reason = "no_phrase_overlap"
+        elif token_hits == 0:
+            insufficient = True
+            reason = "no_entity_overlap"
+        elif score < 3:
+            insufficient = True
+            reason = "weak_retrieval_signal"
+
+        label = "weak" if insufficient else ("strong" if score >= 8 else "medium")
+        return {
+            "score": score,
+            "label": label,
+            "insufficient": insufficient,
+            "reason": reason,
+            "numeric_query": numeric_query,
+        }
+
+    @staticmethod
     def _format_context(
         chunks: list[dict],
         tables: list[dict],
         game_mode: str,
         slug: str | None,
+        query: str,
+        quality: dict,
     ) -> str:
         """Format chunks + tables into an LLM-friendly context string."""
         game_label = "PSO2: New Genesis" if game_mode == "NGS" else "PSO2 Classic"
         parts = []
         total_chars = 0
+        numeric_query = bool(quality.get("numeric_query"))
+        table_first = numeric_query
+
+        table_budget = int(MAX_CONTEXT_CHARS * (0.72 if table_first else 0.40))
+        text_budget = MAX_CONTEXT_CHARS - table_budget
+        table_chars = 0
+        text_chars = 0
+
+        quality_line = (
+            f"[RETRIEVAL_QUALITY] score={quality.get('score', 0)} "
+            f"label={quality.get('label', 'unknown')} "
+            f"reason={quality.get('reason', 'ok') or 'ok'}"
+        )
+
+        if quality.get("insufficient"):
+            parts.append("[INSUFFICIENT_EVIDENCE]")
+        parts.append(quality_line)
 
         parts.append(
             f"--- Wiki Data (from MongoDB) ---\n"
@@ -267,25 +452,10 @@ class WikiSearchService:
             f"If the data does not contain the answer, say so honestly.\n"
         )
 
-        # Format chunks (prose/descriptions)
-        if chunks:
-            parts.append("\n## Text Content\n")
-            for c in chunks:
-                section = c.get("section", "")
-                sub = c.get("sub_section", "")
-                heading = section
-                if sub and sub != section:
-                    heading += f" > {sub}"
-                content = c.get("content", "")
-
-                entry = f"### {heading}\n{content}\n"
-                if total_chars + len(entry) > MAX_CONTEXT_CHARS:
-                    break
-                parts.append(entry)
-                total_chars += len(entry)
-
-        # Format tables (structured data)
-        if tables and total_chars < MAX_CONTEXT_CHARS:
+        def append_tables() -> None:
+            nonlocal total_chars, table_chars
+            if not tables or table_chars >= table_budget or total_chars >= MAX_CONTEXT_CHARS:
+                return
             parts.append("\n## Table Data\n")
             for t in tables:
                 headers = t.get("headers", [])
@@ -308,10 +478,38 @@ class WikiSearchService:
                         vals.append(s[:50])  # truncate long cells
                     entry += "| " + " | ".join(vals) + " |\n"
 
-                if total_chars + len(entry) > MAX_CONTEXT_CHARS:
+                if table_chars + len(entry) > table_budget or total_chars + len(entry) > MAX_CONTEXT_CHARS:
                     break
                 parts.append(entry)
+                table_chars += len(entry)
                 total_chars += len(entry)
+
+        def append_chunks() -> None:
+            nonlocal total_chars, text_chars
+            if not chunks or text_chars >= text_budget or total_chars >= MAX_CONTEXT_CHARS:
+                return
+            parts.append("\n## Text Content\n")
+            for c in chunks:
+                section = c.get("section", "")
+                sub = c.get("sub_section", "")
+                heading = section
+                if sub and sub != section:
+                    heading += f" > {sub}"
+                content = c.get("content", "")
+
+                entry = f"### {heading}\n{content}\n"
+                if text_chars + len(entry) > text_budget or total_chars + len(entry) > MAX_CONTEXT_CHARS:
+                    break
+                parts.append(entry)
+                text_chars += len(entry)
+                total_chars += len(entry)
+
+        if table_first:
+            append_tables()
+            append_chunks()
+        else:
+            append_chunks()
+            append_tables()
 
         # Source attribution
         if slug:

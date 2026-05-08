@@ -5,6 +5,7 @@ Synthesizes context (Memory, RAG, Vision) into natural replies using Groq LLM.
 
 import sys
 import re
+import json
 from pathlib import Path
 
 # Ensure project root is in sys.path
@@ -24,6 +25,15 @@ def load_persona() -> str:
     except Exception: # pylint: disable=broad-exception-caught
         return "You are an AI assistant for Phantasy Star Online 2: New Genesis."
 
+def _load_formatting_prompt() -> str:
+    """Load the structured-output formatting system prompt."""
+    try:
+        path = PROJECT_ROOT / "ai_prompts" / "formatting_system.md"
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception:  # pylint: disable=broad-exception-caught
+        return ""
+
 class ChatAgent:
     """Handles generating the final responses using Groq API."""
     def __init__(self, memory_manager: MemoryManager):
@@ -31,6 +41,7 @@ class ChatAgent:
         self.model = config.GROQ_MODEL
         self.memory = memory_manager
         self.persona = load_persona()
+        self._formatting_prompt = _load_formatting_prompt()
         self.last_debug_snapshot: dict = {}
 
     async def _llm_completion(self, messages: list[dict]):
@@ -149,3 +160,77 @@ class ChatAgent:
     def get_last_debug_snapshot(self) -> dict:
         """Return latest debug snapshot for external logging."""
         return self.last_debug_snapshot or {}
+
+    async def generate_structured_reply(
+        self, user_id: str, message: str, extra_context: str = ""
+    ) -> dict | None:
+        """Generate a structured JSON reply suitable for ASCII rendering.
+
+        Returns the parsed dict on success, or None if the LLM fails to
+        produce valid structured output (caller should fall back to
+        generate_reply).
+        """
+        if not self._formatting_prompt:
+            return None
+
+        # Save user message
+        await self.memory.add_message(user_id, role="user", content=message)
+        memory_doc = await self.memory.get_memory(user_id)
+
+        # Build system prompt: formatting instructions + context
+        system_parts = [self._formatting_prompt, ""]
+
+        # User long-term context
+        summary = memory_doc.get("summary", "")
+        facts = memory_doc.get("facts", [])
+        if summary or facts:
+            system_parts.append(f"--- User Context ---\n{summary}")
+            if facts:
+                system_parts.append("Known Facts: " + ", ".join(facts))
+            system_parts.append("")
+
+        # Retrieved wiki data
+        if extra_context:
+            system_parts.append(
+                "--- Retrieved Data ---\n"
+                "Base your answer ONLY on this data. "
+                "Do NOT fabricate skill names, stat values, or mechanics.\n"
+                f"{extra_context}"
+            )
+
+        system_prompt = "\n".join(system_parts)
+
+        # Recent history (lightweight — only last 3 turns)
+        messages: list[dict] = [{"role": "system", "content": system_prompt}]
+        recent = memory_doc.get("recent_messages", [])[-3:]
+        for msg in recent:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+
+        try:
+            resp = await self.client.chat.completions.create(
+                messages=messages,
+                model=self.model,
+                temperature=0.3,
+                max_tokens=1024,
+                response_format={"type": "json_object"},
+            )
+            raw = (resp.choices[0].message.content or "").strip()
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            print(f"[STRUCTURED] LLM call failed: {e}")
+            return None
+
+        # Parse and validate
+        from core.formatters.discord_table import try_parse_structured
+
+        payload = try_parse_structured(raw)
+        if payload is None:
+            print(f"[STRUCTURED] Invalid JSON from LLM (len={len(raw)})")
+            return None
+
+        # Save assistant reply (the takeaway serves as the conversational message)
+        takeaway = payload.get("takeaway", "")
+        await self.memory.add_message(
+            user_id, role="assistant",
+            content=takeaway or json.dumps(payload, ensure_ascii=False)[:300],
+        )
+        return payload

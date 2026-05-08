@@ -17,6 +17,7 @@ from core.db import MongoDB
 from core.mcp.mcp_client import MCPBridge
 from core.context_compressor import ContextCompressor
 from core.wiki_search import WikiSearchService
+from core.formatters.discord_table import render_response, try_parse_structured
 from bot.cogs.rp_chat import RPChannelManager
 from core.telemetry import (
     start_metrics_server, 
@@ -43,6 +44,113 @@ if cli_args.debug:
         logging.getLogger(_noisy).setLevel(logging.WARNING)
     app_settings.BOT_DEBUG_ENABLED = True
     app_settings.BOT_DEBUG_INCLUDE_IN_REPLY = True
+
+_VERSION_KEYWORDS_NGS = frozenset({
+    "ngs", "new genesis", "retem", "kvaris", "stia", "halpha",
+    "slayer", "waker", "stellar blade", "duel blade",
+    "cocoon", "tower", "trinia", "aelio", "leciel",
+    "augment", "add-on skill", "fixa",
+})
+_VERSION_KEYWORDS_PSO2 = frozenset({
+    "pso2", "classic", "base game",
+    "phantom", "hero", "etoile", "luster", "summoner",
+    "premium set", "arks cash shop", "dark blast", "mag evolution",
+    "matter board", "swap shop",
+})
+
+
+class GameVersionResolver:
+    """Determines which game version (NGS vs PSO2) a wiki query targets.
+
+    Priority:
+      1. Hard keyword match in message text (unambiguous)
+      2. Saved channel preference from memory
+      3. Router suggestion (may be "ngs" by default)
+      4. Ambiguous → return None to trigger clarification prompt
+    """
+
+    ASK_MSG = (
+        "📋 Just to make sure I pull the right data — are you asking about "
+        "**PSO2: New Genesis (NGS)** or **PSO2 Classic (Base)**?\n"
+        "Reply with **NGS** or **PSO2** and I'll remember your preference for this channel."
+    )
+    SWITCH_MSG = (
+        "🔄 It looks like you're switching from **{old}** to **{new}**. "
+        "Should I start a fresh session for {new}? "
+        "Reply **yes** to reset, or **no** to keep the current history."
+    )
+    VERSION_LABELS = {"ngs": "PSO2: New Genesis", "pso2": "PSO2 Classic"}
+
+    def __init__(self, memory: "MemoryManager"):
+        self._memory = memory
+
+    def _hard_detect(self, text: str) -> str | None:
+        """Return 'ngs'/'pso2' if the text contains unambiguous keywords, else None."""
+        lower = text.lower()
+        ngs_hit = any(k in lower for k in _VERSION_KEYWORDS_NGS)
+        pso2_hit = any(k in lower for k in _VERSION_KEYWORDS_PSO2)
+        if ngs_hit and not pso2_hit:
+            return "ngs"
+        if pso2_hit and not ngs_hit:
+            return "pso2"
+        return None  # ambiguous / both / neither
+
+    def _parse_clarification(self, text: str) -> str | None:
+        """Parse a user reply to the clarification prompt."""
+        t = text.strip().lower()
+        if t in {"ngs", "new genesis", "ngs!", "ngs."}:
+            return "ngs"
+        if t in {"pso2", "classic", "base", "base game", "pso2 classic", "pso2!"}:
+            return "pso2"
+        return None
+
+    def _parse_switch_reply(self, text: str) -> bool | None:
+        """Parse yes/no reply to the version-switch prompt. Returns True=reset, False=keep, None=unclear."""
+        t = text.strip().lower()
+        if t in {"yes", "y", "yeah", "yep", "sure", "ok", "reset", "new"}:
+            return True
+        if t in {"no", "n", "nope", "keep", "nah"}:
+            return False
+        return None
+
+    async def resolve(
+        self,
+        session_id: str,
+        message_text: str,
+        router_suggestion: str,
+    ) -> tuple[str | None, str | None]:
+        """Resolve the game version for a wiki query.
+
+        Returns:
+            (version, pending_action)
+            - version: "ngs" | "pso2" | None (None = must ask user first)
+            - pending_action: "ask_version" | "ask_switch:{old}:{new}" | None
+        """
+        # 1. Hard keyword detection — highest priority
+        hard = self._hard_detect(message_text)
+        saved = await self._memory.get_game_version_pref(session_id)
+
+        if hard:
+            # Check if this is a version switch
+            if saved and saved != hard:
+                return None, f"ask_switch:{saved}:{hard}"
+            # No conflict — save and use
+            if not saved:
+                await self._memory.set_game_version_pref(session_id, hard)
+            return hard, None
+
+        # 2. Use saved preference
+        if saved:
+            return saved, None
+
+        # 3. Router gave a non-default signal (confident pso2 detection)
+        if router_suggestion == "pso2":
+            await self._memory.set_game_version_pref(session_id, "pso2")
+            return "pso2", None
+
+        # 4. Ambiguous — need to ask
+        return None, "ask_version"
+
 
 class PSO2Bot(discord.Client):
     """Main Discord Client for PSO2/NGS Bot."""
@@ -86,6 +194,7 @@ class PSO2Bot(discord.Client):
         self.mcp = MCPBridge() if enable_mcp else None
         self.wiki_search = WikiSearchService()
         self.rp_manager = RPChannelManager(MongoDB.get_db())
+        self.gv_resolver = GameVersionResolver(self.memory)
 
     @staticmethod
     def build_no_rag_context(game_label: str) -> str:
@@ -124,6 +233,98 @@ class PSO2Bot(discord.Client):
             return ""
 
         return "\n\n```text\n[BOT_DEBUG]\n" + "\n".join(lines) + "\n```"
+
+    async def _handle_pending_reply(
+        self, session_id: str, content: str, message: "discord.Message"
+    ) -> bool:
+        """Check if the user is replying to a clarification prompt (version or switch).
+
+        Returns True if the message was handled as a clarification reply (caller should return).
+        """
+        mem = await self.memory.get_memory(session_id)
+        recent = mem.get("recent_messages", [])
+
+        # Scan last 3 system messages for pending markers
+        pending_query: str | None = None
+        pending_switch: tuple[str, str, str] | None = None  # (old, new, original_query)
+
+        for msg in reversed(recent[-6:]):
+            if msg.get("role") != "system":
+                continue
+            c = msg.get("content", "")
+            if c.startswith("[PENDING_WIKI_QUERY]"):
+                pending_query = c[len("[PENDING_WIKI_QUERY]"):].strip()
+                break
+            if c.startswith("[PENDING_SWITCH]"):
+                # Parse: old=ngs new=pso2 query=...
+                parts = {}
+                rest = c[len("[PENDING_SWITCH]"):].strip()
+                for chunk in rest.split(" ", 2):
+                    if "=" in chunk:
+                        k, v = chunk.split("=", 1)
+                        parts[k] = v
+                pending_switch = (
+                    parts.get("old", "ngs"),
+                    parts.get("new", "pso2"),
+                    parts.get("query", ""),
+                )
+                break
+
+        # Handle version clarification reply
+        if pending_query is not None:
+            version = self.gv_resolver._parse_clarification(content)
+            if version is None:
+                # User replied something unrelated — let normal flow handle it
+                return False
+            await self.memory.set_game_version_pref(session_id, version)
+            label = GameVersionResolver.VERSION_LABELS[version]
+            # Remove the system pending marker by re-saving without it
+            cleaned = [m for m in recent if not m.get("content", "").startswith("[PENDING_WIKI_QUERY]")]
+            await self.memory._col.update_one(
+                {"channel_id": session_id},
+                {"$set": {"recent_messages": cleaned}},
+            )
+            # Now answer the original question
+            search_query = await self._expand_query(session_id, pending_query)
+            extra = await self._retrieve_wiki_context(search_query, version, label)
+            reply = await self._wiki_reply(session_id, pending_query, extra)
+            reply = f"✅ Got it! I'll use **{label}** as your default for this channel.\n\n" + reply
+            await reply_long(message, reply)
+            return True
+
+        # Handle switch yes/no reply
+        if pending_switch is not None:
+            answer = self.gv_resolver._parse_switch_reply(content)
+            if answer is None:
+                return False
+            old_ver, new_ver, original_query = pending_switch
+            # Remove pending marker
+            cleaned = [m for m in recent if not m.get("content", "").startswith("[PENDING_SWITCH]")]
+            await self.memory._col.update_one(
+                {"channel_id": session_id},
+                {"$set": {"recent_messages": cleaned}},
+            )
+            if answer:
+                # Reset memory and switch version
+                await self.memory.clear_memory(session_id)
+                await self.memory.set_game_version_pref(session_id, new_ver)
+                label = GameVersionResolver.VERSION_LABELS[new_ver]
+                await message.reply(f"🔄 Session reset! Switched to **{label}**.")
+            else:
+                # Keep current version, answer with old version
+                new_ver = old_ver
+                label = GameVersionResolver.VERSION_LABELS[new_ver]
+                await message.reply(f"👍 Keeping **{label}** session.")
+            # Answer the original question with resolved version
+            if original_query:
+                label = GameVersionResolver.VERSION_LABELS[new_ver]
+                search_query = await self._expand_query(session_id, original_query)
+                extra = await self._retrieve_wiki_context(search_query, new_ver, label)
+                reply = await self._wiki_reply(session_id, original_query, extra)
+                await reply_long(message, reply)
+            return True
+
+        return False
 
     async def _expand_query(self, session_id: str, raw_query: str) -> str:
         """Resolve pronouns in follow-up user queries using recent conversation context."""
@@ -341,6 +542,24 @@ class PSO2Bot(discord.Client):
         # 3. Final fallback: model knowledge only
         return prefix + self.build_no_rag_context(game_label)
 
+    async def _wiki_reply(self, session_id: str, question: str, extra_context: str) -> str:
+        """Try structured JSON reply first; fall back to free-text if it fails."""
+        # Skip structured path when evidence is insufficient
+        if "[INSUFFICIENT_EVIDENCE]" not in extra_context:
+            payload = await self.chat_agent.generate_structured_reply(
+                session_id, question, extra_context=extra_context,
+            )
+            if payload is not None:
+                rendered = render_response(payload)
+                print(f"[STRUCTURED] OK format={payload.get('format')}")
+                return rendered
+
+        # Fallback: regular free-text reply
+        print("[STRUCTURED] Fallback to free-text reply")
+        return await self.chat_agent.generate_reply(
+            session_id, question, extra_context=extra_context,
+        )
+
     async def setup_hook(self):
         """Sync Slash Commands on bot startup."""
         # Database indexes
@@ -428,6 +647,11 @@ class PSO2Bot(discord.Client):
                 # LLM call is synchronous, so wrap in to_thread to avoid blocking discord.py loop
                 result = await asyncio.to_thread(self.router.classify_intent, content, has_image)
 
+                # --- Handle pending clarification replies ---
+                pending_handled = await self._handle_pending_reply(session_id, content, message)
+                if pending_handled:
+                    return
+
                 # Record Metric: Intent resolved
                 INTENT_REQUESTS.labels(intent_type=result.intent).inc()
 
@@ -455,11 +679,38 @@ class PSO2Bot(discord.Client):
                         await reply_long(message, reply)
                         
                 elif result.intent == "wiki_search":
-                    game_key = result.game_version
+                    # --- Game version resolution ---
+                    game_key, pending = await self.gv_resolver.resolve(
+                        session_id, content, result.game_version
+                    )
+
+                    if pending == "ask_version":
+                        # Store the original question so we can answer it after user replies
+                        await self.memory.add_message(
+                            session_id, "system",
+                            f"[PENDING_WIKI_QUERY] {content}",
+                        )
+                        await message.reply(GameVersionResolver.ASK_MSG)
+                        return
+
+                    if pending and pending.startswith("ask_switch:"):
+                        _, old_ver, new_ver = pending.split(":")
+                        old_label = GameVersionResolver.VERSION_LABELS[old_ver]
+                        new_label = GameVersionResolver.VERSION_LABELS[new_ver]
+                        await self.memory.add_message(
+                            session_id, "system",
+                            f"[PENDING_SWITCH] old={old_ver} new={new_ver} query={content}",
+                        )
+                        await message.reply(
+                            GameVersionResolver.SWITCH_MSG.format(old=old_label, new=new_label)
+                        )
+                        return
+
+                    # Normal wiki search with resolved version
                     game_label = "PSO2 Classic" if game_key == "pso2" else "PSO2: New Genesis"
                     search_query = await self._expand_query(session_id, content)
                     extra = await self._retrieve_wiki_context(search_query, game_key, game_label)
-                    reply = await self.chat_agent.generate_reply(session_id, content, extra_context=extra)
+                    reply = await self._wiki_reply(session_id, content, extra)
                     reply += self.build_debug_suffix(flow_name="on_message", intent=result.intent)
                     await reply_long(message, reply)
                     
@@ -602,7 +853,7 @@ async def ask(interaction: discord.Interaction, game: GameVersion, question: str
     # RAG → MediaWiki API → model knowledge fallback chain
     search_query = await bot._expand_query(session_id, question)
     extra = await bot._retrieve_wiki_context(search_query, game_key, game_label)
-    reply = await bot.chat_agent.generate_reply(session_id, question, extra_context=extra)
+    reply = await bot._wiki_reply(session_id, question, extra)
     reply += bot.build_debug_suffix(flow_name="slash_ask", intent="wiki_search")
     
     full_reply = f"**[{game_label}]**\n{reply}"

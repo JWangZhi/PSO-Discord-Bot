@@ -161,6 +161,26 @@ class MemoryManager:
         except Exception:
             log.warning("[Memory] DB unreachable, skipping set_character for %s", channel_id)
 
+    async def get_game_version_pref(self, channel_id: str) -> str | None:
+        """Return the saved game version preference for this channel, or None if not set."""
+        doc = await self.get_memory(channel_id)
+        return doc.get("game_version_pref")  # "ngs" | "pso2" | None
+
+    async def set_game_version_pref(self, channel_id: str, version: str) -> None:
+        """Persist the user's game version preference ("ngs" or "pso2") for this channel."""
+        try:
+            await self._col.update_one(
+                {"channel_id": channel_id},
+                {"$set": {
+                    "game_version_pref": version,
+                    "last_updated": datetime.now(timezone.utc).isoformat(),
+                }},
+                upsert=True,
+            )
+            log.info("[Memory] game_version_pref=%s saved for %s", version, channel_id)
+        except Exception:
+            log.warning("[Memory] DB unreachable, skipping set_game_version_pref for %s", channel_id)
+
     async def log_message(
         self, channel_id: str, role: str, content: str, persona: str = "default"
     ) -> None:

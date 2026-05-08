@@ -1,40 +1,43 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12-slim
+FROM python:3.12-slim AS builder
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/root/.local/bin:/root/.cargo/bin:$PATH"
 
-# Set the working directory
 WORKDIR /app
 
-# Install system dependencies (including standard certs)
+ARG UV_VERSION=0.11.7
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
     curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | env UV_NO_MODIFY_PATH=1 sh
+
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen --no-dev --no-install-project
+
+FROM python:3.12-slim AS runtime
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH"
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv (Fast python package manager)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:$PATH"
-ENV PATH="/root/.cargo/bin:${PATH}"
+RUN useradd --create-home appuser
 
-# Copy the dependency files first (layer caching)
-COPY pyproject.toml uv.lock ./
+COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+COPY --chown=appuser:appuser . .
 
-# Install dependencies via uv sync (creates .venv)
-RUN uv sync --no-dev --frozen
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Copy the rest of the application code
-COPY . .
-
-# Non-root user for security
-RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose the Prometheus metrics port
 EXPOSE 8000
 
-# Command to run the application
 CMD ["python", "main.py"]
