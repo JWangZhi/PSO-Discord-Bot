@@ -179,6 +179,15 @@ class PSO2Bot(discord.Client):
     _STAT_TERMS = {
         "potency", "damage", "duration", "cooldown", "pp", "hp", "bp", "rate", "crit",
     }
+    _COMPARE_HINTS = {"compare", "comparison", "difference", "different", "vs", "versus"}
+    _BASE_HINTS = {"base", "classic", "pso2"}
+    _NGS_HINTS = {"ngs", "new genesis"}
+    _FACTUAL_QUERY_HINTS = {
+        "skill", "skills", "class", "weapon", "weapons", "augment", "augments",
+        "potency", "damage", "cooldown", "duration", "price", "cost", "premium",
+        "set", "shop", "level", "quest", "where", "how", "what", "difference",
+        "compare", "vs", "build", "units", "armor", "photon art", "pa",
+    }
 
     def __init__(self, *, enable_mcp: bool = False):
         intents = discord.Intents.default()
@@ -422,6 +431,55 @@ class PSO2Bot(discord.Client):
         kept = [w for w in words if w.lower() not in self._STOPWORDS and len(w) >= 2]
         return " ".join(kept) if kept else text
 
+    def _is_cross_version_compare(self, text: str, game_version: str) -> bool:
+        """Detect comparison intent between PSO2 Classic and NGS."""
+        lower = text.lower()
+        has_compare = any(h in lower for h in self._COMPARE_HINTS)
+        has_base = any(h in lower for h in self._BASE_HINTS)
+        has_ngs = any(h in lower for h in self._NGS_HINTS)
+
+        # Explicit compare mentioning both sides
+        if has_compare and has_base and has_ngs:
+            return True
+
+        # Implicit phrasing: "compare to base" while router/default context is NGS
+        if has_compare and has_base and game_version == "ngs":
+            return True
+
+        # Symmetric implicit phrasing for PSO2 context
+        if has_compare and has_ngs and game_version == "pso2":
+            return True
+
+        return False
+
+    def _looks_like_wiki_query(self, text: str, has_image: bool) -> bool:
+        """Heuristic fallback: detect factual game queries that should use wiki_search.
+
+        This protects regular chat flow when router misclassifies factual questions as chat.
+        """
+        if has_image:
+            return False
+
+        lower = text.lower().strip()
+        if not lower:
+            return False
+
+        has_question = "?" in lower or any(
+            lower.startswith(prefix) for prefix in ("what", "how", "where", "which", "compare")
+        )
+        has_class = any(cls in lower for cls in self._KNOWN_CLASSES)
+        has_hint = any(h in lower for h in self._FACTUAL_QUERY_HINTS)
+
+        # Require either an explicit class entity, or question+factual-hints combo.
+        return has_class or (has_question and has_hint)
+
+    @staticmethod
+    def _clip_context(text: str, max_chars: int = 3200) -> str:
+        """Keep context under size limit when merging multiple game-mode contexts."""
+        if len(text) <= max_chars:
+            return text
+        return text[: max_chars - 64] + "\n...[truncated for context budget]"
+
     async def _extract_retrieval_query(self, raw_query: str, game_version: str) -> str:
         """Use LLM to distill class/skill/stat entities for retrieval, with strict safety guards."""
         raw_tokens = self._important_tokens(raw_query)
@@ -508,6 +566,40 @@ class PSO2Bot(discord.Client):
 
     async def _retrieve_wiki_context(self, query: str, game_version: str, game_label: str) -> str:
         """Retrieve wiki context via MongoDB → MCP (live wiki) → model knowledge fallback chain."""
+        # Compare mode: pull both PSO2 Classic and NGS evidence to avoid one-sided hallucinations.
+        if self._is_cross_version_compare(query, game_version):
+            retrieval_query = await self._extract_retrieval_query(query, game_version)
+            sections: list[str] = [
+                "[COMPARE_MODE]",
+                "User asks for Base vs NGS comparison. Use BOTH evidence blocks below only.",
+            ]
+
+            pso2_ctx = None
+            ngs_ctx = None
+            try:
+                pso2_ctx = await self.wiki_search.search(retrieval_query, "pso2")
+            except Exception as e:
+                print(f"[WARN] Compare mode PSO2 retrieval failed: {e}")
+            try:
+                ngs_ctx = await self.wiki_search.search(retrieval_query, "ngs")
+            except Exception as e:
+                print(f"[WARN] Compare mode NGS retrieval failed: {e}")
+
+            if pso2_ctx:
+                sections.append("\n--- PSO2 Classic Evidence ---\n" + self._clip_context(pso2_ctx))
+            else:
+                sections.append("\n[INSUFFICIENT_EVIDENCE] Missing PSO2 Classic evidence.")
+
+            if ngs_ctx:
+                sections.append("\n--- PSO2: New Genesis Evidence ---\n" + self._clip_context(ngs_ctx))
+            else:
+                sections.append("\n[INSUFFICIENT_EVIDENCE] Missing NGS evidence.")
+
+            if not pso2_ctx and not ngs_ctx:
+                return self.build_no_rag_context("PSO2 Classic and PSO2: New Genesis")
+
+            return "\n".join(sections)
+
         retrieval_query = await self._extract_retrieval_query(query, game_version)
 
         # Entity-game validation (e.g., Phantom asked in NGS → redirect to PSO2)
@@ -542,20 +634,82 @@ class PSO2Bot(discord.Client):
         # 3. Final fallback: model knowledge only
         return prefix + self.build_no_rag_context(game_label)
 
+    def _is_table_suitable(self, question: str) -> bool:
+        """Heuristic: decide if a question should use structured table format.
+        
+        Returns True for comparison/list/stat queries suitable for tables/kv.
+        Returns False for explanatory/conceptual questions that need free-text.
+        """
+        lower = question.lower()
+        
+        # TABLE-SUITABLE patterns: comparisons, lists, stat lookups, builds
+        table_keywords = {
+            "compare", "vs ", "versus", "difference", "different",
+            "list", "all", "options", "which", "best", "better", "worse",
+            "stats", "potency", "cooldown", "duration", "pp cost", "pp consumption",
+            "build", "loadout", "setup", "equipped", "gear",
+            "rank", "tier", "level", "damage", "defense", "hp", "attack",
+            "cost", "price", "ac", "meseta", "exchange",
+            "table", "data", "values", "numbers",
+            "skill tree", "augment path", "progression",
+        }
+        
+        # FREE-TEXT-ONLY patterns: explanations, mechanics, lore
+        free_text_keywords = {
+            "how to", "how do", "explain", "what is", "what does", 
+            "why", "when", "tell me", "describe", "help", "guide",
+            "lore", "story", "background", "history", "tip", "advice",
+            "strategy", "playstyle", "meta", "viable", "worth",
+            "farming", "grind", "unlock", "quest", "mission", "event",
+            "mechanics", "system", "feature", "work", "work out",
+        }
+        
+        # Strong free-text signals (override table signals)
+        if any(k in lower for k in free_text_keywords):
+            print(f"[TABLE_CHECK] Free-text pattern detected in: {question}")
+            return False
+        
+        # Check for table-suitable signals
+        if any(k in lower for k in table_keywords):
+            print(f"[TABLE_CHECK] Table-suitable pattern detected in: {question}")
+            return True
+        
+        # Default: if unknown structure, use free-text (safer default)
+        print(f"[TABLE_CHECK] Ambiguous pattern, defaulting to free-text: {question}")
+        return False
+
     async def _wiki_reply(self, session_id: str, question: str, extra_context: str) -> str:
-        """Try structured JSON reply first; fall back to free-text if it fails."""
+        """Intelligently choose structured (table) vs free-text response.
+        
+        1. If insufficient evidence → always free-text
+        2. If question is table-suitable → try structured, fallback to free-text
+        3. Otherwise → go straight to free-text (safer, more natural)
+        """
         # Skip structured path when evidence is insufficient
-        if "[INSUFFICIENT_EVIDENCE]" not in extra_context:
-            payload = await self.chat_agent.generate_structured_reply(
+        if "[INSUFFICIENT_EVIDENCE]" in extra_context:
+            print("[WIKI_REPLY] Insufficient evidence detected, using free-text")
+            return await self.chat_agent.generate_reply(
                 session_id, question, extra_context=extra_context,
             )
-            if payload is not None:
-                rendered = render_response(payload)
-                print(f"[STRUCTURED] OK format={payload.get('format')}")
-                return rendered
+        
+        # Check if this question is suitable for table format
+        if not self._is_table_suitable(question):
+            print("[WIKI_REPLY] Question is not table-suitable, using free-text directly")
+            return await self.chat_agent.generate_reply(
+                session_id, question, extra_context=extra_context,
+            )
+        
+        # Try structured format for table-suitable questions
+        payload = await self.chat_agent.generate_structured_reply(
+            session_id, question, extra_context=extra_context,
+        )
+        if payload is not None:
+            rendered = render_response(payload)
+            print(f"[WIKI_REPLY] Structured reply success, format={payload.get('format')}")
+            return rendered
 
-        # Fallback: regular free-text reply
-        print("[STRUCTURED] Fallback to free-text reply")
+        # Fallback: structured failed or didn't produce valid JSON → free-text
+        print("[WIKI_REPLY] Structured reply failed, falling back to free-text")
         return await self.chat_agent.generate_reply(
             session_id, question, extra_context=extra_context,
         )
@@ -652,12 +806,17 @@ class PSO2Bot(discord.Client):
                 if pending_handled:
                     return
 
+                intent = result.intent
+                if intent == "chat" and self._looks_like_wiki_query(content, has_image):
+                    print("[ROUTER_FALLBACK] chat -> wiki_search (factual query heuristic)")
+                    intent = "wiki_search"
+
                 # Record Metric: Intent resolved
-                INTENT_REQUESTS.labels(intent_type=result.intent).inc()
+                INTENT_REQUESTS.labels(intent_type=intent).inc()
 
                 # Execute actual AI logic based on resolved Intent
                 
-                if result.intent == "fashion_match":
+                if intent == "fashion_match":
                     if has_image:
                         # Extract first image attachment
                         att = [a for a in message.attachments if a.content_type and 'image' in a.content_type][0]
@@ -678,7 +837,7 @@ class PSO2Bot(discord.Client):
                         reply = await self.chat_agent.generate_reply(session_id, content, extra_context="[System Context] User asked for a fashion match but forgot to upload an image. Subtly remind them.")
                         await reply_long(message, reply)
                         
-                elif result.intent == "wiki_search":
+                elif intent == "wiki_search":
                     # --- Game version resolution ---
                     game_key, pending = await self.gv_resolver.resolve(
                         session_id, content, result.game_version
@@ -711,17 +870,17 @@ class PSO2Bot(discord.Client):
                     search_query = await self._expand_query(session_id, content)
                     extra = await self._retrieve_wiki_context(search_query, game_key, game_label)
                     reply = await self._wiki_reply(session_id, content, extra)
-                    reply += self.build_debug_suffix(flow_name="on_message", intent=result.intent)
+                    reply += self.build_debug_suffix(flow_name="on_message", intent=intent)
                     await reply_long(message, reply)
                     
                 else: # "chat"
                     # Default: Conversational memory utilizing the background Context Compressor natively
                     reply = await self.chat_agent.generate_reply(session_id, content)
-                    reply += self.build_debug_suffix(flow_name="on_message", intent=result.intent)
+                    reply += self.build_debug_suffix(flow_name="on_message", intent=intent)
                     await reply_long(message, reply)
                     
                 # Record Metric: Processing Time
-                MESSAGE_PROCESSING_TIME.labels(intent_type=result.intent).observe(time.time() - start_time)
+                MESSAGE_PROCESSING_TIME.labels(intent_type=intent).observe(time.time() - start_time)
 
                 # Non-blocking compression check
                 asyncio.create_task(self.compressor.run_compression(session_id))
