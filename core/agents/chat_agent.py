@@ -23,7 +23,7 @@ def load_persona() -> str:
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
     except Exception: # pylint: disable=broad-exception-caught
-        return "You are an AI assistant for Phantasy Star Online 2: New Genesis."
+        return "You are an AI assistant for Phantasy Star Online 2."
 
 def _load_formatting_prompt() -> str:
     """Load the structured-output formatting system prompt."""
@@ -44,6 +44,18 @@ class ChatAgent:
         self._formatting_prompt = _load_formatting_prompt()
         self.last_debug_snapshot: dict = {}
 
+    @staticmethod
+    def _simple_greeting_reply(message: str) -> str | None:
+        """Return a deterministic non-game-version-specific reply for simple greetings."""
+        cleaned = re.sub(r"[^\w\s']", " ", message.lower()).strip()
+        cleaned = re.sub(r"\s+", " ", cleaned)
+        if cleaned in {
+            "hi", "hello", "hey", "yo", "sup", "good morning",
+            "good afternoon", "good evening", "hiya", "hey there",
+        }:
+            return "Hello. How can I help you with Phantasy Star Online 2 today?"
+        return None
+
     async def _llm_completion(self, messages: list[dict]):
         """Wrapper to call chat completion with consistent defaults."""
         return await self.client.chat.completions.create(
@@ -60,6 +72,19 @@ class ChatAgent:
             "LANGUAGE POLICY: Always reply in English only. "
             "Do not use Vietnamese or any other language unless the user explicitly asks to switch language.\n\n"
         )
+        prompt += (
+            "GAME NAME POLICY: For greetings and general chat, refer to the game only as "
+            "'Phantasy Star Online 2'. Do not say 'New Genesis', 'NGS', or 'Base' unless the user "
+            "explicitly asks about that game version or retrieved wiki context specifies it.\n\n"
+        )
+        if not extra_context:
+            prompt += (
+                "FACTUAL GAME DATA POLICY: No retrieved wiki data is available in this turn. "
+                "For factual Base or NGS questions about classes, skills, weapons, "
+                "items, stats, prices, quests, builds, or mechanics, do not answer from general model "
+                "knowledge and do not invent names or numbers. Say that you need to look it up in the "
+                "ARKS database and ask the user to use /ask or rephrase as a specific wiki question.\n\n"
+            )
         
         # Inject long-term context
         summary = memory_doc.get("summary", "")
@@ -86,7 +111,7 @@ class ChatAgent:
                 "--- Relevant Retrieved Data ---\n"
                 "IMPORTANT: The following context is extracted from the Wiki. "
                 "Base your answer ONLY on this context and the specified Game Version. "
-                "Do NOT mix mechanics between PSO2 Classic and NGS (e.g., NGS Rangers cannot use Technics).\n"
+                "Do NOT mix mechanics between Base and NGS (e.g., NGS Rangers cannot use Technics).\n"
                 "Do NOT fabricate skill names, stat values, or mechanics that are not in the retrieved data.\n"
                 "If the retrieved data does not contain the answer, say 'Data not found in the ARKS database.'\n"
                 "If sources are present, cite at least one source URL in your final answer.\n"
@@ -110,6 +135,14 @@ class ChatAgent:
         
         # 1. Save user message to memory
         await self.memory.add_message(user_id, role="user", content=message)
+
+        simple_greeting = self._simple_greeting_reply(message)
+        if simple_greeting and not extra_context:
+            debug_info["short_circuit_reason"] = "simple_greeting"
+            debug_info["reply_len"] = len(simple_greeting)
+            self.last_debug_snapshot = debug_info
+            await self.memory.add_message(user_id, role="assistant", content=simple_greeting)
+            return simple_greeting
         
         # Fetch memory payload
         memory_doc = await self.memory.get_memory(user_id)
@@ -126,15 +159,20 @@ class ChatAgent:
         ]
         recent_history = memory_doc.get("recent_messages", [])[-5:]
         for msg in recent_history:
+            role = msg.get("role")
+            if role not in {"user", "assistant"}:
+                continue
+            if extra_context and role == "assistant":
+                continue
             if msg["role"] == "assistant" and any(m in msg.get("content", "") for m in _HALLUCINATION_MARKERS):
                 continue  # Skip likely-hallucinated responses
-            messages.append({"role": msg["role"], "content": msg["content"]})
+            messages.append({"role": role, "content": msg["content"]})
             
         # 5. Guard: if retrieval is explicitly low-confidence, avoid speculative generation.
         if "[INSUFFICIENT_EVIDENCE]" in extra_context:
             reply = (
                 "I could not find enough reliable evidence to answer this accurately. "
-                "Please provide a more specific class, skill, or weapon name and specify the game mode (PSO2 or NGS)."
+                "Please provide a more specific class, skill, or weapon name and specify the game mode (Base or NGS)."
             )
             debug_info["short_circuit_reason"] = "insufficient_evidence"
             debug_info["reply_len"] = len(reply)
@@ -162,7 +200,11 @@ class ChatAgent:
         return self.last_debug_snapshot or {}
 
     async def generate_structured_reply(
-        self, user_id: str, message: str, extra_context: str = ""
+        self,
+        user_id: str,
+        message: str,
+        extra_context: str = "",
+        preferred_format: str | None = None,
     ) -> dict | None:
         """Generate a structured JSON reply suitable for ASCII rendering.
 
@@ -198,13 +240,22 @@ class ChatAgent:
                 f"{extra_context}"
             )
 
+        if preferred_format in {"table", "kv", "bullets"}:
+            system_parts.append(
+                f"FORMAT OVERRIDE: You MUST return format='{preferred_format}' "
+                "unless the retrieved data is clearly insufficient."
+            )
+
         system_prompt = "\n".join(system_parts)
 
         # Recent history (lightweight — only last 3 turns)
         messages: list[dict] = [{"role": "system", "content": system_prompt}]
         recent = memory_doc.get("recent_messages", [])[-3:]
         for msg in recent:
-            messages.append({"role": msg["role"], "content": msg["content"]})
+            role = msg.get("role")
+            if role != "user":
+                continue
+            messages.append({"role": role, "content": msg["content"]})
 
         try:
             resp = await self.client.chat.completions.create(

@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 import certifi
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-from pymongo import IndexModel, ASCENDING, DESCENDING
+from pymongo import IndexModel, ASCENDING, DESCENDING, TEXT
 
 from settings import env as config
 from settings import app as app_settings
@@ -59,9 +59,19 @@ _INDEXES: dict[str, list[IndexModel]] = {
     ],
     COL_WIKI_CHUNKS: [
         IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
+        IndexModel(
+            [("content", TEXT), ("page_title", TEXT), ("section", TEXT)],
+            name="text_search",
+            default_language="english",
+        ),
     ],
     COL_WIKI_TABLES: [
         IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
+        IndexModel(
+            [("_search_text", TEXT), ("page_name", TEXT)],
+            name="text_search",
+            default_language="english",
+        ),
     ],
     COL_WIKI_PAGES: [
         IndexModel([("game_mode", ASCENDING), ("category", ASCENDING)]),
@@ -131,7 +141,7 @@ def default_rp_memory(channel_id: str) -> dict:
         "facts": [],
         "emotion": {"mood": "neutral", "trust": 0.5},
         "character": "default",
-        "game_version_pref": None,   # "ngs" | "pso2" | None (not set yet)
+        "game_version_pref": None,   # "ngs" | "pso2" | "both" | None (not set yet)
         "last_updated": datetime.now(timezone.utc).isoformat(),
     }
 

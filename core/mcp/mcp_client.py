@@ -33,7 +33,7 @@ DEFAULT_MAX_LENGTH = 8000  # chars – keeps token usage reasonable
 PSO2_ONLY_CLASSES = {"phantom", "hero", "etoile", "luster", "summoner"}
 NGS_ONLY_CLASSES = {"slayer", "waker"}
 
-# PSO2 Classic-specific concepts that are NOT in NGS (used to redirect game_version)
+# Base-specific concepts that are NOT in NGS (used to redirect game_version)
 PSO2_ONLY_CONCEPTS = {
     "premium set", "premium pack", "arks cash shop", "ac shop",
     "swap shop", "treasure shop", "fun shop", "casino coin",
@@ -57,8 +57,8 @@ def validate_entity_game(query: str, game_version: str) -> tuple[str, str | None
         for cls in PSO2_ONLY_CLASSES:
             if cls in query_lower:
                 return "pso2", (
-                    f"**Note:** {cls.title()} is a PSO2 Classic class and does not exist in NGS. "
-                    f"Searching PSO2 Classic data instead.\n\n"
+                    f"**Note:** {cls.title()} is a Base class and does not exist in NGS. "
+                    f"Searching Base data instead.\n\n"
                 )
         for concept in PSO2_ONLY_CONCEPTS:
             if concept in query_lower:
@@ -67,7 +67,7 @@ def validate_entity_game(query: str, game_version: str) -> tuple[str, str | None
         for cls in NGS_ONLY_CLASSES:
             if cls in query_lower:
                 return "ngs", (
-                    f"**Note:** {cls.title()} is an NGS-only class and does not exist in PSO2 Classic. "
+                    f"**Note:** {cls.title()} is an NGS-only class and does not exist in Base. "
                     f"Searching NGS data instead.\n\n"
                 )
 
@@ -80,7 +80,7 @@ TASK: Given a user question, output the COMPLETE wiki page slug. The slug is the
 
 FORMAT RULES:
 - For NGS: always output "Portal:New_Genesis/PageName" — NEVER just "Portal:" or "Portal:New_Genesis" alone.
-- For PSO2 Classic: output "PageName" directly (e.g. "Hunter", "Katanas_List").
+- For Base: output "PageName" directly (e.g. "Hunter", "Katanas_List").
 - Use underscores instead of spaces.
 - Output ONLY the slug on a single line. No quotes, no explanation, no URL.
 
@@ -88,9 +88,9 @@ WIKI PAGES YOU KNOW:
 - Classes: Portal:New_Genesis/Hunter, Portal:New_Genesis/Fighter, Portal:New_Genesis/Ranger, Portal:New_Genesis/Gunner, Portal:New_Genesis/Force, Portal:New_Genesis/Techter, Portal:New_Genesis/Braver, Portal:New_Genesis/Bouncer, Portal:New_Genesis/Waker, Portal:New_Genesis/Slayer
 - Weapons: Portal:New_Genesis/Swords_List, Portal:New_Genesis/Katanas_List, Portal:New_Genesis/Assault_Rifles_List, Portal:New_Genesis/Launchers_List, etc.
 - Systems: Portal:New_Genesis/Photon_Arts_List, Portal:New_Genesis/Enhancement, Portal:New_Genesis/Augments, Portal:New_Genesis/Class, Portal:New_Genesis/Experience_Level
-- PSO2 Classic classes: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer, Summoner, Hero, Phantom, Etoile, Luster
-- PSO2 Classic shop/system: ARKS_Cash_Shop, Swap_Shop, Treasure_Shop, Client_Orders, Enhancement, Dark_Blast
-- PSO2 Classic armor: Arm_Units_List, Leg_Units_List, Back_Units_List
+- Base classes: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer, Summoner, Hero, Phantom, Etoile, Luster
+- Base shop/system: ARKS_Cash_Shop, Swap_Shop, Treasure_Shop, Client_Orders, Enhancement, Dark_Blast
+- Base armor: Arm_Units_List, Leg_Units_List, Back_Units_List
 
 EXAMPLES:
 Q: "What skills does Slayer have?" game_version: ngs

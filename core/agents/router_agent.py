@@ -7,7 +7,7 @@ Memory compression or RAG searches for simple chat messages.
 
 Intents:
 1. 'chat': General roleplay, greetings, small talk. Route to normal Memory/Persona.
-2. 'wiki_search': Questions about game mechanics, classes, lore. Route to RAG Pipeline.
+2. 'wiki_search': Questions about game mechanics, classes, lore. Route to wiki retrieval.
 3. 'fashion_match': User uploaded an image asking "what outfit is this?". Route to Phashion Matcher.
 """
 
@@ -44,17 +44,17 @@ message into exactly one of three intents: 'chat', 'wiki_search', or 'fashion_ma
 Rules:
 - 'fashion_match': The user has uploaded an image and wants to know what clothing/outfit/fashion it is. 
    Keywords: "what is this", "outfit", "look", "wear". (If `has_image` is true, heavily bias towards this).
-- 'wiki_search': The user is asking a factual question about Phantasy Star Online 2 (NGS) gameplay, classes, skills, weapons, or story. 
+- 'wiki_search': The user is asking a factual question about Base or NGS gameplay, classes, skills, weapons, or story. 
    Keywords: "how to", "where to find", "what does", "guide", "wiki".
 - 'chat': The user is just chatting, saying hello, or roleplaying with the bot character (Matoi, Xiera).
 
 Additionally, determine the game version:
-- 'ngs': Default. Questions about PSO2: New Genesis.
-- 'pso2': Questions about PSO2 Classic / base game, or classes/entities that ONLY exist in PSO2 Classic.
+- 'ngs': Questions about NGS.
+- 'pso2': Questions about Base, or classes/entities that ONLY exist in Base.
 
 ENTITY-GAME MAP (use this to classify):
-- PSO2-ONLY classes (do NOT exist in NGS): Phantom, Hero, Etoile, Luster, Summoner.
-- NGS-ONLY classes (do NOT exist in PSO2 Classic): Slayer, Waker.
+- Base-only classes (do NOT exist in NGS): Phantom, Hero, Etoile, Luster, Summoner.
+- NGS-only classes (do NOT exist in Base): Slayer, Waker.
 - Both games: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer.
 - If unsure, default to 'ngs'.
 

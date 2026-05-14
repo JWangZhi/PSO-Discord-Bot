@@ -164,10 +164,10 @@ class MemoryManager:
     async def get_game_version_pref(self, channel_id: str) -> str | None:
         """Return the saved game version preference for this channel, or None if not set."""
         doc = await self.get_memory(channel_id)
-        return doc.get("game_version_pref")  # "ngs" | "pso2" | None
+        return doc.get("game_version_pref")  # "ngs" | "pso2" | "both" | None
 
     async def set_game_version_pref(self, channel_id: str, version: str) -> None:
-        """Persist the user's game version preference ("ngs" or "pso2") for this channel."""
+        """Persist the user's game version preference ("ngs", "pso2", or "both") for this channel."""
         try:
             await self._col.update_one(
                 {"channel_id": channel_id},

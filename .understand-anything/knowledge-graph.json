@@ -1,0 +1,5004 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "pso-bot",
+    "languages": [
+      "docker-compose",
+      "dockerfile",
+      "env",
+      "json",
+      "markdown",
+      "python",
+      "toml",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Docker Compose",
+      "GitHub Actions",
+      "Grafana",
+      "MongoDB",
+      "Prometheus",
+      "discord.py"
+    ],
+    "description": "An AI-powered Discord bot for the **Phantasy Star Online 2 (PSO2: NGS)** community — game expert, fashion detective, and roleplay companion in one.",
+    "analyzedAt": "2026-05-12T07:25:05.793Z",
+    "gitCommitHash": "16715556b5692b565bdbd2880b7d02e4f486d16e"
+  },
+  "nodes": [
+    {
+      "id": "file:.dockerignore",
+      "type": "file",
+      "name": ".dockerignore",
+      "filePath": ".dockerignore",
+      "summary": "Source file containing 39 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config",
+        "schema"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:DISCORD_BOT_TOKEN",
+      "type": "config",
+      "name": "DISCORD_BOT_TOKEN",
+      "filePath": ".env.example",
+      "lineRange": [
+        4,
+        4
+      ],
+      "summary": "variable: DISCORD_BOT_TOKEN (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:GEMINI_API_KEY",
+      "type": "config",
+      "name": "GEMINI_API_KEY",
+      "filePath": ".env.example",
+      "lineRange": [
+        5,
+        5
+      ],
+      "summary": "variable: GEMINI_API_KEY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:GROQ_API_KEY",
+      "type": "config",
+      "name": "GROQ_API_KEY",
+      "filePath": ".env.example",
+      "lineRange": [
+        6,
+        6
+      ],
+      "summary": "variable: GROQ_API_KEY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:MONGODB_URI",
+      "type": "config",
+      "name": "MONGODB_URI",
+      "filePath": ".env.example",
+      "lineRange": [
+        7,
+        7
+      ],
+      "summary": "variable: MONGODB_URI (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:GEMINI_API_KEY_EMBEDDING",
+      "type": "config",
+      "name": "GEMINI_API_KEY_EMBEDDING",
+      "filePath": ".env.example",
+      "lineRange": [
+        8,
+        8
+      ],
+      "summary": "variable: GEMINI_API_KEY_EMBEDDING (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:GROQ_MODEL",
+      "type": "config",
+      "name": "GROQ_MODEL",
+      "filePath": ".env.example",
+      "lineRange": [
+        11,
+        11
+      ],
+      "summary": "variable: GROQ_MODEL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:COMPRESSION_THRESHOLD",
+      "type": "config",
+      "name": "COMPRESSION_THRESHOLD",
+      "filePath": ".env.example",
+      "lineRange": [
+        12,
+        12
+      ],
+      "summary": "variable: COMPRESSION_THRESHOLD (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:DISCORD_MESSAGE_LIMIT",
+      "type": "config",
+      "name": "DISCORD_MESSAGE_LIMIT",
+      "filePath": ".env.example",
+      "lineRange": [
+        17,
+        17
+      ],
+      "summary": "variable: DISCORD_MESSAGE_LIMIT (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:METRICS_PORT",
+      "type": "config",
+      "name": "METRICS_PORT",
+      "filePath": ".env.example",
+      "lineRange": [
+        18,
+        18
+      ],
+      "summary": "variable: METRICS_PORT (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:ROUTER_MODEL",
+      "type": "config",
+      "name": "ROUTER_MODEL",
+      "filePath": ".env.example",
+      "lineRange": [
+        20,
+        20
+      ],
+      "summary": "variable: ROUTER_MODEL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:ROUTER_TEMPERATURE",
+      "type": "config",
+      "name": "ROUTER_TEMPERATURE",
+      "filePath": ".env.example",
+      "lineRange": [
+        21,
+        21
+      ],
+      "summary": "variable: ROUTER_TEMPERATURE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:BOT_DEBUG_ENABLED",
+      "type": "config",
+      "name": "BOT_DEBUG_ENABLED",
+      "filePath": ".env.example",
+      "lineRange": [
+        23,
+        23
+      ],
+      "summary": "variable: BOT_DEBUG_ENABLED (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:BOT_DEBUG_INCLUDE_IN_REPLY",
+      "type": "config",
+      "name": "BOT_DEBUG_INCLUDE_IN_REPLY",
+      "filePath": ".env.example",
+      "lineRange": [
+        24,
+        24
+      ],
+      "summary": "variable: BOT_DEBUG_INCLUDE_IN_REPLY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:APP_DB_NAME",
+      "type": "config",
+      "name": "APP_DB_NAME",
+      "filePath": ".env.example",
+      "lineRange": [
+        26,
+        26
+      ],
+      "summary": "variable: APP_DB_NAME (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:MONGO_MEMORY_COLLECTION",
+      "type": "config",
+      "name": "MONGO_MEMORY_COLLECTION",
+      "filePath": ".env.example",
+      "lineRange": [
+        27,
+        27
+      ],
+      "summary": "variable: MONGO_MEMORY_COLLECTION (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:MEMORY_MAX_BUFFER",
+      "type": "config",
+      "name": "MEMORY_MAX_BUFFER",
+      "filePath": ".env.example",
+      "lineRange": [
+        28,
+        28
+      ],
+      "summary": "variable: MEMORY_MAX_BUFFER (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:LOCAL_VLM_URL",
+      "type": "config",
+      "name": "LOCAL_VLM_URL",
+      "filePath": ".env.example",
+      "lineRange": [
+        31,
+        31
+      ],
+      "summary": "variable: LOCAL_VLM_URL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:LOCAL_VLM_MODEL",
+      "type": "config",
+      "name": "LOCAL_VLM_MODEL",
+      "filePath": ".env.example",
+      "lineRange": [
+        32,
+        32
+      ],
+      "summary": "variable: LOCAL_VLM_MODEL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:VISION_MAX_TOKENS",
+      "type": "config",
+      "name": "VISION_MAX_TOKENS",
+      "filePath": ".env.example",
+      "lineRange": [
+        33,
+        33
+      ],
+      "summary": "variable: VISION_MAX_TOKENS (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:VISION_TEMPERATURE",
+      "type": "config",
+      "name": "VISION_TEMPERATURE",
+      "filePath": ".env.example",
+      "lineRange": [
+        34,
+        34
+      ],
+      "summary": "variable: VISION_TEMPERATURE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_API_BASE",
+      "type": "config",
+      "name": "WIKI_API_BASE",
+      "filePath": ".env.example",
+      "lineRange": [
+        39,
+        39
+      ],
+      "summary": "variable: WIKI_API_BASE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_BASE_URL",
+      "type": "config",
+      "name": "WIKI_BASE_URL",
+      "filePath": ".env.example",
+      "lineRange": [
+        40,
+        40
+      ],
+      "summary": "variable: WIKI_BASE_URL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:SCRAPER_USER_AGENT",
+      "type": "config",
+      "name": "SCRAPER_USER_AGENT",
+      "filePath": ".env.example",
+      "lineRange": [
+        41,
+        41
+      ],
+      "summary": "variable: SCRAPER_USER_AGENT (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_REQUEST_DELAY",
+      "type": "config",
+      "name": "WIKI_REQUEST_DELAY",
+      "filePath": ".env.example",
+      "lineRange": [
+        42,
+        42
+      ],
+      "summary": "variable: WIKI_REQUEST_DELAY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_CACHE_TTL_H",
+      "type": "config",
+      "name": "WIKI_CACHE_TTL_H",
+      "filePath": ".env.example",
+      "lineRange": [
+        43,
+        43
+      ],
+      "summary": "variable: WIKI_CACHE_TTL_H (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_MIN_CHUNK_LEN",
+      "type": "config",
+      "name": "WIKI_MIN_CHUNK_LEN",
+      "filePath": ".env.example",
+      "lineRange": [
+        44,
+        44
+      ],
+      "summary": "variable: WIKI_MIN_CHUNK_LEN (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:WIKI_BATCH_SIZE",
+      "type": "config",
+      "name": "WIKI_BATCH_SIZE",
+      "filePath": ".env.example",
+      "lineRange": [
+        45,
+        45
+      ],
+      "summary": "variable: WIKI_BATCH_SIZE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_BASE_URL",
+      "type": "config",
+      "name": "PLAYERS_BASE_URL",
+      "filePath": ".env.example",
+      "lineRange": [
+        48,
+        48
+      ],
+      "summary": "variable: PLAYERS_BASE_URL (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_ALLOWED_PATH_PREFIX",
+      "type": "config",
+      "name": "PLAYERS_ALLOWED_PATH_PREFIX",
+      "filePath": ".env.example",
+      "lineRange": [
+        49,
+        49
+      ],
+      "summary": "variable: PLAYERS_ALLOWED_PATH_PREFIX (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_MAX_PAGES",
+      "type": "config",
+      "name": "PLAYERS_MAX_PAGES",
+      "filePath": ".env.example",
+      "lineRange": [
+        50,
+        50
+      ],
+      "summary": "variable: PLAYERS_MAX_PAGES (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_FETCH_TIMEOUT",
+      "type": "config",
+      "name": "PLAYERS_FETCH_TIMEOUT",
+      "filePath": ".env.example",
+      "lineRange": [
+        51,
+        51
+      ],
+      "summary": "variable: PLAYERS_FETCH_TIMEOUT (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_REQUEST_DELAY",
+      "type": "config",
+      "name": "PLAYERS_REQUEST_DELAY",
+      "filePath": ".env.example",
+      "lineRange": [
+        52,
+        52
+      ],
+      "summary": "variable: PLAYERS_REQUEST_DELAY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_MIN_TEXT_LEN",
+      "type": "config",
+      "name": "PLAYERS_MIN_TEXT_LEN",
+      "filePath": ".env.example",
+      "lineRange": [
+        53,
+        53
+      ],
+      "summary": "variable: PLAYERS_MIN_TEXT_LEN (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_CHUNK_SIZE",
+      "type": "config",
+      "name": "PLAYERS_CHUNK_SIZE",
+      "filePath": ".env.example",
+      "lineRange": [
+        54,
+        54
+      ],
+      "summary": "variable: PLAYERS_CHUNK_SIZE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_CHUNK_OVERLAP",
+      "type": "config",
+      "name": "PLAYERS_CHUNK_OVERLAP",
+      "filePath": ".env.example",
+      "lineRange": [
+        55,
+        55
+      ],
+      "summary": "variable: PLAYERS_CHUNK_OVERLAP (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_GAME_MODE",
+      "type": "config",
+      "name": "PLAYERS_GAME_MODE",
+      "filePath": ".env.example",
+      "lineRange": [
+        56,
+        56
+      ],
+      "summary": "variable: PLAYERS_GAME_MODE (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "variable:.env.example:PLAYERS_CATEGORY",
+      "type": "config",
+      "name": "PLAYERS_CATEGORY",
+      "filePath": ".env.example",
+      "lineRange": [
+        57,
+        57
+      ],
+      "summary": "variable: PLAYERS_CATEGORY (0 fields)",
+      "tags": [
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "pipeline:.github/workflows/pylint.yml",
+      "type": "pipeline",
+      "name": "pylint.yml",
+      "filePath": ".github/workflows/pylint.yml",
+      "summary": "Infrastructure or deployment file for the project environment.",
+      "tags": [
+        "infra"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.python-version",
+      "type": "file",
+      "name": ".python-version",
+      "filePath": ".python-version",
+      "summary": "Source file containing 1 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "Dockerfile",
+      "summary": "Infrastructure or deployment file for the project environment.",
+      "tags": [
+        "infra",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile:builder",
+      "type": "service",
+      "name": "builder",
+      "filePath": "Dockerfile",
+      "summary": "Service builder (image: python:3.12-slim)",
+      "tags": [
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:Dockerfile:runtime",
+      "type": "service",
+      "name": "runtime",
+      "filePath": "Dockerfile",
+      "summary": "Service runtime (image: python:3.12-slim)",
+      "tags": [
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:FROM python:3.12-slim AS builder",
+      "type": "pipeline",
+      "name": "FROM python:3.12-slim AS builder",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        1,
+        1
+      ],
+      "summary": "Step: FROM python:3.12-slim AS builder",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:ENV PYTHONUNBUFFERED=1 \\",
+      "type": "pipeline",
+      "name": "ENV PYTHONUNBUFFERED=1 \\",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        3,
+        3
+      ],
+      "summary": "Step: ENV PYTHONUNBUFFERED=1 \\",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:WORKDIR /app",
+      "type": "pipeline",
+      "name": "WORKDIR /app",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        7,
+        7
+      ],
+      "summary": "Step: WORKDIR /app",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:ARG UV_VERSION=0.11.7",
+      "type": "pipeline",
+      "name": "ARG UV_VERSION=0.11.7",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        9,
+        9
+      ],
+      "summary": "Step: ARG UV_VERSION=0.11.7",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:RUN apt-get update && apt-get install -y --no-install-recommends",
+      "type": "pipeline",
+      "name": "RUN apt-get update && apt-get install -y --no-install-recommends",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        11,
+        11
+      ],
+      "summary": "Step: RUN apt-get update && apt-get install -y --no-install-recommends",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+      "type": "pipeline",
+      "name": "RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        16,
+        16
+      ],
+      "summary": "Step: RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:COPY pyproject.toml uv.lock ./",
+      "type": "pipeline",
+      "name": "COPY pyproject.toml uv.lock ./",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        18,
+        18
+      ],
+      "summary": "Step: COPY pyproject.toml uv.lock ./",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:RUN uv sync --frozen --no-dev --no-install-project",
+      "type": "pipeline",
+      "name": "RUN uv sync --frozen --no-dev --no-install-project",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        20,
+        20
+      ],
+      "summary": "Step: RUN uv sync --frozen --no-dev --no-install-project",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:FROM python:3.12-slim AS runtime",
+      "type": "pipeline",
+      "name": "FROM python:3.12-slim AS runtime",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        22,
+        22
+      ],
+      "summary": "Step: FROM python:3.12-slim AS runtime",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:RUN useradd --create-home appuser",
+      "type": "pipeline",
+      "name": "RUN useradd --create-home appuser",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        34,
+        34
+      ],
+      "summary": "Step: RUN useradd --create-home appuser",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+      "type": "pipeline",
+      "name": "COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        36,
+        36
+      ],
+      "summary": "Step: COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:COPY --chown=appuser:appuser . .",
+      "type": "pipeline",
+      "name": "COPY --chown=appuser:appuser . .",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        37,
+        37
+      ],
+      "summary": "Step: COPY --chown=appuser:appuser . .",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:USER appuser",
+      "type": "pipeline",
+      "name": "USER appuser",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        39,
+        39
+      ],
+      "summary": "Step: USER appuser",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:EXPOSE 8000",
+      "type": "pipeline",
+      "name": "EXPOSE 8000",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        41,
+        41
+      ],
+      "summary": "Step: EXPOSE 8000",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "step:Dockerfile:CMD [\"python\", \"main.py\"]",
+      "type": "pipeline",
+      "name": "CMD [\"python\", \"main.py\"]",
+      "filePath": "Dockerfile",
+      "lineRange": [
+        43,
+        43
+      ],
+      "summary": "Step: CMD [\"python\", \"main.py\"]",
+      "tags": [
+        "pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview and usage documentation.",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:ai_prompts/characters/default.md",
+      "type": "document",
+      "name": "default.md",
+      "filePath": "ai_prompts/characters/default.md",
+      "summary": "Documentation file for default.",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:ai_prompts/characters/matoi.md",
+      "type": "document",
+      "name": "matoi.md",
+      "filePath": "ai_prompts/characters/matoi.md",
+      "summary": "Documentation file for matoi.",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:ai_prompts/characters/xiera.md",
+      "type": "document",
+      "name": "xiera.md",
+      "filePath": "ai_prompts/characters/xiera.md",
+      "summary": "Documentation file for xiera.",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:ai_prompts/formatting_system.md",
+      "type": "document",
+      "name": "formatting_system.md",
+      "filePath": "ai_prompts/formatting_system.md",
+      "summary": "Documentation file for formatting_system.",
+      "tags": [
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:bot/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "bot/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:bot/cogs/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "bot/cogs/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:bot/cogs/rp_chat.py",
+      "type": "file",
+      "name": "rp_chat.py",
+      "filePath": "bot/cogs/rp_chat.py",
+      "summary": "Source file containing 1 class.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:bot/cogs/rp_chat.py:RPChannelManager",
+      "type": "class",
+      "name": "RPChannelManager",
+      "filePath": "bot/cogs/rp_chat.py",
+      "lineRange": [
+        18,
+        76
+      ],
+      "summary": "Class RPChannelManager defined in rp_chat.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/agents/chat_agent.py",
+      "type": "file",
+      "name": "chat_agent.py",
+      "filePath": "core/agents/chat_agent.py",
+      "summary": "Source file containing 1 class, 2 functions.",
+      "tags": [
+        "code",
+        "agent"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/agents/chat_agent.py:load_persona",
+      "type": "function",
+      "name": "load_persona",
+      "filePath": "core/agents/chat_agent.py",
+      "lineRange": [
+        19,
+        26
+      ],
+      "summary": "Function load_persona defined in chat_agent.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/agents/chat_agent.py:_load_formatting_prompt",
+      "type": "function",
+      "name": "_load_formatting_prompt",
+      "filePath": "core/agents/chat_agent.py",
+      "lineRange": [
+        28,
+        35
+      ],
+      "summary": "Function _load_formatting_prompt defined in chat_agent.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:core/agents/chat_agent.py:ChatAgent",
+      "type": "class",
+      "name": "ChatAgent",
+      "filePath": "core/agents/chat_agent.py",
+      "lineRange": [
+        37,
+        246
+      ],
+      "summary": "Class ChatAgent defined in chat_agent.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:core/agents/router_agent.py",
+      "type": "file",
+      "name": "router_agent.py",
+      "filePath": "core/agents/router_agent.py",
+      "summary": "Source file containing 2 classes.",
+      "tags": [
+        "code",
+        "agent"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:core/agents/router_agent.py:IntentResult",
+      "type": "class",
+      "name": "IntentResult",
+      "filePath": "core/agents/router_agent.py",
+      "lineRange": [
+        28,
+        32
+      ],
+      "summary": "Class IntentResult defined in router_agent.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:core/agents/router_agent.py:RouterAgent",
+      "type": "class",
+      "name": "RouterAgent",
+      "filePath": "core/agents/router_agent.py",
+      "lineRange": [
+        34,
+        121
+      ],
+      "summary": "Class RouterAgent defined in router_agent.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/agents/vision_agent.py",
+      "type": "file",
+      "name": "vision_agent.py",
+      "filePath": "core/agents/vision_agent.py",
+      "summary": "Source file containing 1 class.",
+      "tags": [
+        "code",
+        "agent"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:core/agents/vision_agent.py:VisionAgent",
+      "type": "class",
+      "name": "VisionAgent",
+      "filePath": "core/agents/vision_agent.py",
+      "lineRange": [
+        16,
+        78
+      ],
+      "summary": "Class VisionAgent defined in vision_agent.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/context_compressor.py",
+      "type": "file",
+      "name": "context_compressor.py",
+      "filePath": "core/context_compressor.py",
+      "summary": "Source file containing 1 class.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:core/context_compressor.py:ContextCompressor",
+      "type": "class",
+      "name": "ContextCompressor",
+      "filePath": "core/context_compressor.py",
+      "lineRange": [
+        20,
+        99
+      ],
+      "summary": "Class ContextCompressor defined in context_compressor.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/db.py",
+      "type": "file",
+      "name": "db.py",
+      "filePath": "core/db.py",
+      "summary": "Source file containing 1 class, 2 functions.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:core/db.py:default_rp_memory",
+      "type": "function",
+      "name": "default_rp_memory",
+      "filePath": "core/db.py",
+      "lineRange": [
+        125,
+        136
+      ],
+      "summary": "Function default_rp_memory defined in db.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:core/db.py:default_guild_config",
+      "type": "function",
+      "name": "default_guild_config",
+      "filePath": "core/db.py",
+      "lineRange": [
+        139,
+        148
+      ],
+      "summary": "Function default_guild_config defined in db.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:core/db.py:MongoDB",
+      "type": "class",
+      "name": "MongoDB",
+      "filePath": "core/db.py",
+      "lineRange": [
+        75,
+        119
+      ],
+      "summary": "Class MongoDB defined in db.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/formatters/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "core/formatters/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code",
+        "formatting"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/formatters/discord_table.py",
+      "type": "file",
+      "name": "discord_table.py",
+      "filePath": "core/formatters/discord_table.py",
+      "summary": "Source file containing 10 functions.",
+      "tags": [
+        "code",
+        "formatting"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:_trunc",
+      "type": "function",
+      "name": "_trunc",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        22,
+        24
+      ],
+      "summary": "Function _trunc defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:_pad",
+      "type": "function",
+      "name": "_pad",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        27,
+        28
+      ],
+      "summary": "Function _pad defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:_looks_numeric",
+      "type": "function",
+      "name": "_looks_numeric",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        31,
+        32
+      ],
+      "summary": "Function _looks_numeric defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:_col_widths",
+      "type": "function",
+      "name": "_col_widths",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        35,
+        41
+      ],
+      "summary": "Function _col_widths defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:render_table",
+      "type": "function",
+      "name": "render_table",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        46,
+        85
+      ],
+      "summary": "Function render_table defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:render_kv",
+      "type": "function",
+      "name": "render_kv",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        88,
+        111
+      ],
+      "summary": "Function render_kv defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:render_bullets",
+      "type": "function",
+      "name": "render_bullets",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        114,
+        133
+      ],
+      "summary": "Function render_bullets defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:render_response",
+      "type": "function",
+      "name": "render_response",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        138,
+        163
+      ],
+      "summary": "Function render_response defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:validate_payload",
+      "type": "function",
+      "name": "validate_payload",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        166,
+        176
+      ],
+      "summary": "Function validate_payload defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/formatters/discord_table.py:try_parse_structured",
+      "type": "function",
+      "name": "try_parse_structured",
+      "filePath": "core/formatters/discord_table.py",
+      "lineRange": [
+        179,
+        197
+      ],
+      "summary": "Function try_parse_structured defined in discord_table.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:core/mcp/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "core/mcp/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code",
+        "mcp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/mcp/mcp_client.py",
+      "type": "file",
+      "name": "mcp_client.py",
+      "filePath": "core/mcp/mcp_client.py",
+      "summary": "Source file containing 1 class, 1 function.",
+      "tags": [
+        "code",
+        "mcp"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/mcp/mcp_client.py:validate_entity_game",
+      "type": "function",
+      "name": "validate_entity_game",
+      "filePath": "core/mcp/mcp_client.py",
+      "lineRange": [
+        47,
+        74
+      ],
+      "summary": "Function validate_entity_game defined in mcp_client.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:core/mcp/mcp_client.py:MCPBridge",
+      "type": "class",
+      "name": "MCPBridge",
+      "filePath": "core/mcp/mcp_client.py",
+      "lineRange": [
+        113,
+        264
+      ],
+      "summary": "Class MCPBridge defined in mcp_client.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:core/memory.py",
+      "type": "file",
+      "name": "memory.py",
+      "filePath": "core/memory.py",
+      "summary": "Source file containing 1 class.",
+      "tags": [
+        "code",
+        "memory"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:core/memory.py:MemoryManager",
+      "type": "class",
+      "name": "MemoryManager",
+      "filePath": "core/memory.py",
+      "lineRange": [
+        17,
+        273
+      ],
+      "summary": "Class MemoryManager defined in memory.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:core/telemetry.py",
+      "type": "file",
+      "name": "telemetry.py",
+      "filePath": "core/telemetry.py",
+      "summary": "Source file containing 1 function.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/telemetry.py:start_metrics_server",
+      "type": "function",
+      "name": "start_metrics_server",
+      "filePath": "core/telemetry.py",
+      "lineRange": [
+        37,
+        43
+      ],
+      "summary": "Function start_metrics_server defined in telemetry.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/wiki_search.py",
+      "type": "file",
+      "name": "wiki_search.py",
+      "filePath": "core/wiki_search.py",
+      "summary": "Source file containing 1 class, 2 functions.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/wiki_search.py:slug_to_page_name",
+      "type": "function",
+      "name": "slug_to_page_name",
+      "filePath": "core/wiki_search.py",
+      "lineRange": [
+        39,
+        45
+      ],
+      "summary": "Function slug_to_page_name defined in wiki_search.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:core/wiki_search.py:slug_to_game_mode",
+      "type": "function",
+      "name": "slug_to_game_mode",
+      "filePath": "core/wiki_search.py",
+      "lineRange": [
+        48,
+        52
+      ],
+      "summary": "Function slug_to_game_mode defined in wiki_search.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:core/wiki_search.py:WikiSearchService",
+      "type": "class",
+      "name": "WikiSearchService",
+      "filePath": "core/wiki_search.py",
+      "lineRange": [
+        100,
+        519
+      ],
+      "summary": "Class WikiSearchService defined in wiki_search.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:docker-compose.yml",
+      "type": "config",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Infrastructure or deployment file for the project environment.",
+      "tags": [
+        "infra"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/01-architecture.md",
+      "type": "document",
+      "name": "01-architecture.md",
+      "filePath": "docs/01-architecture.md",
+      "summary": "Documentation file for 01-architecture.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/02-features.md",
+      "type": "document",
+      "name": "02-features.md",
+      "filePath": "docs/02-features.md",
+      "summary": "Documentation file for 02-features.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/08-rp-memory-management.md",
+      "type": "document",
+      "name": "08-rp-memory-management.md",
+      "filePath": "docs/08-rp-memory-management.md",
+      "summary": "Documentation file for 08-rp-memory-management.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/10-wiki-scraper-guide.md",
+      "type": "document",
+      "name": "10-wiki-scraper-guide.md",
+      "filePath": "docs/10-wiki-scraper-guide.md",
+      "summary": "Documentation file for 10-wiki-scraper-guide.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/12-tool-mcp-ideas.md",
+      "type": "document",
+      "name": "12-tool-mcp-ideas.md",
+      "filePath": "docs/12-tool-mcp-ideas.md",
+      "summary": "Documentation file for 12-tool-mcp-ideas.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/13-config-structure.md",
+      "type": "document",
+      "name": "13-config-structure.md",
+      "filePath": "docs/13-config-structure.md",
+      "summary": "Documentation file for 13-config-structure.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/14-critical-fixes-plan.md",
+      "type": "document",
+      "name": "14-critical-fixes-plan.md",
+      "filePath": "docs/14-critical-fixes-plan.md",
+      "summary": "Documentation file for 14-critical-fixes-plan.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/etl-addon-skills-parser.md",
+      "type": "document",
+      "name": "etl-addon-skills-parser.md",
+      "filePath": "docs/etl-addon-skills-parser.md",
+      "summary": "Documentation file for etl-addon-skills-parser.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/roadmap/TODO.md",
+      "type": "document",
+      "name": "TODO.md",
+      "filePath": "docs/roadmap/TODO.md",
+      "summary": "Documentation file for TODO.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/roadmap/token_optimization.md",
+      "type": "document",
+      "name": "token_optimization.md",
+      "filePath": "docs/roadmap/token_optimization.md",
+      "summary": "Documentation file for token_optimization.",
+      "tags": [
+        "docs",
+        "documentation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:grafana/dashboards/pso2bot-overview.json",
+      "type": "config",
+      "name": "pso2bot-overview.json",
+      "filePath": "grafana/dashboards/pso2bot-overview.json",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:grafana/provisioning/dashboards/provider.yml",
+      "type": "config",
+      "name": "provider.yml",
+      "filePath": "grafana/provisioning/dashboards/provider.yml",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:grafana/provisioning/datasources/prometheus.yml",
+      "type": "config",
+      "name": "prometheus.yml",
+      "filePath": "grafana/provisioning/datasources/prometheus.yml",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "main.py",
+      "summary": "Application entry point for the PSO2 Discord bot runtime.",
+      "tags": [
+        "code",
+        "entrypoint"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:send_long_message",
+      "type": "function",
+      "name": "send_long_message",
+      "filePath": "main.py",
+      "lineRange": [
+        964,
+        990
+      ],
+      "summary": "Function send_long_message defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:reply_long",
+      "type": "function",
+      "name": "reply_long",
+      "filePath": "main.py",
+      "lineRange": [
+        992,
+        1033
+      ],
+      "summary": "Function reply_long defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:ping",
+      "type": "function",
+      "name": "ping",
+      "filePath": "main.py",
+      "lineRange": [
+        1036,
+        1042
+      ],
+      "summary": "Function ping defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:clear_memory",
+      "type": "function",
+      "name": "clear_memory",
+      "filePath": "main.py",
+      "lineRange": [
+        1045,
+        1052
+      ],
+      "summary": "Function clear_memory defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:ask",
+      "type": "function",
+      "name": "ask",
+      "filePath": "main.py",
+      "lineRange": [
+        1060,
+        1076
+      ],
+      "summary": "Function ask defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:fashion",
+      "type": "function",
+      "name": "fashion",
+      "filePath": "main.py",
+      "lineRange": [
+        1084,
+        1111
+      ],
+      "summary": "Function fashion defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:wiki",
+      "type": "function",
+      "name": "wiki",
+      "filePath": "main.py",
+      "lineRange": [
+        1118,
+        1150
+      ],
+      "summary": "Function wiki defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:rp_enable",
+      "type": "function",
+      "name": "rp_enable",
+      "filePath": "main.py",
+      "lineRange": [
+        1156,
+        1166
+      ],
+      "summary": "Function rp_enable defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:main.py:rp_disable",
+      "type": "function",
+      "name": "rp_disable",
+      "filePath": "main.py",
+      "lineRange": [
+        1172,
+        1181
+      ],
+      "summary": "Function rp_disable defined in main.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:main.py:GameVersionResolver",
+      "type": "class",
+      "name": "GameVersionResolver",
+      "filePath": "main.py",
+      "lineRange": [
+        62,
+        152
+      ],
+      "summary": "Class GameVersionResolver defined in main.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:main.py:PSO2Bot",
+      "type": "class",
+      "name": "PSO2Bot",
+      "filePath": "main.py",
+      "lineRange": [
+        155,
+        948
+      ],
+      "summary": "Class PSO2Bot defined in main.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:main.py:GameVersion",
+      "type": "class",
+      "name": "GameVersion",
+      "filePath": "main.py",
+      "lineRange": [
+        956,
+        958
+      ],
+      "summary": "Class GameVersion defined in main.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:prometheus.yml",
+      "type": "config",
+      "name": "prometheus.yml",
+      "filePath": "prometheus.yml",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "pyproject.toml",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "scripts/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/etl/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "scripts/etl/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code",
+        "etl"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "type": "file",
+      "name": "upload_wiki_to_mongo.py",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "summary": "Source file containing 7 classes, 11 functions.",
+      "tags": [
+        "code",
+        "etl"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:parse_wiki_path",
+      "type": "function",
+      "name": "parse_wiki_path",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        132,
+        150
+      ],
+      "summary": "Function parse_wiki_path defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:is_nav_table",
+      "type": "function",
+      "name": "is_nav_table",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        153,
+        158
+      ],
+      "summary": "Function is_nav_table defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:flatten_multi_level_header",
+      "type": "function",
+      "name": "flatten_multi_level_header",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        161,
+        183
+      ],
+      "summary": "Function flatten_multi_level_header defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:build_search_text",
+      "type": "function",
+      "name": "build_search_text",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        186,
+        196
+      ],
+      "summary": "Function build_search_text defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:process_table",
+      "type": "function",
+      "name": "process_table",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        199,
+        255
+      ],
+      "summary": "Function process_table defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:process_chunk",
+      "type": "function",
+      "name": "process_chunk",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        258,
+        280
+      ],
+      "summary": "Function process_chunk defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:process_meta",
+      "type": "function",
+      "name": "process_meta",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        283,
+        304
+      ],
+      "summary": "Function process_meta defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:load_all_documents",
+      "type": "function",
+      "name": "load_all_documents",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        307,
+        374
+      ],
+      "summary": "Function load_all_documents defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:log_stats",
+      "type": "function",
+      "name": "log_stats",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        377,
+        430
+      ],
+      "summary": "Function log_stats defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:upload_to_mongo",
+      "type": "function",
+      "name": "upload_to_mongo",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        434,
+        504
+      ],
+      "summary": "Function upload_to_mongo defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/etl/upload_wiki_to_mongo.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        507,
+        534
+      ],
+      "summary": "Function main defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:CollectionNames",
+      "type": "class",
+      "name": "CollectionNames",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        55,
+        58
+      ],
+      "summary": "Class CollectionNames defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:WikiFields",
+      "type": "class",
+      "name": "WikiFields",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        61,
+        79
+      ],
+      "summary": "Class WikiFields defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:PageInfo",
+      "type": "class",
+      "name": "PageInfo",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        83,
+        86
+      ],
+      "summary": "Class PageInfo defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:ChunkDocument",
+      "type": "class",
+      "name": "ChunkDocument",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        89,
+        98
+      ],
+      "summary": "Class ChunkDocument defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:TableDocument",
+      "type": "class",
+      "name": "TableDocument",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        101,
+        110
+      ],
+      "summary": "Class TableDocument defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:PageDocument",
+      "type": "class",
+      "name": "PageDocument",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        113,
+        122
+      ],
+      "summary": "Class PageDocument defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/etl/upload_wiki_to_mongo.py:GameModeStats",
+      "type": "class",
+      "name": "GameModeStats",
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "lineRange": [
+        125,
+        128
+      ],
+      "summary": "Class GameModeStats defined in upload_wiki_to_mongo.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/rag/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "scripts/rag/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code",
+        "rag"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/rag/audit_wiki_retrieval.py",
+      "type": "file",
+      "name": "audit_wiki_retrieval.py",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "summary": "Source file containing 1 class, 11 functions.",
+      "tags": [
+        "code",
+        "rag"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_tokens",
+      "type": "function",
+      "name": "_tokens",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        50,
+        55
+      ],
+      "summary": "Function _tokens defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_parse_quality",
+      "type": "function",
+      "name": "_parse_quality",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        58,
+        62
+      ],
+      "summary": "Function _parse_quality defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_overlap_expected",
+      "type": "function",
+      "name": "_overlap_expected",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        65,
+        71
+      ],
+      "summary": "Function _overlap_expected defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_risk_level",
+      "type": "function",
+      "name": "_risk_level",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        74,
+        79
+      ],
+      "summary": "Function _risk_level defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_fetch_pages",
+      "type": "function",
+      "name": "_fetch_pages",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        82,
+        92
+      ],
+      "summary": "Function _fetch_pages defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_build_queries",
+      "type": "function",
+      "name": "_build_queries",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        95,
+        101
+      ],
+      "summary": "Function _build_queries defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_normalized_page_title",
+      "type": "function",
+      "name": "_normalized_page_title",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        104,
+        117
+      ],
+      "summary": "Function _normalized_page_title defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_chunk_title_candidates",
+      "type": "function",
+      "name": "_chunk_title_candidates",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        120,
+        135
+      ],
+      "summary": "Function _chunk_title_candidates defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:_classify_row",
+      "type": "function",
+      "name": "_classify_row",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        138,
+        159
+      ],
+      "summary": "Function _classify_row defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:run_audit",
+      "type": "function",
+      "name": "run_audit",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        162,
+        246
+      ],
+      "summary": "Function run_audit defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/rag/audit_wiki_retrieval.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        249,
+        278
+      ],
+      "summary": "Function main defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/rag/audit_wiki_retrieval.py:AuditRow",
+      "type": "class",
+      "name": "AuditRow",
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "lineRange": [
+        35,
+        47
+      ],
+      "summary": "Class AuditRow defined in audit_wiki_retrieval.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/rag/rag_pipeline.py",
+      "type": "file",
+      "name": "rag_pipeline.py",
+      "filePath": "scripts/rag/rag_pipeline.py",
+      "summary": "Source file containing 2 classes.",
+      "tags": [
+        "code",
+        "rag"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/rag/rag_pipeline.py:RetrievedChunk",
+      "type": "class",
+      "name": "RetrievedChunk",
+      "filePath": "scripts/rag/rag_pipeline.py",
+      "lineRange": [
+        33,
+        42
+      ],
+      "summary": "Class RetrievedChunk defined in rag_pipeline.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:scripts/rag/rag_pipeline.py:RAGPipeline",
+      "type": "class",
+      "name": "RAGPipeline",
+      "filePath": "scripts/rag/rag_pipeline.py",
+      "lineRange": [
+        49,
+        272
+      ],
+      "summary": "Class RAGPipeline defined in rag_pipeline.py.",
+      "tags": [
+        "class"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:scripts/rag/reembed_from_cache.py",
+      "type": "file",
+      "name": "reembed_from_cache.py",
+      "filePath": "scripts/rag/reembed_from_cache.py",
+      "summary": "Source file containing 2 functions.",
+      "tags": [
+        "code",
+        "rag"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:scripts/rag/reembed_from_cache.py:embed_texts",
+      "type": "function",
+      "name": "embed_texts",
+      "filePath": "scripts/rag/reembed_from_cache.py",
+      "lineRange": [
+        41,
+        44
+      ],
+      "summary": "Function embed_texts defined in reembed_from_cache.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:scripts/rag/reembed_from_cache.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/rag/reembed_from_cache.py",
+      "lineRange": [
+        50,
+        163
+      ],
+      "summary": "Function main defined in reembed_from_cache.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/scraper/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "scripts/scraper/__init__.py",
+      "summary": "Source file containing 0 lines.",
+      "tags": [
+        "code",
+        "scraping"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/scraper/wiki_scraper.py",
+      "type": "file",
+      "name": "wiki_scraper.py",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "summary": "Source file containing 24 functions.",
+      "tags": [
+        "code",
+        "scraping"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_ensure_dir",
+      "type": "function",
+      "name": "_ensure_dir",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        50,
+        51
+      ],
+      "summary": "Function _ensure_dir defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_safe_filename",
+      "type": "function",
+      "name": "_safe_filename",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        54,
+        55
+      ],
+      "summary": "Function _safe_filename defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_page_url",
+      "type": "function",
+      "name": "_page_url",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        58,
+        59
+      ],
+      "summary": "Function _page_url defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_out_dir",
+      "type": "function",
+      "name": "_out_dir",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        62,
+        65
+      ],
+      "summary": "Function _out_dir defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_chunk_id",
+      "type": "function",
+      "name": "_chunk_id",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        68,
+        71
+      ],
+      "summary": "Function _chunk_id defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_now_iso",
+      "type": "function",
+      "name": "_now_iso",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        74,
+        75
+      ],
+      "summary": "Function _now_iso defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_is_nav_table",
+      "type": "function",
+      "name": "_is_nav_table",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        78,
+        114
+      ],
+      "summary": "Function _is_nav_table defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_is_skill_table",
+      "type": "function",
+      "name": "_is_skill_table",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        117,
+        122
+      ],
+      "summary": "Function _is_skill_table defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_extract_skill_from_table",
+      "type": "function",
+      "name": "_extract_skill_from_table",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        125,
+        188
+      ],
+      "summary": "Function _extract_skill_from_table defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_skill_to_chunk_text",
+      "type": "function",
+      "name": "_skill_to_chunk_text",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        191,
+        203
+      ],
+      "summary": "Function _skill_to_chunk_text defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_remove_noise_tables_for_text",
+      "type": "function",
+      "name": "_remove_noise_tables_for_text",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        206,
+        220
+      ],
+      "summary": "Function _remove_noise_tables_for_text defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:api_batch_check",
+      "type": "function",
+      "name": "api_batch_check",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        227,
+        276
+      ],
+      "summary": "Function api_batch_check defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:should_scrape",
+      "type": "function",
+      "name": "should_scrape",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        279,
+        311
+      ],
+      "summary": "Function should_scrape defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:fetch_html",
+      "type": "function",
+      "name": "fetch_html",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        318,
+        364
+      ],
+      "summary": "Function fetch_html defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:extract_tables",
+      "type": "function",
+      "name": "extract_tables",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        371,
+        432
+      ],
+      "summary": "Function extract_tables defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:extract_text_chunks",
+      "type": "function",
+      "name": "extract_text_chunks",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        439,
+        551
+      ],
+      "summary": "Function extract_text_chunks defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:save_tables",
+      "type": "function",
+      "name": "save_tables",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        558,
+        563
+      ],
+      "summary": "Function save_tables defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:save_chunks",
+      "type": "function",
+      "name": "save_chunks",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        566,
+        570
+      ],
+      "summary": "Function save_chunks defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:save_markdown",
+      "type": "function",
+      "name": "save_markdown",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        573,
+        578
+      ],
+      "summary": "Function save_markdown defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:save_meta",
+      "type": "function",
+      "name": "save_meta",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        581,
+        603
+      ],
+      "summary": "Function save_meta defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:scrape_page",
+      "type": "function",
+      "name": "scrape_page",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        610,
+        652
+      ],
+      "summary": "Function scrape_page defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:load_manifest",
+      "type": "function",
+      "name": "load_manifest",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        659,
+        663
+      ],
+      "summary": "Function load_manifest defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:run",
+      "type": "function",
+      "name": "run",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        670,
+        765
+      ],
+      "summary": "Function run defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:scripts/scraper/wiki_scraper.py:_print_summary",
+      "type": "function",
+      "name": "_print_summary",
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "lineRange": [
+        768,
+        773
+      ],
+      "summary": "Function _print_summary defined in wiki_scraper.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:scripts/scraper/wiki_scraper_manifest.json",
+      "type": "config",
+      "name": "wiki_scraper_manifest.json",
+      "filePath": "scripts/scraper/wiki_scraper_manifest.json",
+      "summary": "Configuration file used by the project runtime or tooling.",
+      "tags": [
+        "config",
+        "scraping"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:settings/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "settings/__init__.py",
+      "summary": "Source file containing 11 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:settings/app.py",
+      "type": "file",
+      "name": "app.py",
+      "filePath": "settings/app.py",
+      "summary": "Source file containing 58 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:settings/env.py",
+      "type": "file",
+      "name": "env.py",
+      "filePath": "settings/env.py",
+      "summary": "Source file containing 23 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:settings/scraper.py",
+      "type": "file",
+      "name": "scraper.py",
+      "filePath": "settings/scraper.py",
+      "summary": "Source file containing 54 lines.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/_preflight.py",
+      "type": "file",
+      "name": "_preflight.py",
+      "filePath": "tests/_preflight.py",
+      "summary": "Source file containing 46 lines.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/_start_test.py",
+      "type": "file",
+      "name": "_start_test.py",
+      "filePath": "tests/_start_test.py",
+      "summary": "Source file containing 1 function.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/_start_test.py:alarm_handler",
+      "type": "function",
+      "name": "alarm_handler",
+      "filePath": "tests/_start_test.py",
+      "lineRange": [
+        6,
+        8
+      ],
+      "summary": "Function alarm_handler defined in _start_test.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/debug_rag_flow.py",
+      "type": "file",
+      "name": "debug_rag_flow.py",
+      "filePath": "tests/debug_rag_flow.py",
+      "summary": "Source file containing 60 lines.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_wiki_access.py",
+      "type": "file",
+      "name": "test_wiki_access.py",
+      "filePath": "tests/test_wiki_access.py",
+      "summary": "Source file containing 4 functions.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_wiki_access.py:test_mediawiki_api",
+      "type": "function",
+      "name": "test_mediawiki_api",
+      "filePath": "tests/test_wiki_access.py",
+      "lineRange": [
+        25,
+        101
+      ],
+      "summary": "Function test_mediawiki_api defined in test_wiki_access.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_wiki_access.py:test_mcp_bridge",
+      "type": "function",
+      "name": "test_mcp_bridge",
+      "filePath": "tests/test_wiki_access.py",
+      "lineRange": [
+        108,
+        156
+      ],
+      "summary": "Function test_mcp_bridge defined in test_wiki_access.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_wiki_access.py:test_slug_resolution",
+      "type": "function",
+      "name": "test_slug_resolution",
+      "filePath": "tests/test_wiki_access.py",
+      "lineRange": [
+        163,
+        194
+      ],
+      "summary": "Function test_slug_resolution defined in test_wiki_access.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/test_wiki_access.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/test_wiki_access.py",
+      "lineRange": [
+        201,
+        277
+      ],
+      "summary": "Function main defined in test_wiki_access.py.",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:DISCORD_BOT_TOKEN",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:GEMINI_API_KEY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:GROQ_API_KEY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:MONGODB_URI",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:GEMINI_API_KEY_EMBEDDING",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:GROQ_MODEL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:COMPRESSION_THRESHOLD",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:DISCORD_MESSAGE_LIMIT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:METRICS_PORT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:ROUTER_MODEL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:ROUTER_TEMPERATURE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:BOT_DEBUG_ENABLED",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:BOT_DEBUG_INCLUDE_IN_REPLY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:APP_DB_NAME",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:MONGO_MEMORY_COLLECTION",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:MEMORY_MAX_BUFFER",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:LOCAL_VLM_URL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:LOCAL_VLM_MODEL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:VISION_MAX_TOKENS",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:VISION_TEMPERATURE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_API_BASE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_BASE_URL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:SCRAPER_USER_AGENT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_REQUEST_DELAY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_CACHE_TTL_H",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_MIN_CHUNK_LEN",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:WIKI_BATCH_SIZE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_BASE_URL",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_ALLOWED_PATH_PREFIX",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_MAX_PAGES",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_FETCH_TIMEOUT",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_REQUEST_DELAY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_MIN_TEXT_LEN",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_CHUNK_SIZE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_CHUNK_OVERLAP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_GAME_MODE",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "config:.env.example",
+      "target": "variable:.env.example:PLAYERS_CATEGORY",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "service:Dockerfile:builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "service:Dockerfile:runtime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:FROM python:3.12-slim AS builder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:ENV PYTHONUNBUFFERED=1 \\",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:WORKDIR /app",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:ARG UV_VERSION=0.11.7",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:RUN apt-get update && apt-get install -y --no-install-recommends",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:COPY pyproject.toml uv.lock ./",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:RUN uv sync --frozen --no-dev --no-install-project",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:FROM python:3.12-slim AS runtime",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:RUN useradd --create-home appuser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:COPY --chown=appuser:appuser . .",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:USER appuser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:EXPOSE 8000",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "service:Dockerfile",
+      "target": "step:Dockerfile:CMD [\"python\", \"main.py\"]",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:bot/cogs/rp_chat.py",
+      "target": "class:bot/cogs/rp_chat.py:RPChannelManager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "function:core/agents/chat_agent.py:load_persona",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "function:core/agents/chat_agent.py:_load_formatting_prompt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "class:core/agents/chat_agent.py:ChatAgent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/router_agent.py",
+      "target": "class:core/agents/router_agent.py:IntentResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/router_agent.py",
+      "target": "class:core/agents/router_agent.py:RouterAgent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/agents/vision_agent.py",
+      "target": "class:core/agents/vision_agent.py:VisionAgent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/context_compressor.py",
+      "target": "class:core/context_compressor.py:ContextCompressor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/db.py",
+      "target": "function:core/db.py:default_rp_memory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/db.py",
+      "target": "function:core/db.py:default_guild_config",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/db.py",
+      "target": "class:core/db.py:MongoDB",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:_trunc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:_pad",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:_looks_numeric",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:_col_widths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:render_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:render_kv",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:render_bullets",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:render_response",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:validate_payload",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/formatters/discord_table.py",
+      "target": "function:core/formatters/discord_table.py:try_parse_structured",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/mcp/mcp_client.py",
+      "target": "function:core/mcp/mcp_client.py:validate_entity_game",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/mcp/mcp_client.py",
+      "target": "class:core/mcp/mcp_client.py:MCPBridge",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/memory.py",
+      "target": "class:core/memory.py:MemoryManager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/telemetry.py",
+      "target": "function:core/telemetry.py:start_metrics_server",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/wiki_search.py",
+      "target": "function:core/wiki_search.py:slug_to_page_name",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/wiki_search.py",
+      "target": "function:core/wiki_search.py:slug_to_game_mode",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:core/wiki_search.py",
+      "target": "class:core/wiki_search.py:WikiSearchService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:send_long_message",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:reply_long",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:ping",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:clear_memory",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:ask",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:fashion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:wiki",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:rp_enable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "function:main.py:rp_disable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "class:main.py:GameVersionResolver",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "class:main.py:PSO2Bot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:main.py",
+      "target": "class:main.py:GameVersion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:parse_wiki_path",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:is_nav_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:flatten_multi_level_header",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:build_search_text",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:process_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:process_chunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:process_meta",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:load_all_documents",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:log_stats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:upload_to_mongo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "function:scripts/etl/upload_wiki_to_mongo.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:CollectionNames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:WikiFields",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:PageInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:ChunkDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:TableDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:PageDocument",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "class:scripts/etl/upload_wiki_to_mongo.py:GameModeStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_tokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_parse_quality",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_overlap_expected",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_risk_level",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_fetch_pages",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_build_queries",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_normalized_page_title",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_chunk_title_candidates",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:_classify_row",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:run_audit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "function:scripts/rag/audit_wiki_retrieval.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "class:scripts/rag/audit_wiki_retrieval.py:AuditRow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/rag_pipeline.py",
+      "target": "class:scripts/rag/rag_pipeline.py:RetrievedChunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/rag_pipeline.py",
+      "target": "class:scripts/rag/rag_pipeline.py:RAGPipeline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/reembed_from_cache.py",
+      "target": "function:scripts/rag/reembed_from_cache.py:embed_texts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/rag/reembed_from_cache.py",
+      "target": "function:scripts/rag/reembed_from_cache.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_ensure_dir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_safe_filename",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_page_url",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_out_dir",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_chunk_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_now_iso",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_is_nav_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_is_skill_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_extract_skill_from_table",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_skill_to_chunk_text",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_remove_noise_tables_for_text",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:api_batch_check",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:should_scrape",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:fetch_html",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:extract_tables",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:extract_text_chunks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:save_tables",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:save_chunks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:save_markdown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:save_meta",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:scrape_page",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:load_manifest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:scripts/scraper/wiki_scraper.py",
+      "target": "function:scripts/scraper/wiki_scraper.py:_print_summary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/_start_test.py",
+      "target": "function:tests/_start_test.py:alarm_handler",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_wiki_access.py",
+      "target": "function:tests/test_wiki_access.py:test_mediawiki_api",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_wiki_access.py",
+      "target": "function:tests/test_wiki_access.py:test_mcp_bridge",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_wiki_access.py",
+      "target": "function:tests/test_wiki_access.py:test_slug_resolution",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:tests/test_wiki_access.py",
+      "target": "function:tests/test_wiki_access.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:bot/cogs/rp_chat.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "file:core/formatters/discord_table.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "file:core/memory.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/agents/chat_agent.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/agents/router_agent.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/agents/vision_agent.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/context_compressor.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/context_compressor.py",
+      "target": "file:core/memory.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/context_compressor.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/db.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/mcp/mcp_client.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/memory.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/memory.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/telemetry.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/wiki_search.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/wiki_search.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:bot/cogs/rp_chat.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/agents/chat_agent.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/agents/router_agent.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/agents/vision_agent.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/context_compressor.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/formatters/discord_table.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/mcp/mcp_client.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/memory.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:core/wiki_search.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:main.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "file:core/db.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/etl/upload_wiki_to_mongo.py",
+      "target": "file:settings/scraper.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/rag/audit_wiki_retrieval.py",
+      "target": "file:core/wiki_search.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/rag/rag_pipeline.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/rag/reembed_from_cache.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/rag/reembed_from_cache.py",
+      "target": "file:settings/scraper.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/_preflight.py",
+      "target": "file:settings/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/_start_test.py",
+      "target": "file:main.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/debug_rag_flow.py",
+      "target": "file:scripts/rag/rag_pipeline.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_wiki_access.py",
+      "target": "file:core/mcp/mcp_client.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "variable:.env.example:PLAYERS_CATEGORY",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:ai_prompts/characters/default.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:ai_prompts/characters/matoi.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:ai_prompts/characters/xiera.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:ai_prompts/formatting_system.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/01-architecture.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/02-features.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/08-rp-memory-management.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/10-wiki-scraper-guide.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/12-tool-mcp-ideas.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/13-config-structure.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/14-critical-fixes-plan.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/etl-addon-skills-parser.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/roadmap/TODO.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/roadmap/token_optimization.md",
+      "target": "file:main.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:grafana/dashboards/pso2bot-overview.json",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:grafana/provisioning/dashboards/provider.yml",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:grafana/provisioning/datasources/prometheus.yml",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:prometheus.yml",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:pyproject.toml",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:scripts/scraper/wiki_scraper_manifest.json",
+      "target": "file:main.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:docker-compose.yml",
+      "target": "step:Dockerfile:CMD [\"python\", \"main.py\"]",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:core",
+      "name": "Core",
+      "description": "Core application files",
+      "nodeIds": [
+        "file:.dockerignore",
+        "file:.python-version",
+        "file:bot/__init__.py",
+        "file:bot/cogs/__init__.py",
+        "file:bot/cogs/rp_chat.py",
+        "file:core/agents/chat_agent.py",
+        "file:core/agents/router_agent.py",
+        "file:core/agents/vision_agent.py",
+        "file:core/context_compressor.py",
+        "file:core/db.py",
+        "file:core/formatters/__init__.py",
+        "file:core/formatters/discord_table.py",
+        "file:core/mcp/__init__.py",
+        "file:core/mcp/mcp_client.py",
+        "file:core/memory.py",
+        "file:core/telemetry.py",
+        "file:core/wiki_search.py",
+        "file:main.py",
+        "file:scripts/__init__.py",
+        "file:scripts/etl/__init__.py",
+        "file:scripts/etl/upload_wiki_to_mongo.py",
+        "file:scripts/rag/__init__.py",
+        "file:scripts/rag/audit_wiki_retrieval.py",
+        "file:scripts/rag/rag_pipeline.py",
+        "file:scripts/rag/reembed_from_cache.py",
+        "file:scripts/scraper/__init__.py",
+        "file:scripts/scraper/wiki_scraper.py"
+      ]
+    },
+    {
+      "id": "layer:configuration-layer",
+      "name": "Configuration Layer",
+      "description": "Application configuration and environment settings",
+      "nodeIds": [
+        "config:.env.example",
+        "config:grafana/dashboards/pso2bot-overview.json",
+        "config:grafana/provisioning/dashboards/provider.yml",
+        "config:grafana/provisioning/datasources/prometheus.yml",
+        "config:prometheus.yml",
+        "config:pyproject.toml",
+        "config:scripts/scraper/wiki_scraper_manifest.json",
+        "file:settings/__init__.py",
+        "file:settings/app.py",
+        "file:settings/env.py",
+        "file:settings/scraper.py",
+        "variable:.env.example:APP_DB_NAME",
+        "variable:.env.example:BOT_DEBUG_ENABLED",
+        "variable:.env.example:BOT_DEBUG_INCLUDE_IN_REPLY",
+        "variable:.env.example:COMPRESSION_THRESHOLD",
+        "variable:.env.example:DISCORD_BOT_TOKEN",
+        "variable:.env.example:DISCORD_MESSAGE_LIMIT",
+        "variable:.env.example:GEMINI_API_KEY",
+        "variable:.env.example:GEMINI_API_KEY_EMBEDDING",
+        "variable:.env.example:GROQ_API_KEY",
+        "variable:.env.example:GROQ_MODEL",
+        "variable:.env.example:LOCAL_VLM_MODEL",
+        "variable:.env.example:LOCAL_VLM_URL",
+        "variable:.env.example:MEMORY_MAX_BUFFER",
+        "variable:.env.example:METRICS_PORT",
+        "variable:.env.example:MONGODB_URI",
+        "variable:.env.example:MONGO_MEMORY_COLLECTION",
+        "variable:.env.example:PLAYERS_ALLOWED_PATH_PREFIX",
+        "variable:.env.example:PLAYERS_BASE_URL",
+        "variable:.env.example:PLAYERS_CATEGORY",
+        "variable:.env.example:PLAYERS_CHUNK_OVERLAP",
+        "variable:.env.example:PLAYERS_CHUNK_SIZE",
+        "variable:.env.example:PLAYERS_FETCH_TIMEOUT",
+        "variable:.env.example:PLAYERS_GAME_MODE",
+        "variable:.env.example:PLAYERS_MAX_PAGES",
+        "variable:.env.example:PLAYERS_MIN_TEXT_LEN",
+        "variable:.env.example:PLAYERS_REQUEST_DELAY",
+        "variable:.env.example:ROUTER_MODEL",
+        "variable:.env.example:ROUTER_TEMPERATURE",
+        "variable:.env.example:SCRAPER_USER_AGENT",
+        "variable:.env.example:VISION_MAX_TOKENS",
+        "variable:.env.example:VISION_TEMPERATURE",
+        "variable:.env.example:WIKI_API_BASE",
+        "variable:.env.example:WIKI_BASE_URL",
+        "variable:.env.example:WIKI_BATCH_SIZE",
+        "variable:.env.example:WIKI_CACHE_TTL_H",
+        "variable:.env.example:WIKI_MIN_CHUNK_LEN",
+        "variable:.env.example:WIKI_REQUEST_DELAY"
+      ]
+    },
+    {
+      "id": "layer:test-layer",
+      "name": "Test Layer",
+      "description": "Test files and test utilities",
+      "nodeIds": [
+        "file:tests/_preflight.py",
+        "file:tests/_start_test.py",
+        "file:tests/debug_rag_flow.py",
+        "file:tests/test_wiki_access.py"
+      ]
+    },
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure Layer",
+      "description": "Deployment, observability, and environment infrastructure files.",
+      "nodeIds": [
+        "config:docker-compose.yml",
+        "pipeline:.github/workflows/pylint.yml",
+        "service:Dockerfile",
+        "service:Dockerfile:builder",
+        "service:Dockerfile:runtime",
+        "step:Dockerfile:ARG UV_VERSION=0.11.7",
+        "step:Dockerfile:CMD [\"python\", \"main.py\"]",
+        "step:Dockerfile:COPY --chown=appuser:appuser . .",
+        "step:Dockerfile:COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+        "step:Dockerfile:COPY pyproject.toml uv.lock ./",
+        "step:Dockerfile:ENV PYTHONUNBUFFERED=1 \\",
+        "step:Dockerfile:EXPOSE 8000",
+        "step:Dockerfile:FROM python:3.12-slim AS builder",
+        "step:Dockerfile:FROM python:3.12-slim AS runtime",
+        "step:Dockerfile:RUN apt-get update && apt-get install -y --no-install-recommends",
+        "step:Dockerfile:RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+        "step:Dockerfile:RUN useradd --create-home appuser",
+        "step:Dockerfile:RUN uv sync --frozen --no-dev --no-install-project",
+        "step:Dockerfile:USER appuser",
+        "step:Dockerfile:WORKDIR /app"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation Layer",
+      "description": "Project guides, references, and written explanations.",
+      "nodeIds": [
+        "document:README.md",
+        "document:ai_prompts/characters/default.md",
+        "document:ai_prompts/characters/matoi.md",
+        "document:ai_prompts/characters/xiera.md",
+        "document:ai_prompts/formatting_system.md",
+        "document:docs/01-architecture.md",
+        "document:docs/02-features.md",
+        "document:docs/08-rp-memory-management.md",
+        "document:docs/10-wiki-scraper-guide.md",
+        "document:docs/12-tool-mcp-ideas.md",
+        "document:docs/13-config-structure.md",
+        "document:docs/14-critical-fixes-plan.md",
+        "document:docs/etl-addon-skills-parser.md",
+        "document:docs/roadmap/TODO.md",
+        "document:docs/roadmap/token_optimization.md"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Core",
+      "description": "Core application files. Key files: .dockerignore, .python-version, __init__.py, __init__.py, __init__.py, __init__.py, telemetry.py, __init__.py, __init__.py, upload_wiki_to_mongo.py, __init__.py, audit_wiki_retrieval.py, reembed_from_cache.py, __init__.py, wiki_scraper.py, rag_pipeline.py, main.py, rp_chat.py, chat_agent.py, router_agent.py, vision_agent.py, context_compressor.py, mcp_client.py, wiki_search.py, discord_table.py, memory.py, db.py.",
+      "nodeIds": [
+        "file:.dockerignore",
+        "file:.python-version",
+        "file:bot/__init__.py",
+        "file:bot/cogs/__init__.py",
+        "file:core/formatters/__init__.py",
+        "file:core/mcp/__init__.py",
+        "file:core/telemetry.py",
+        "file:scripts/__init__.py",
+        "file:scripts/etl/__init__.py",
+        "file:scripts/etl/upload_wiki_to_mongo.py",
+        "file:scripts/rag/__init__.py",
+        "file:scripts/rag/audit_wiki_retrieval.py",
+        "file:scripts/rag/reembed_from_cache.py",
+        "file:scripts/scraper/__init__.py",
+        "file:scripts/scraper/wiki_scraper.py",
+        "file:scripts/rag/rag_pipeline.py",
+        "file:main.py",
+        "file:bot/cogs/rp_chat.py",
+        "file:core/agents/chat_agent.py",
+        "file:core/agents/router_agent.py",
+        "file:core/agents/vision_agent.py",
+        "file:core/context_compressor.py",
+        "file:core/mcp/mcp_client.py",
+        "file:core/wiki_search.py",
+        "file:core/formatters/discord_table.py",
+        "file:core/memory.py",
+        "file:core/db.py"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Configuration Layer",
+      "description": "Application configuration and environment settings. Key files: .env.example, pso2bot-overview.json, provider.yml, prometheus.yml, prometheus.yml, pyproject.toml, wiki_scraper_manifest.json, app.py, env.py, DISCORD_BOT_TOKEN, GEMINI_API_KEY, GROQ_API_KEY, MONGODB_URI, GEMINI_API_KEY_EMBEDDING, GROQ_MODEL, COMPRESSION_THRESHOLD, DISCORD_MESSAGE_LIMIT, METRICS_PORT, ROUTER_MODEL, ROUTER_TEMPERATURE, BOT_DEBUG_ENABLED, BOT_DEBUG_INCLUDE_IN_REPLY, APP_DB_NAME, MONGO_MEMORY_COLLECTION, MEMORY_MAX_BUFFER, LOCAL_VLM_URL, LOCAL_VLM_MODEL, VISION_MAX_TOKENS, VISION_TEMPERATURE, WIKI_API_BASE, WIKI_BASE_URL, SCRAPER_USER_AGENT, WIKI_REQUEST_DELAY, WIKI_CACHE_TTL_H, WIKI_MIN_CHUNK_LEN, WIKI_BATCH_SIZE, PLAYERS_BASE_URL, PLAYERS_ALLOWED_PATH_PREFIX, PLAYERS_MAX_PAGES, PLAYERS_FETCH_TIMEOUT, PLAYERS_REQUEST_DELAY, PLAYERS_MIN_TEXT_LEN, PLAYERS_CHUNK_SIZE, PLAYERS_CHUNK_OVERLAP, PLAYERS_GAME_MODE, PLAYERS_CATEGORY, scraper.py, __init__.py.",
+      "nodeIds": [
+        "config:.env.example",
+        "config:grafana/dashboards/pso2bot-overview.json",
+        "config:grafana/provisioning/dashboards/provider.yml",
+        "config:grafana/provisioning/datasources/prometheus.yml",
+        "config:prometheus.yml",
+        "config:pyproject.toml",
+        "config:scripts/scraper/wiki_scraper_manifest.json",
+        "file:settings/app.py",
+        "file:settings/env.py",
+        "variable:.env.example:DISCORD_BOT_TOKEN",
+        "variable:.env.example:GEMINI_API_KEY",
+        "variable:.env.example:GROQ_API_KEY",
+        "variable:.env.example:MONGODB_URI",
+        "variable:.env.example:GEMINI_API_KEY_EMBEDDING",
+        "variable:.env.example:GROQ_MODEL",
+        "variable:.env.example:COMPRESSION_THRESHOLD",
+        "variable:.env.example:DISCORD_MESSAGE_LIMIT",
+        "variable:.env.example:METRICS_PORT",
+        "variable:.env.example:ROUTER_MODEL",
+        "variable:.env.example:ROUTER_TEMPERATURE",
+        "variable:.env.example:BOT_DEBUG_ENABLED",
+        "variable:.env.example:BOT_DEBUG_INCLUDE_IN_REPLY",
+        "variable:.env.example:APP_DB_NAME",
+        "variable:.env.example:MONGO_MEMORY_COLLECTION",
+        "variable:.env.example:MEMORY_MAX_BUFFER",
+        "variable:.env.example:LOCAL_VLM_URL",
+        "variable:.env.example:LOCAL_VLM_MODEL",
+        "variable:.env.example:VISION_MAX_TOKENS",
+        "variable:.env.example:VISION_TEMPERATURE",
+        "variable:.env.example:WIKI_API_BASE",
+        "variable:.env.example:WIKI_BASE_URL",
+        "variable:.env.example:SCRAPER_USER_AGENT",
+        "variable:.env.example:WIKI_REQUEST_DELAY",
+        "variable:.env.example:WIKI_CACHE_TTL_H",
+        "variable:.env.example:WIKI_MIN_CHUNK_LEN",
+        "variable:.env.example:WIKI_BATCH_SIZE",
+        "variable:.env.example:PLAYERS_BASE_URL",
+        "variable:.env.example:PLAYERS_ALLOWED_PATH_PREFIX",
+        "variable:.env.example:PLAYERS_MAX_PAGES",
+        "variable:.env.example:PLAYERS_FETCH_TIMEOUT",
+        "variable:.env.example:PLAYERS_REQUEST_DELAY",
+        "variable:.env.example:PLAYERS_MIN_TEXT_LEN",
+        "variable:.env.example:PLAYERS_CHUNK_SIZE",
+        "variable:.env.example:PLAYERS_CHUNK_OVERLAP",
+        "variable:.env.example:PLAYERS_GAME_MODE",
+        "variable:.env.example:PLAYERS_CATEGORY",
+        "file:settings/scraper.py",
+        "file:settings/__init__.py"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Infrastructure Layer",
+      "description": "Deployment, observability, and environment infrastructure files.. Key files: pylint.yml, Dockerfile, docker-compose.yml, builder, runtime, FROM python:3.12-slim AS builder, ENV PYTHONUNBUFFERED=1 \\, WORKDIR /app, ARG UV_VERSION=0.11.7, RUN apt-get update && apt-get install -y --no-install-recommends, RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e, COPY pyproject.toml uv.lock ./, RUN uv sync --frozen --no-dev --no-install-project, FROM python:3.12-slim AS runtime, RUN useradd --create-home appuser, COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv, COPY --chown=appuser:appuser . ., USER appuser, EXPOSE 8000, CMD [\"python\", \"main.py\"].",
+      "nodeIds": [
+        "pipeline:.github/workflows/pylint.yml",
+        "service:Dockerfile",
+        "config:docker-compose.yml",
+        "service:Dockerfile:builder",
+        "service:Dockerfile:runtime",
+        "step:Dockerfile:FROM python:3.12-slim AS builder",
+        "step:Dockerfile:ENV PYTHONUNBUFFERED=1 \\",
+        "step:Dockerfile:WORKDIR /app",
+        "step:Dockerfile:ARG UV_VERSION=0.11.7",
+        "step:Dockerfile:RUN apt-get update && apt-get install -y --no-install-recommends",
+        "step:Dockerfile:RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | e",
+        "step:Dockerfile:COPY pyproject.toml uv.lock ./",
+        "step:Dockerfile:RUN uv sync --frozen --no-dev --no-install-project",
+        "step:Dockerfile:FROM python:3.12-slim AS runtime",
+        "step:Dockerfile:RUN useradd --create-home appuser",
+        "step:Dockerfile:COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv",
+        "step:Dockerfile:COPY --chown=appuser:appuser . .",
+        "step:Dockerfile:USER appuser",
+        "step:Dockerfile:EXPOSE 8000",
+        "step:Dockerfile:CMD [\"python\", \"main.py\"]"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Documentation Layer",
+      "description": "Project guides, references, and written explanations.. Key files: README.md, default.md, matoi.md, xiera.md, formatting_system.md, 01-architecture.md, 02-features.md, 08-rp-memory-management.md, 10-wiki-scraper-guide.md, 12-tool-mcp-ideas.md, 13-config-structure.md, 14-critical-fixes-plan.md, etl-addon-skills-parser.md, TODO.md, token_optimization.md.",
+      "nodeIds": [
+        "document:README.md",
+        "document:ai_prompts/characters/default.md",
+        "document:ai_prompts/characters/matoi.md",
+        "document:ai_prompts/characters/xiera.md",
+        "document:ai_prompts/formatting_system.md",
+        "document:docs/01-architecture.md",
+        "document:docs/02-features.md",
+        "document:docs/08-rp-memory-management.md",
+        "document:docs/10-wiki-scraper-guide.md",
+        "document:docs/12-tool-mcp-ideas.md",
+        "document:docs/13-config-structure.md",
+        "document:docs/14-critical-fixes-plan.md",
+        "document:docs/etl-addon-skills-parser.md",
+        "document:docs/roadmap/TODO.md",
+        "document:docs/roadmap/token_optimization.md"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Test Layer",
+      "description": "Test files and test utilities. Key files: _preflight.py, _start_test.py, debug_rag_flow.py, test_wiki_access.py.",
+      "nodeIds": [
+        "file:tests/_preflight.py",
+        "file:tests/_start_test.py",
+        "file:tests/debug_rag_flow.py",
+        "file:tests/test_wiki_access.py"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Supporting Components",
+      "description": "Additional supporting files: start_metrics_server, parse_wiki_path, is_nav_table, flatten_multi_level_header, build_search_text, process_table, process_chunk, process_meta, load_all_documents, log_stats, upload_to_mongo, main, CollectionNames, WikiFields, PageInfo, ChunkDocument, TableDocument, PageDocument, GameModeStats, _tokens, _parse_quality, _overlap_expected, _risk_level, _fetch_pages, _build_queries, _normalized_page_title, _chunk_title_candidates, _classify_row, run_audit, main, AuditRow, embed_texts, main, _ensure_dir, _safe_filename, _page_url, _out_dir, _chunk_id, _now_iso, _is_nav_table, _is_skill_table, _extract_skill_from_table, _skill_to_chunk_text, _remove_noise_tables_for_text, api_batch_check, should_scrape, fetch_html, extract_tables, extract_text_chunks, save_tables, save_chunks, save_markdown, save_meta, scrape_page, load_manifest, run, _print_summary, alarm_handler, test_mediawiki_api, test_mcp_bridge, test_slug_resolution, main, RetrievedChunk, RAGPipeline, send_long_message, reply_long, ping, clear_memory, ask, fashion, wiki, rp_enable, rp_disable, GameVersionResolver, PSO2Bot, GameVersion, RPChannelManager, load_persona, _load_formatting_prompt, ChatAgent, IntentResult, RouterAgent, VisionAgent, ContextCompressor, validate_entity_game, MCPBridge, slug_to_page_name, slug_to_game_mode, WikiSearchService, _trunc, _pad, _looks_numeric, _col_widths, render_table, render_kv, render_bullets, render_response, validate_payload, try_parse_structured, MemoryManager, default_rp_memory, default_guild_config, MongoDB.",
+      "nodeIds": [
+        "function:core/telemetry.py:start_metrics_server",
+        "function:scripts/etl/upload_wiki_to_mongo.py:parse_wiki_path",
+        "function:scripts/etl/upload_wiki_to_mongo.py:is_nav_table",
+        "function:scripts/etl/upload_wiki_to_mongo.py:flatten_multi_level_header",
+        "function:scripts/etl/upload_wiki_to_mongo.py:build_search_text",
+        "function:scripts/etl/upload_wiki_to_mongo.py:process_table",
+        "function:scripts/etl/upload_wiki_to_mongo.py:process_chunk",
+        "function:scripts/etl/upload_wiki_to_mongo.py:process_meta",
+        "function:scripts/etl/upload_wiki_to_mongo.py:load_all_documents",
+        "function:scripts/etl/upload_wiki_to_mongo.py:log_stats",
+        "function:scripts/etl/upload_wiki_to_mongo.py:upload_to_mongo",
+        "function:scripts/etl/upload_wiki_to_mongo.py:main",
+        "class:scripts/etl/upload_wiki_to_mongo.py:CollectionNames",
+        "class:scripts/etl/upload_wiki_to_mongo.py:WikiFields",
+        "class:scripts/etl/upload_wiki_to_mongo.py:PageInfo",
+        "class:scripts/etl/upload_wiki_to_mongo.py:ChunkDocument",
+        "class:scripts/etl/upload_wiki_to_mongo.py:TableDocument",
+        "class:scripts/etl/upload_wiki_to_mongo.py:PageDocument",
+        "class:scripts/etl/upload_wiki_to_mongo.py:GameModeStats",
+        "function:scripts/rag/audit_wiki_retrieval.py:_tokens",
+        "function:scripts/rag/audit_wiki_retrieval.py:_parse_quality",
+        "function:scripts/rag/audit_wiki_retrieval.py:_overlap_expected",
+        "function:scripts/rag/audit_wiki_retrieval.py:_risk_level",
+        "function:scripts/rag/audit_wiki_retrieval.py:_fetch_pages",
+        "function:scripts/rag/audit_wiki_retrieval.py:_build_queries",
+        "function:scripts/rag/audit_wiki_retrieval.py:_normalized_page_title",
+        "function:scripts/rag/audit_wiki_retrieval.py:_chunk_title_candidates",
+        "function:scripts/rag/audit_wiki_retrieval.py:_classify_row",
+        "function:scripts/rag/audit_wiki_retrieval.py:run_audit",
+        "function:scripts/rag/audit_wiki_retrieval.py:main",
+        "class:scripts/rag/audit_wiki_retrieval.py:AuditRow",
+        "function:scripts/rag/reembed_from_cache.py:embed_texts",
+        "function:scripts/rag/reembed_from_cache.py:main",
+        "function:scripts/scraper/wiki_scraper.py:_ensure_dir",
+        "function:scripts/scraper/wiki_scraper.py:_safe_filename",
+        "function:scripts/scraper/wiki_scraper.py:_page_url",
+        "function:scripts/scraper/wiki_scraper.py:_out_dir",
+        "function:scripts/scraper/wiki_scraper.py:_chunk_id",
+        "function:scripts/scraper/wiki_scraper.py:_now_iso",
+        "function:scripts/scraper/wiki_scraper.py:_is_nav_table",
+        "function:scripts/scraper/wiki_scraper.py:_is_skill_table",
+        "function:scripts/scraper/wiki_scraper.py:_extract_skill_from_table",
+        "function:scripts/scraper/wiki_scraper.py:_skill_to_chunk_text",
+        "function:scripts/scraper/wiki_scraper.py:_remove_noise_tables_for_text",
+        "function:scripts/scraper/wiki_scraper.py:api_batch_check",
+        "function:scripts/scraper/wiki_scraper.py:should_scrape",
+        "function:scripts/scraper/wiki_scraper.py:fetch_html",
+        "function:scripts/scraper/wiki_scraper.py:extract_tables",
+        "function:scripts/scraper/wiki_scraper.py:extract_text_chunks",
+        "function:scripts/scraper/wiki_scraper.py:save_tables",
+        "function:scripts/scraper/wiki_scraper.py:save_chunks",
+        "function:scripts/scraper/wiki_scraper.py:save_markdown",
+        "function:scripts/scraper/wiki_scraper.py:save_meta",
+        "function:scripts/scraper/wiki_scraper.py:scrape_page",
+        "function:scripts/scraper/wiki_scraper.py:load_manifest",
+        "function:scripts/scraper/wiki_scraper.py:run",
+        "function:scripts/scraper/wiki_scraper.py:_print_summary",
+        "function:tests/_start_test.py:alarm_handler",
+        "function:tests/test_wiki_access.py:test_mediawiki_api",
+        "function:tests/test_wiki_access.py:test_mcp_bridge",
+        "function:tests/test_wiki_access.py:test_slug_resolution",
+        "function:tests/test_wiki_access.py:main",
+        "class:scripts/rag/rag_pipeline.py:RetrievedChunk",
+        "class:scripts/rag/rag_pipeline.py:RAGPipeline",
+        "function:main.py:send_long_message",
+        "function:main.py:reply_long",
+        "function:main.py:ping",
+        "function:main.py:clear_memory",
+        "function:main.py:ask",
+        "function:main.py:fashion",
+        "function:main.py:wiki",
+        "function:main.py:rp_enable",
+        "function:main.py:rp_disable",
+        "class:main.py:GameVersionResolver",
+        "class:main.py:PSO2Bot",
+        "class:main.py:GameVersion",
+        "class:bot/cogs/rp_chat.py:RPChannelManager",
+        "function:core/agents/chat_agent.py:load_persona",
+        "function:core/agents/chat_agent.py:_load_formatting_prompt",
+        "class:core/agents/chat_agent.py:ChatAgent",
+        "class:core/agents/router_agent.py:IntentResult",
+        "class:core/agents/router_agent.py:RouterAgent",
+        "class:core/agents/vision_agent.py:VisionAgent",
+        "class:core/context_compressor.py:ContextCompressor",
+        "function:core/mcp/mcp_client.py:validate_entity_game",
+        "class:core/mcp/mcp_client.py:MCPBridge",
+        "function:core/wiki_search.py:slug_to_page_name",
+        "function:core/wiki_search.py:slug_to_game_mode",
+        "class:core/wiki_search.py:WikiSearchService",
+        "function:core/formatters/discord_table.py:_trunc",
+        "function:core/formatters/discord_table.py:_pad",
+        "function:core/formatters/discord_table.py:_looks_numeric",
+        "function:core/formatters/discord_table.py:_col_widths",
+        "function:core/formatters/discord_table.py:render_table",
+        "function:core/formatters/discord_table.py:render_kv",
+        "function:core/formatters/discord_table.py:render_bullets",
+        "function:core/formatters/discord_table.py:render_response",
+        "function:core/formatters/discord_table.py:validate_payload",
+        "function:core/formatters/discord_table.py:try_parse_structured",
+        "class:core/memory.py:MemoryManager",
+        "function:core/db.py:default_rp_memory",
+        "function:core/db.py:default_guild_config",
+        "class:core/db.py:MongoDB"
+      ]
+    }
+  ]
+}

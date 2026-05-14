@@ -1,5 +1,5 @@
 """
-Wiki Search Service — MongoDB-based retrieval for PSO2/NGS wiki data.
+Wiki Search Service — MongoDB-based retrieval for Base/NGS wiki data.
 
 Strategy C (Hybrid): Gemini slug resolution + MongoDB text search.
 
@@ -63,7 +63,7 @@ TASK: Given a user question, output the COMPLETE wiki page slug. The slug is the
 
 FORMAT RULES:
 - For NGS: always output "Portal:New_Genesis/PageName" — NEVER just "Portal:" or "Portal:New_Genesis" alone.
-- For PSO2 Classic: output "PageName" directly (e.g. "Hunter", "Katanas_List").
+- For Base: output "PageName" directly (e.g. "Hunter", "Katanas_List").
 - Use underscores instead of spaces.
 - Output ONLY the slug on a single line. No quotes, no explanation, no URL.
 
@@ -72,9 +72,9 @@ WIKI PAGES YOU KNOW:
 - Weapons: Portal:New_Genesis/Swords_List, Portal:New_Genesis/Katanas_List, Portal:New_Genesis/Assault_Rifles_List, Portal:New_Genesis/Launchers_List, etc.
 - Systems: Portal:New_Genesis/Photon_Arts_List, Portal:New_Genesis/Enhancement, Portal:New_Genesis/Augments, Portal:New_Genesis/Class, Portal:New_Genesis/Experience_Level
 - Skills: Portal:New_Genesis/Add-on_Skills, Portal:New_Genesis/Tech_Arts_Customization
-- PSO2 Classic classes: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer, Summoner, Hero, Phantom, Etoile, Luster
-- PSO2 Classic shop/system: ARKS_Cash_Shop, Swap_Shop, Treasure_Shop, Client_Orders, Enhancement, Dark_Blast
-- PSO2 Classic armor: Arm_Units_List, Leg_Units_List, Back_Units_List
+- Base classes: Hunter, Fighter, Ranger, Gunner, Force, Techter, Braver, Bouncer, Summoner, Hero, Phantom, Etoile, Luster
+- Base shop/system: ARKS_Cash_Shop, Swap_Shop, Treasure_Shop, Client_Orders, Enhancement, Dark_Blast
+- Base armor: Arm_Units_List, Leg_Units_List, Back_Units_List
 
 EXAMPLES:
 Q: "What skills does Slayer have?" game_version: ngs
@@ -126,6 +126,7 @@ class WikiSearchService:
 
         primary_chunks = []
         primary_tables = []
+        primary_page_name = None
 
         # Step 2: Fetch all data for the resolved page
         if page_name:
@@ -142,6 +143,7 @@ class WikiSearchService:
                 gm = page_doc["game_mode"]
                 cat = page_doc["category"]
                 pn = page_doc["page_name"]
+                primary_page_name = pn
 
                 log.info("[WikiSearch] Page resolved: %s → %s/%s/%s", slug, gm, cat, pn)
 
@@ -196,9 +198,10 @@ class WikiSearchService:
             log.info("[WikiSearch] No results for query=%r game=%s", query, game_version)
             return None
 
-        # Step 5: Score retrieval quality and rank tables by query relevance
+        # Step 5: Score retrieval quality and rank evidence by query relevance
         quality = self._assess_retrieval_quality(query, primary_chunks, primary_tables)
-        primary_tables = self._rank_tables(primary_tables, query)
+        primary_chunks = self._rank_chunks(primary_chunks, query)
+        primary_tables = self._rank_tables(primary_tables, query, primary_page_name)
 
         # Step 6: Format context
         return self._format_context(
@@ -216,6 +219,11 @@ class WikiSearchService:
 
     async def _resolve_slug(self, query: str, game_version: str) -> str | None:
         """Use Gemini to resolve a user query into a wiki page slug."""
+        heuristic_slug = self._resolve_slug_heuristic(query, game_version)
+        if heuristic_slug:
+            log.info("[WikiSearch] Slug heuristic: %r -> %r", query, heuristic_slug)
+            return heuristic_slug
+
         prompt = f"Q: {query}\ngame_version: {game_version}"
         try:
             response = await self._gemini.aio.models.generate_content(
@@ -242,6 +250,30 @@ class WikiSearchService:
         except Exception as exc:
             log.warning("[WikiSearch] Slug resolution failed: %s", exc)
             return None
+
+    @staticmethod
+    def _resolve_slug_heuristic(query: str, game_version: str) -> str | None:
+        """Resolve very common pages deterministically before spending an LLM call."""
+        lower = query.lower()
+        cash_shop_terms = (
+            "ac premium",
+            "premium set",
+            "premium 30",
+            "premium 60",
+            "premium 90",
+            "arks cash",
+            "cash shop",
+            "ac shop",
+        )
+        ac_price_query = (
+            re.search(r"\bac\b", lower)
+            and any(term in lower for term in ("cost", "price", "how much", "days", "premium", "storage"))
+        )
+        if any(term in lower for term in cash_shop_terms) or ac_price_query:
+            if game_version == "ngs":
+                return "Portal:New_Genesis/ARKS_Cash_Shop"
+            return "ARKS_Cash_Shop"
+        return None
 
     # ------------------------------------------------------------------
     # Text search
@@ -335,9 +367,61 @@ class WikiSearchService:
         return score
 
     @classmethod
-    def _rank_tables(cls, tables: list[dict], query: str) -> list[dict]:
+    def _rank_tables(
+        cls,
+        tables: list[dict],
+        query: str,
+        primary_page_name: str | None = None,
+    ) -> list[dict]:
         """Rank tables by relevance so critical rows appear before context budget runs out."""
-        return sorted(tables, key=lambda t: cls._table_score(t, query), reverse=True)
+        def sort_key(table: dict) -> tuple[int, int]:
+            primary_boost = 1 if primary_page_name and table.get("page_name") == primary_page_name else 0
+            return primary_boost, cls._table_score(table, query)
+
+        return sorted(tables, key=sort_key, reverse=True)
+
+    @classmethod
+    def _chunk_score(cls, chunk: dict, query: str) -> int:
+        """Score chunks so broad class/entity summaries surface before long skill lists."""
+        score = 0
+        q = query.lower()
+        tokens = cls._query_tokens(query)
+        phrases = cls._query_phrases(query)
+        section = str(chunk.get("section", "")).lower()
+        sub_section = str(chunk.get("sub_section", "")).lower()
+        page_title = str(chunk.get("page_title", "")).lower()
+        content = str(chunk.get("content", "")).lower()
+        blob = " ".join([page_title, section, sub_section, content])
+
+        if any(tok == page_title for tok in tokens):
+            score += 8
+        if any(tok in page_title for tok in tokens):
+            score += 4
+        if any(p in blob for p in phrases):
+            score += 5
+        if any(tok in blob for tok in tokens):
+            score += 2
+
+        broad_class_query = "class" in q and not any(
+            h in q for h in ("skill", "skills", "potency", "damage", "cooldown", "duration")
+        )
+        if broad_class_query:
+            if section in {"overview", "weapons"} or "weapon" in section:
+                score += 12
+            if not section or section in {"overview", "weapons"}:
+                score += 4
+            if section == "skills":
+                score -= 8
+        elif "skill" in q or "skills" in q:
+            if section == "skills":
+                score += 8
+
+        return score
+
+    @classmethod
+    def _rank_chunks(cls, chunks: list[dict], query: str) -> list[dict]:
+        """Rank chunks by query relevance before applying the context budget."""
+        return sorted(chunks, key=lambda c: cls._chunk_score(c, query), reverse=True)
 
     @classmethod
     def _assess_retrieval_quality(
@@ -414,8 +498,9 @@ class WikiSearchService:
             "numeric_query": numeric_query,
         }
 
-    @staticmethod
+    @classmethod
     def _format_context(
+        cls,
         chunks: list[dict],
         tables: list[dict],
         game_mode: str,
@@ -424,7 +509,7 @@ class WikiSearchService:
         quality: dict,
     ) -> str:
         """Format chunks + tables into an LLM-friendly context string."""
-        game_label = "PSO2: New Genesis" if game_mode == "NGS" else "PSO2 Classic"
+        game_label = "NGS" if game_mode == "NGS" else "Base"
         parts = []
         total_chars = 0
         numeric_query = bool(quality.get("numeric_query"))
@@ -462,6 +547,19 @@ class WikiSearchService:
                 rows = t.get("rows", [])
                 if not rows:
                     continue
+
+                query_tokens = cls._query_tokens(query)
+                query_phrases = cls._query_phrases(query)
+
+                def row_score(row: dict) -> int:
+                    row_blob = " ".join(str(v).lower() for v in row.values())
+                    score = sum(1 for tok in query_tokens if tok in row_blob)
+                    score += 3 * sum(1 for phrase in query_phrases if phrase in row_blob)
+                    if "sale" in row_blob or "one time" in row_blob or "bonus" in row_blob:
+                        score -= 1
+                    return score
+
+                rows = sorted(rows, key=row_score, reverse=True)
 
                 # Render as markdown table (compact)
                 header_line = "| " + " | ".join(str(h) for h in headers[:8]) + " |"

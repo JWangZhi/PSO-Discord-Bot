@@ -1,0 +1,2842 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "16715556b5692b565bdbd2880b7d02e4f486d16e",
+  "generatedAt": "2026-05-12T07:25:05.832Z",
+  "files": {
+    ".dockerignore": {
+      "filePath": ".dockerignore",
+      "contentHash": "8c5dff93854002d1e6817d4270aeb6077dee2ac4b577ecc367d756b1cec9bb10",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": false
+    },
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "a989d8a829f5d03452f50920fcd7ce9ba9ee359f3ebe167991c4a7c40ba57ffb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/pylint.yml": {
+      "filePath": ".github/workflows/pylint.yml",
+      "contentHash": "c825d6fa18dd3f6bb245bf97f902194f23b71bf129bd2f29a6e786212f6166fe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    ".python-version": {
+      "filePath": ".python-version",
+      "contentHash": "49a506dd32096b010d75205acf3430c9ae6c40351888129499e5a5e487126c93",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "Dockerfile": {
+      "filePath": "Dockerfile",
+      "contentHash": "ecc62eda23c92673b4479ab130e84677937b85971cad781356539ece4439ae0a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "c3ed191e07298af1668dd5a35070ecf9b24245f2600dacc0fe71c6ab8dada6b4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 151,
+      "hasStructuralAnalysis": true
+    },
+    "ai_prompts/characters/default.md": {
+      "filePath": "ai_prompts/characters/default.md",
+      "contentHash": "e2d14e4db2e5dce51dcd40bc59bc575d74b54f7b48a8c39c2873e99b2724b618",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "ai_prompts/characters/matoi.md": {
+      "filePath": "ai_prompts/characters/matoi.md",
+      "contentHash": "1fca15081ff339ca4b098a0614077cd3c0a6294d835299762e2987c21b43d5ef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "ai_prompts/characters/xiera.md": {
+      "filePath": "ai_prompts/characters/xiera.md",
+      "contentHash": "21be61c1dfd95df5894388a63f210f73627708684d6184883829705653d75c01",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "ai_prompts/formatting_system.md": {
+      "filePath": "ai_prompts/formatting_system.md",
+      "contentHash": "b4d9d793ac16a2ea0a6f5938d181fdb641d6c338a341b32cdf9430e484d3ca10",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "bot/__init__.py": {
+      "filePath": "bot/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "bot/cogs/__init__.py": {
+      "filePath": "bot/cogs/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "bot/cogs/rp_chat.py": {
+      "filePath": "bot/cogs/rp_chat.py",
+      "contentHash": "325c2d85198578e6a6299f63f74509bbc9f50b5b892f15dbfee45995a37ab113",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RPChannelManager",
+          "methods": [
+            "__init__",
+            "load_all",
+            "is_rp_channel",
+            "enable",
+            "disable",
+            "list_channels"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 59
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "motor.motor_asyncio",
+          "specifiers": [
+            "AsyncIOMotorDatabase"
+          ]
+        },
+        {
+          "source": "core.db",
+          "specifiers": [
+            "COL_GUILD_CONFIG"
+          ]
+        }
+      ],
+      "exports": [
+        "RPChannelManager"
+      ],
+      "totalLines": 77,
+      "hasStructuralAnalysis": true
+    },
+    "core/agents/chat_agent.py": {
+      "filePath": "core/agents/chat_agent.py",
+      "contentHash": "fe12d3792d0feeea267e6c0b339f46a529e2f4c198d6a9fa83d6013fe3cf5b5c",
+      "functions": [
+        {
+          "name": "load_persona",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_load_formatting_prompt",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [
+        {
+          "name": "ChatAgent",
+          "methods": [
+            "__init__",
+            "_llm_completion",
+            "_build_system_prompt",
+            "generate_reply",
+            "get_last_debug_snapshot",
+            "generate_structured_reply"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 210
+        }
+      ],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "groq",
+          "specifiers": [
+            "AsyncGroq"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "core.memory",
+          "specifiers": [
+            "MemoryManager"
+          ]
+        }
+      ],
+      "exports": [
+        "load_persona",
+        "_load_formatting_prompt",
+        "ChatAgent"
+      ],
+      "totalLines": 247,
+      "hasStructuralAnalysis": true
+    },
+    "core/agents/router_agent.py": {
+      "filePath": "core/agents/router_agent.py",
+      "contentHash": "452402c3075cfae6b0af128827636fb42224ad42a8ab33fb978ffcbb5e8a6d38",
+      "functions": [],
+      "classes": [
+        {
+          "name": "IntentResult",
+          "methods": [],
+          "properties": [
+            "intent",
+            "confidence",
+            "reasoning",
+            "game_version"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "RouterAgent",
+          "methods": [
+            "__init__",
+            "classify_intent"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 88
+        }
+      ],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "google",
+          "specifiers": [
+            "genai"
+          ]
+        },
+        {
+          "source": "google.genai",
+          "specifiers": [
+            "types"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "IntentResult",
+        "RouterAgent"
+      ],
+      "totalLines": 144,
+      "hasStructuralAnalysis": true
+    },
+    "core/agents/vision_agent.py": {
+      "filePath": "core/agents/vision_agent.py",
+      "contentHash": "66242525b1c57a93bfc21457501313843da4288f741bcc62aa346e3c229b0dcc",
+      "functions": [],
+      "classes": [
+        {
+          "name": "VisionAgent",
+          "methods": [
+            "__init__",
+            "_create_prompt",
+            "analyze_outfit_from_bytes"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "google",
+          "specifiers": [
+            "genai"
+          ]
+        },
+        {
+          "source": "google.genai",
+          "specifiers": [
+            "types"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        }
+      ],
+      "exports": [
+        "VisionAgent"
+      ],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "core/context_compressor.py": {
+      "filePath": "core/context_compressor.py",
+      "contentHash": "a0ce3c1dd808142cdc6d1b516ec8b87e61a13cec0c24bb73a7d0478c936d63c3",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ContextCompressor",
+          "methods": [
+            "__init__",
+            "should_compress",
+            "compress",
+            "run_compression"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 80
+        }
+      ],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "groq",
+          "specifiers": [
+            "groq"
+          ]
+        },
+        {
+          "source": "core.memory",
+          "specifiers": [
+            "MemoryManager"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        }
+      ],
+      "exports": [
+        "ContextCompressor"
+      ],
+      "totalLines": 150,
+      "hasStructuralAnalysis": true
+    },
+    "core/db.py": {
+      "filePath": "core/db.py",
+      "contentHash": "cf1a0b272b5a9fc2b4c65562da8195ce53552c696d4f6208140fa7b1ce0612ee",
+      "functions": [
+        {
+          "name": "default_rp_memory",
+          "params": [
+            "channel_id"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "default_guild_config",
+          "params": [
+            "guild_id"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [
+        {
+          "name": "MongoDB",
+          "methods": [
+            "connect",
+            "get_db",
+            "close",
+            "ensure_indexes"
+          ],
+          "properties": [
+            "_client",
+            "_db"
+          ],
+          "exported": true,
+          "lineCount": 45
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "certifi",
+          "specifiers": [
+            "certifi"
+          ]
+        },
+        {
+          "source": "motor.motor_asyncio",
+          "specifiers": [
+            "AsyncIOMotorClient",
+            "AsyncIOMotorDatabase"
+          ]
+        },
+        {
+          "source": "pymongo",
+          "specifiers": [
+            "IndexModel",
+            "ASCENDING",
+            "DESCENDING"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "MongoDB",
+        "default_rp_memory",
+        "default_guild_config"
+      ],
+      "totalLines": 149,
+      "hasStructuralAnalysis": true
+    },
+    "core/formatters/__init__.py": {
+      "filePath": "core/formatters/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "core/formatters/discord_table.py": {
+      "filePath": "core/formatters/discord_table.py",
+      "contentHash": "8dc7e5e216b87ebc47ee88a0e968a5d07b36bdf9e6c96b661f7adea5953c3103",
+      "functions": [
+        {
+          "name": "_trunc",
+          "params": [
+            "text",
+            "max_len"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_pad",
+          "params": [
+            "text",
+            "width",
+            "align"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_looks_numeric",
+          "params": [
+            "text"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_col_widths",
+          "params": [
+            "headers",
+            "rows"
+          ],
+          "returnType": "list[int]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "render_table",
+          "params": [
+            "title",
+            "headers",
+            "rows",
+            "takeaway",
+            "cautions"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "render_kv",
+          "params": [
+            "title",
+            "rows",
+            "takeaway",
+            "cautions"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "render_bullets",
+          "params": [
+            "title",
+            "bullets",
+            "takeaway",
+            "cautions"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "render_response",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "validate_payload",
+          "params": [
+            "payload"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "try_parse_structured",
+          "params": [
+            "text"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_trunc",
+        "_pad",
+        "_looks_numeric",
+        "_col_widths",
+        "render_table",
+        "render_kv",
+        "render_bullets",
+        "render_response",
+        "validate_payload",
+        "try_parse_structured"
+      ],
+      "totalLines": 198,
+      "hasStructuralAnalysis": true
+    },
+    "core/mcp/__init__.py": {
+      "filePath": "core/mcp/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "core/mcp/mcp_client.py": {
+      "filePath": "core/mcp/mcp_client.py",
+      "contentHash": "6b952f21090e4b5630e71df11d593f8845c2f4a59238e3de0cc83a46f5647bb2",
+      "functions": [
+        {
+          "name": "validate_entity_game",
+          "params": [
+            "query",
+            "game_version"
+          ],
+          "returnType": "tuple[str, str | None]",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [
+        {
+          "name": "MCPBridge",
+          "methods": [
+            "__init__",
+            "start",
+            "close",
+            "fetch_url",
+            "search_wiki",
+            "_resolve_wiki_slug",
+            "_is_allowed"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 152
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "quote",
+            "urlparse"
+          ]
+        },
+        {
+          "source": "aiohttp",
+          "specifiers": [
+            "aiohttp"
+          ]
+        },
+        {
+          "source": "bs4",
+          "specifiers": [
+            "BeautifulSoup"
+          ]
+        },
+        {
+          "source": "google",
+          "specifiers": [
+            "genai"
+          ]
+        },
+        {
+          "source": "google.genai",
+          "specifiers": [
+            "types"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "validate_entity_game",
+        "MCPBridge"
+      ],
+      "totalLines": 265,
+      "hasStructuralAnalysis": true
+    },
+    "core/memory.py": {
+      "filePath": "core/memory.py",
+      "contentHash": "c86f3ad45afd82a5ca57ac23196d40aab263dcb8477814443b4223f69884f72d",
+      "functions": [],
+      "classes": [
+        {
+          "name": "MemoryManager",
+          "methods": [
+            "__init__",
+            "get_memory",
+            "get_recent_messages",
+            "add_message",
+            "update_summary",
+            "add_fact",
+            "clear_memory",
+            "update_emotion",
+            "set_character",
+            "get_game_version_pref",
+            "set_game_version_pref",
+            "log_message",
+            "rebuild_from_history",
+            "_default_memory"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 257
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "core.db",
+          "specifiers": [
+            "MongoDB",
+            "COL_RP_MEMORY",
+            "COL_RP_HISTORY",
+            "default_rp_memory"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "MemoryManager"
+      ],
+      "totalLines": 310,
+      "hasStructuralAnalysis": true
+    },
+    "core/telemetry.py": {
+      "filePath": "core/telemetry.py",
+      "contentHash": "57a80c839a881c319afe46d48a07663ffcec22217d7eef035c4cd59a554a1ba6",
+      "functions": [
+        {
+          "name": "start_metrics_server",
+          "params": [
+            "port"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "prometheus_client",
+          "specifiers": [
+            "Counter",
+            "Histogram",
+            "start_http_server"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "start_metrics_server"
+      ],
+      "totalLines": 44,
+      "hasStructuralAnalysis": true
+    },
+    "core/wiki_search.py": {
+      "filePath": "core/wiki_search.py",
+      "contentHash": "1f574b52ef66a710e48e91da1f2bdaa179fa504c5b941603af401e6065939036",
+      "functions": [
+        {
+          "name": "slug_to_page_name",
+          "params": [
+            "slug"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "slug_to_game_mode",
+          "params": [
+            "slug"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "WikiSearchService",
+          "methods": [
+            "__init__",
+            "search",
+            "_resolve_slug",
+            "_text_search",
+            "_query_tokens",
+            "_query_phrases",
+            "_is_numeric_query",
+            "_table_score",
+            "_rank_tables",
+            "_assess_retrieval_quality",
+            "_format_context"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 420
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "google",
+          "specifiers": [
+            "genai"
+          ]
+        },
+        {
+          "source": "google.genai",
+          "specifiers": [
+            "types"
+          ]
+        },
+        {
+          "source": "motor.motor_asyncio",
+          "specifiers": [
+            "AsyncIOMotorDatabase"
+          ]
+        },
+        {
+          "source": "core.db",
+          "specifiers": [
+            "MongoDB",
+            "COL_WIKI_CHUNKS",
+            "COL_WIKI_TABLES",
+            "COL_WIKI_PAGES"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "slug_to_page_name",
+        "slug_to_game_mode",
+        "WikiSearchService"
+      ],
+      "totalLines": 520,
+      "hasStructuralAnalysis": true
+    },
+    "docker-compose.yml": {
+      "filePath": "docker-compose.yml",
+      "contentHash": "e09d949a993ca20c6bcfc51f53b28ed4e60d7760ec036b3f83a9e04dbd72854e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "docs/01-architecture.md": {
+      "filePath": "docs/01-architecture.md",
+      "contentHash": "8c81a54a53e8c5eab87f9c43366bc2d78185a0e28f49ce43fda3f149912e48b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 183,
+      "hasStructuralAnalysis": true
+    },
+    "docs/02-features.md": {
+      "filePath": "docs/02-features.md",
+      "contentHash": "22c740077a30b2cf43ddf8b57022cf266bbdd251418593dbbd39f83453e1d5ef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "docs/08-rp-memory-management.md": {
+      "filePath": "docs/08-rp-memory-management.md",
+      "contentHash": "1b09cf755e843b94d9df0ff9f50211ba3015746c44fc5e344127cfb4044a2b27",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 45,
+      "hasStructuralAnalysis": true
+    },
+    "docs/10-wiki-scraper-guide.md": {
+      "filePath": "docs/10-wiki-scraper-guide.md",
+      "contentHash": "3316f1fd7ebe2a851d709efdbbb4b987f807463e269f39826a69b52cc3264cbc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 142,
+      "hasStructuralAnalysis": true
+    },
+    "docs/12-tool-mcp-ideas.md": {
+      "filePath": "docs/12-tool-mcp-ideas.md",
+      "contentHash": "1edc7a0d551b3fa7b96e0ca0d53e20e23628b897b1fff61ddbf40d2066661c32",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 289,
+      "hasStructuralAnalysis": true
+    },
+    "docs/13-config-structure.md": {
+      "filePath": "docs/13-config-structure.md",
+      "contentHash": "e315447648688cddc54ad627ab2fcb3acf73cb2d0654f3f97067e823d9ac4e6e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "docs/14-critical-fixes-plan.md": {
+      "filePath": "docs/14-critical-fixes-plan.md",
+      "contentHash": "05679fb5a56fa499559c760d2f1bd88af54e84ea233a52caa5678fd166318723",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1128,
+      "hasStructuralAnalysis": true
+    },
+    "docs/etl-addon-skills-parser.md": {
+      "filePath": "docs/etl-addon-skills-parser.md",
+      "contentHash": "c94f2707840426921f078d7c8dbbafd57995d0a8aad7370cdc192bb2d2048927",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 618,
+      "hasStructuralAnalysis": true
+    },
+    "docs/roadmap/TODO.md": {
+      "filePath": "docs/roadmap/TODO.md",
+      "contentHash": "64114e63c1e28c9b23ecb5cb1d1c244a6272767a82dee719a03a75e5ede43577",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 286,
+      "hasStructuralAnalysis": true
+    },
+    "docs/roadmap/token_optimization.md": {
+      "filePath": "docs/roadmap/token_optimization.md",
+      "contentHash": "42bf24ddcea6de89d42bba47ba84bf5aa786332c5e616aa1df17cbb23c74b57a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    "grafana/dashboards/pso2bot-overview.json": {
+      "filePath": "grafana/dashboards/pso2bot-overview.json",
+      "contentHash": "bdb8c60b03dc60bb718b8d0d9a05a33c5b790f101c5df5c94104ccac0163e827",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 179,
+      "hasStructuralAnalysis": true
+    },
+    "grafana/provisioning/dashboards/provider.yml": {
+      "filePath": "grafana/provisioning/dashboards/provider.yml",
+      "contentHash": "bc591e646385cb92b188fb2809a34d24589049fc9bcea1020b2e7d50c39ce3a9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "grafana/provisioning/datasources/prometheus.yml": {
+      "filePath": "grafana/provisioning/datasources/prometheus.yml",
+      "contentHash": "ce0bd69f3a72d7e42d085211153cbb1036e9a55cd7ae88de109fb3b5160bc300",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "main.py": {
+      "filePath": "main.py",
+      "contentHash": "c46a8784daea7a6ee977ff88626e0c5a590c3867772e59af4de8c179bbd8e93a",
+      "functions": [
+        {
+          "name": "send_long_message",
+          "params": [
+            "interaction",
+            "text"
+          ],
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "reply_long",
+          "params": [
+            "message",
+            "text"
+          ],
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "ping",
+          "params": [
+            "interaction"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "clear_memory",
+          "params": [
+            "interaction"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ask",
+          "params": [
+            "interaction",
+            "game",
+            "question"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "fashion",
+          "params": [
+            "interaction",
+            "game",
+            "image"
+          ],
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "wiki",
+          "params": [
+            "interaction",
+            "url",
+            "question"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "rp_enable",
+          "params": [
+            "interaction"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "rp_disable",
+          "params": [
+            "interaction"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [
+        {
+          "name": "GameVersionResolver",
+          "methods": [
+            "__init__",
+            "_hard_detect",
+            "_parse_clarification",
+            "_parse_switch_reply",
+            "resolve"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 91
+        },
+        {
+          "name": "PSO2Bot",
+          "methods": [
+            "__init__",
+            "build_no_rag_context",
+            "build_debug_suffix",
+            "_handle_pending_reply",
+            "_expand_query",
+            "_important_tokens",
+            "_clean_query",
+            "_is_cross_version_compare",
+            "_looks_like_wiki_query",
+            "_clip_context",
+            "_extract_retrieval_query",
+            "_retrieve_wiki_context",
+            "_is_table_suitable",
+            "_format_entities",
+            "_wiki_reply",
+            "setup_hook",
+            "close",
+            "on_ready",
+            "on_message"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 794
+        },
+        {
+          "name": "GameVersion",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "discord",
+          "specifiers": [
+            "discord"
+          ]
+        },
+        {
+          "source": "discord",
+          "specifiers": [
+            "app_commands"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        },
+        {
+          "source": "core.agents.router_agent",
+          "specifiers": [
+            "RouterAgent"
+          ]
+        },
+        {
+          "source": "core.agents.chat_agent",
+          "specifiers": [
+            "ChatAgent"
+          ]
+        },
+        {
+          "source": "core.agents.vision_agent",
+          "specifiers": [
+            "VisionAgent"
+          ]
+        },
+        {
+          "source": "core.memory",
+          "specifiers": [
+            "MemoryManager"
+          ]
+        },
+        {
+          "source": "core.db",
+          "specifiers": [
+            "MongoDB"
+          ]
+        },
+        {
+          "source": "core.mcp.mcp_client",
+          "specifiers": [
+            "MCPBridge"
+          ]
+        },
+        {
+          "source": "core.context_compressor",
+          "specifiers": [
+            "ContextCompressor"
+          ]
+        },
+        {
+          "source": "core.wiki_search",
+          "specifiers": [
+            "WikiSearchService"
+          ]
+        },
+        {
+          "source": "core.formatters.discord_table",
+          "specifiers": [
+            "render_response",
+            "try_parse_structured"
+          ]
+        },
+        {
+          "source": "bot.cogs.rp_chat",
+          "specifiers": [
+            "RPChannelManager"
+          ]
+        },
+        {
+          "source": "core.telemetry",
+          "specifiers": [
+            "start_metrics_server",
+            "INTENT_REQUESTS",
+            "MESSAGE_PROCESSING_TIME",
+            "COMMAND_REQUESTS",
+            "EXTERNAL_API_ERRORS"
+          ]
+        }
+      ],
+      "exports": [
+        "GameVersionResolver",
+        "PSO2Bot",
+        "GameVersion",
+        "send_long_message",
+        "reply_long",
+        "ping",
+        "clear_memory",
+        "ask",
+        "fashion",
+        "wiki",
+        "rp_enable",
+        "rp_disable"
+      ],
+      "totalLines": 1191,
+      "hasStructuralAnalysis": true
+    },
+    "prometheus.yml": {
+      "filePath": "prometheus.yml",
+      "contentHash": "655f7f91487847097e120b08561862faaaf78046ce2282a2a72c32cb9ab5ca17",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "pyproject.toml": {
+      "filePath": "pyproject.toml",
+      "contentHash": "2d1042260ad212a15c9e926b524c87307d1cc4ad16c4dbc4caf0d7fcbdb2834c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/__init__.py": {
+      "filePath": "scripts/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/etl/__init__.py": {
+      "filePath": "scripts/etl/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/etl/upload_wiki_to_mongo.py": {
+      "filePath": "scripts/etl/upload_wiki_to_mongo.py",
+      "contentHash": "e99c9de12d6036b761d1355e2f327e9d0e318f8791f1007e7c7a4dfa8cd7bf1c",
+      "functions": [
+        {
+          "name": "parse_wiki_path",
+          "params": [
+            "filepath"
+          ],
+          "returnType": "PageInfo | None",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "is_nav_table",
+          "params": [
+            "headers"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "flatten_multi_level_header",
+          "params": [
+            "header"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "build_search_text",
+          "params": [
+            "headers",
+            "rows"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "process_table",
+          "params": [
+            "table",
+            "page_info",
+            "table_index"
+          ],
+          "returnType": "TableDocument | None",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "process_chunk",
+          "params": [
+            "chunk",
+            "page_info",
+            "chunk_index"
+          ],
+          "returnType": "ChunkDocument",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "process_meta",
+          "params": [
+            "meta",
+            "page_info",
+            "chunk_count",
+            "table_count"
+          ],
+          "returnType": "PageDocument",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "load_all_documents",
+          "params": [],
+          "returnType": "tuple[\n    list[ChunkDocument], list[TableDocument], list[PageDocument]\n]",
+          "exported": true,
+          "lineCount": 68
+        },
+        {
+          "name": "log_stats",
+          "params": [
+            "chunks",
+            "tables",
+            "pages"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "upload_to_mongo",
+          "params": [
+            "chunks",
+            "tables",
+            "pages",
+            "clear"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [
+        {
+          "name": "CollectionNames",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "WikiFields",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "PageInfo",
+          "methods": [],
+          "properties": [
+            "game_mode",
+            "category",
+            "page_name"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "ChunkDocument",
+          "methods": [],
+          "properties": [
+            "_id",
+            "game_mode",
+            "category",
+            "page_title",
+            "section",
+            "sub_section",
+            "content",
+            "url",
+            "last_scraped"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "TableDocument",
+          "methods": [],
+          "properties": [
+            "_id",
+            "game_mode",
+            "category",
+            "page_name",
+            "table_index",
+            "headers",
+            "rows",
+            "row_count",
+            "_search_text"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "PageDocument",
+          "methods": [],
+          "properties": [
+            "_id",
+            "game_mode",
+            "category",
+            "page_name",
+            "page_title",
+            "url",
+            "last_scraped",
+            "chunk_count",
+            "table_count"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "GameModeStats",
+          "methods": [],
+          "properties": [
+            "pages",
+            "chunks",
+            "tables"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "ast",
+          "specifiers": [
+            "ast"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "TypedDict"
+          ]
+        },
+        {
+          "source": "pymongo.errors",
+          "specifiers": [
+            "pymongo.errors"
+          ]
+        },
+        {
+          "source": "pymongo",
+          "specifiers": [
+            "ReplaceOne"
+          ]
+        },
+        {
+          "source": "core.db",
+          "specifiers": [
+            "MongoDB"
+          ]
+        },
+        {
+          "source": "settings.scraper",
+          "specifiers": [
+            "STORAGE_DIR"
+          ]
+        }
+      ],
+      "exports": [
+        "CollectionNames",
+        "WikiFields",
+        "PageInfo",
+        "ChunkDocument",
+        "TableDocument",
+        "PageDocument",
+        "GameModeStats",
+        "parse_wiki_path",
+        "is_nav_table",
+        "flatten_multi_level_header",
+        "build_search_text",
+        "process_table",
+        "process_chunk",
+        "process_meta",
+        "load_all_documents",
+        "log_stats",
+        "upload_to_mongo",
+        "main"
+      ],
+      "totalLines": 539,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/rag/__init__.py": {
+      "filePath": "scripts/rag/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/rag/audit_wiki_retrieval.py": {
+      "filePath": "scripts/rag/audit_wiki_retrieval.py",
+      "contentHash": "0d35a6a6993159f96e3233d52e0b8346f9add39a4d7b233368b52226927e9bf7",
+      "functions": [
+        {
+          "name": "_tokens",
+          "params": [
+            "text"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_parse_quality",
+          "params": [
+            "ctx"
+          ],
+          "returnType": "tuple[int, str, str]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_overlap_expected",
+          "params": [
+            "page_title",
+            "ctx"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_risk_level",
+          "params": [
+            "has_context",
+            "insufficient",
+            "quality_label",
+            "overlap"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_fetch_pages",
+          "params": [
+            "db"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_build_queries",
+          "params": [
+            "page_title",
+            "template"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_normalized_page_title",
+          "params": [
+            "page"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_chunk_title_candidates",
+          "params": [
+            "page"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_classify_row",
+          "params": [
+            "page",
+            "query",
+            "ctx"
+          ],
+          "returnType": "AuditRow",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "run_audit",
+          "params": [
+            "max_pages",
+            "template",
+            "retry",
+            "mode"
+          ],
+          "returnType": "tuple[list[AuditRow], dict]",
+          "exported": true,
+          "lineCount": 85
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "classes": [
+        {
+          "name": "AuditRow",
+          "methods": [],
+          "properties": [
+            "game_mode",
+            "category",
+            "page_name",
+            "page_title",
+            "query",
+            "has_context",
+            "insufficient",
+            "quality_score",
+            "quality_label",
+            "quality_reason",
+            "token_overlap",
+            "risk"
+          ],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "Counter",
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "asdict",
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "certifi",
+          "specifiers": [
+            "certifi"
+          ]
+        },
+        {
+          "source": "motor.motor_asyncio",
+          "specifiers": [
+            "AsyncIOMotorClient"
+          ]
+        },
+        {
+          "source": "core.wiki_search",
+          "specifiers": [
+            "WikiSearchService"
+          ]
+        }
+      ],
+      "exports": [
+        "AuditRow",
+        "_tokens",
+        "_parse_quality",
+        "_overlap_expected",
+        "_risk_level",
+        "_fetch_pages",
+        "_build_queries",
+        "_normalized_page_title",
+        "_chunk_title_candidates",
+        "_classify_row",
+        "run_audit",
+        "main"
+      ],
+      "totalLines": 283,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/rag/rag_pipeline.py": {
+      "filePath": "scripts/rag/rag_pipeline.py",
+      "contentHash": "623303f2dd09ea275f05e5733fe0784e2c89e043acdea03d9d96fc2a1c8347c2",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RetrievedChunk",
+          "methods": [],
+          "properties": [
+            "text",
+            "source",
+            "page",
+            "heading",
+            "sub_heading",
+            "score",
+            "game_mode",
+            "category"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "RAGPipeline",
+          "methods": [
+            "_normalize_token",
+            "__init__",
+            "embed_query",
+            "search_chunks",
+            "_tokenize_query",
+            "_specific_tokens",
+            "retrieve_context"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 224
+        }
+      ],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "openai",
+          "specifiers": [
+            "OpenAI"
+          ]
+        },
+        {
+          "source": "pinecone",
+          "specifiers": [
+            "Pinecone"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [
+        "RetrievedChunk",
+        "RAGPipeline"
+      ],
+      "totalLines": 299,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/rag/reembed_from_cache.py": {
+      "filePath": "scripts/rag/reembed_from_cache.py",
+      "contentHash": "8b7d4dc40b65da1e1e2de67721af6bc7e3e85ad485e9c809afed065c588fed51",
+      "functions": [
+        {
+          "name": "embed_texts",
+          "params": [
+            "client",
+            "texts",
+            "model"
+          ],
+          "returnType": "list[list[float]]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 114
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "openai",
+          "specifiers": [
+            "OpenAI"
+          ]
+        },
+        {
+          "source": "pinecone",
+          "specifiers": [
+            "Pinecone"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        },
+        {
+          "source": "settings.scraper",
+          "specifiers": [
+            "STORAGE_DIR"
+          ]
+        }
+      ],
+      "exports": [
+        "embed_texts",
+        "main"
+      ],
+      "totalLines": 168,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/scraper/__init__.py": {
+      "filePath": "scripts/scraper/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/scraper/wiki_scraper.py": {
+      "filePath": "scripts/scraper/wiki_scraper.py",
+      "contentHash": "80bf0293b2f7595acacab9b4e7383c7b93d228da1fdbc881ce3d9198eb5e64ec",
+      "functions": [
+        {
+          "name": "_ensure_dir",
+          "params": [
+            "path"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_safe_filename",
+          "params": [
+            "page_path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_page_url",
+          "params": [
+            "page_path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_out_dir",
+          "params": [
+            "game_mode",
+            "category"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_chunk_id",
+          "params": [
+            "url",
+            "section",
+            "sub_section"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_now_iso",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_is_nav_table",
+          "params": [
+            "table"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_is_skill_table",
+          "params": [
+            "table"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_extract_skill_from_table",
+          "params": [
+            "table"
+          ],
+          "returnType": "dict | None",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "_skill_to_chunk_text",
+          "params": [
+            "skill"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_remove_noise_tables_for_text",
+          "params": [
+            "soup"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "api_batch_check",
+          "params": [
+            "page_paths"
+          ],
+          "returnType": "dict[str, dict]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "should_scrape",
+          "params": [
+            "page_path",
+            "api_info",
+            "game_mode",
+            "category"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "fetch_html",
+          "params": [
+            "page_path"
+          ],
+          "returnType": "Optional[str]",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "extract_tables",
+          "params": [
+            "html",
+            "game_mode",
+            "category",
+            "page_path"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "extract_text_chunks",
+          "params": [
+            "html",
+            "game_mode",
+            "category",
+            "page_path",
+            "page_title"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 113
+        },
+        {
+          "name": "save_tables",
+          "params": [
+            "page_path",
+            "game_mode",
+            "category",
+            "tables"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "save_chunks",
+          "params": [
+            "page_path",
+            "game_mode",
+            "category",
+            "chunks"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "save_markdown",
+          "params": [
+            "page_path",
+            "game_mode",
+            "category",
+            "html"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "save_meta",
+          "params": [
+            "page_path",
+            "game_mode",
+            "category",
+            "scrape_type",
+            "n_tables",
+            "n_chunks",
+            "lastrevid"
+          ],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "scrape_page",
+          "params": [
+            "page_path",
+            "game_mode",
+            "category",
+            "scrape_type",
+            "last_rev_ts"
+          ],
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "load_manifest",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "run",
+          "params": [
+            "batch"
+          ],
+          "exported": true,
+          "lineCount": 96
+        },
+        {
+          "name": "_print_summary",
+          "params": [
+            "total",
+            "done",
+            "skip"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "bs4",
+          "specifiers": [
+            "BeautifulSoup",
+            "NavigableString",
+            "Tag"
+          ]
+        },
+        {
+          "source": "markdownify",
+          "specifiers": [
+            "md"
+          ]
+        },
+        {
+          "source": "settings.scraper",
+          "specifiers": [
+            "API_BASE",
+            "WIKI_BASE",
+            "HEADERS",
+            "STORAGE_DIR",
+            "CACHE_DIR",
+            "MANIFEST_FILE",
+            "REQUEST_DELAY",
+            "CACHE_TTL_H",
+            "MIN_CHUNK_LEN",
+            "BATCH_SIZE",
+            "NAV_TABLE_CLASS_HINTS",
+            "NAV_CAPTION_HINTS"
+          ]
+        }
+      ],
+      "exports": [
+        "_ensure_dir",
+        "_safe_filename",
+        "_page_url",
+        "_out_dir",
+        "_chunk_id",
+        "_now_iso",
+        "_is_nav_table",
+        "_is_skill_table",
+        "_extract_skill_from_table",
+        "_skill_to_chunk_text",
+        "_remove_noise_tables_for_text",
+        "api_batch_check",
+        "should_scrape",
+        "fetch_html",
+        "extract_tables",
+        "extract_text_chunks",
+        "save_tables",
+        "save_chunks",
+        "save_markdown",
+        "save_meta",
+        "scrape_page",
+        "load_manifest",
+        "run",
+        "_print_summary"
+      ],
+      "totalLines": 784,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/scraper/wiki_scraper_manifest.json": {
+      "filePath": "scripts/scraper/wiki_scraper_manifest.json",
+      "contentHash": "c0bc056b22f08618e2f3351f698cea88794a19b454bd6b9cc80f090f42f6ff44",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 322,
+      "hasStructuralAnalysis": true
+    },
+    "settings/__init__.py": {
+      "filePath": "settings/__init__.py",
+      "contentHash": "be0b947158084af6b9a3b9146a0f4b77d4ebe50e7453c24eda327725f5f3e1ee",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "settings/app.py": {
+      "filePath": "settings/app.py",
+      "contentHash": "0f4d96d988380a5b84ecac2d6dd80ad3e79dad0734a88bb053879dbbc7a79228",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "settings/env.py": {
+      "filePath": "settings/env.py",
+      "contentHash": "7045b8d8d19cbdaac0ab86fadaa0b5eed5618d77f8c5a3fab96ba9c3241819c4",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "settings/scraper.py": {
+      "filePath": "settings/scraper.py",
+      "contentHash": "0c969a9038a83713d2022b159181e9a1d3147291fc3ced13ceec6300203d6ac1",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 55,
+      "hasStructuralAnalysis": true
+    },
+    "tests/_preflight.py": {
+      "filePath": "tests/_preflight.py",
+      "contentHash": "c54f42e28aa7ebfd1633dde0db1b43ce49f8dbac833551075d6fb20f4f98e19c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "settings",
+          "specifiers": [
+            "app_settings"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "tests/_start_test.py": {
+      "filePath": "tests/_start_test.py",
+      "contentHash": "d011f5b79f9652418b2150f599ab7d67fded22ccb71af286b17917e1079811b4",
+      "functions": [
+        {
+          "name": "alarm_handler",
+          "params": [
+            "signum",
+            "frame"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "signal",
+          "specifiers": [
+            "signal"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "main",
+          "specifiers": [
+            "bot",
+            "config"
+          ]
+        }
+      ],
+      "exports": [
+        "alarm_handler"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "tests/debug_rag_flow.py": {
+      "filePath": "tests/debug_rag_flow.py",
+      "contentHash": "b97870fb65e9aba07a3965c3b6a5e429daccee1aa6ad05a0c9985b6bea66f555",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "scripts.rag.rag_pipeline",
+          "specifiers": [
+            "RAGPipeline"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_wiki_access.py": {
+      "filePath": "tests/test_wiki_access.py",
+      "contentHash": "ca41d69e6d83ed5e8664a76f265ec0c64db6750c1eef02eacdf106261ff06095",
+      "functions": [
+        {
+          "name": "test_mediawiki_api",
+          "params": [
+            "page_slug"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 77
+        },
+        {
+          "name": "test_mcp_bridge",
+          "params": [
+            "page_slug"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "test_slug_resolution",
+          "params": [
+            "query",
+            "game_version"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "main",
+          "params": [],
+          "exported": true,
+          "lineCount": 77
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [
+        "test_mediawiki_api",
+        "test_mcp_bridge",
+        "test_slug_resolution",
+        "main"
+      ],
+      "totalLines": 282,
+      "hasStructuralAnalysis": true
+    }
+  }
+}
